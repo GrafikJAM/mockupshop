@@ -1,0 +1,59 @@
+.wrapper {
+  overflow: hidden;
+  width: 100%;
+}
+
+.track {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  animation: scrollLeft linear infinite;
+}
+
+.track:hover {
+  animation-play-state: paused;
+}
+
+.reverse {
+  animation-name: scrollRight;
+}
+
+.item {
+  flex-shrink: 0;
+  width: 220px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.item:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-3px);
+}
+
+.imageWrap {
+  position: relative;
+  width: 220px;
+  height: 165px;
+  background: var(--bg-elevated);
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.item:hover .image {
+  transform: scale(1.04);
+}
+
+@keyframes scrollLeft {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes scrollRight {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}

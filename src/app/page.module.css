@@ -1,0 +1,129 @@
+.main {
+  padding-top: var(--nav-h);
+}
+
+/* ── Hero ───────────────────────────────────────── */
+.hero {
+  padding: 100px 0 80px;
+  border-bottom: 1px solid var(--border);
+}
+
+.heroInner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 800px;
+}
+
+.heroInner h1 em {
+  font-style: italic;
+  color: var(--accent-warm);
+}
+
+.heroDesc {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 520px;
+  line-height: 1.7;
+  margin-top: 4px;
+}
+
+.heroCtas {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .hero { padding: 72px 0 56px; }
+  .heroInner { padding: 0 20px; }
+}
+
+/* ── Marquee strip ───────────────────────────────── */
+.marqueeSection {
+  padding: 40px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Deal section ───────────────────────────────── */
+.dealSection {
+  border-bottom: 1px solid var(--border);
+}
+
+.dealHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.dealSub {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.marqueeGap {
+  padding: 20px 0;
+}
+
+/* ── Social section ─────────────────────────────── */
+.socialSection {
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* ── Section head ───────────────────────────────── */
+.sectionHead {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+/* ── View all ───────────────────────────────────── */
+.viewAll {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+/* ── Founder ────────────────────────────────────── */
+.founderSection {
+  border-top: 1px solid var(--border);
+}
+
+.founder {
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.founderTagline {
+  color: var(--text-primary);
+}
+
+.founderBio {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.founderBio p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.founderName {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.2rem;
+  color: var(--accent-warm);
+  margin-top: 8px;
+}
