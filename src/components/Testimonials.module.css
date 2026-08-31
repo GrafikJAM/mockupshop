@@ -1,14 +1,20 @@
-.wrapper { display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+.wrap { display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
 .row { overflow: hidden; }
-.track { display: flex; gap: 12px; width: max-content; animation: scrollLeft linear infinite; }
+.track { display: flex; gap: 10px; width: max-content; animation: scrollLeft linear infinite; }
 .track:hover { animation-play-state: paused; }
-.reverse { animation-name: scrollRight; }
-.card { flex-shrink: 0; width: 280px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+.rev { animation-name: scrollRight; }
+.card {
+  flex-shrink: 0; width: 260px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 14px;
+  transition: border-color 0.2s;
+}
 .card:hover { border-color: var(--border-hover); }
-.header { display: flex; align-items: center; gap: 10px; }
-.avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: var(--bg-elevated); }
-.name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.author { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--bg-elevated); }
+.name { font-size: 12px; font-weight: 500; color: var(--text-primary); }
 .handle { font-size: 11px; color: var(--text-muted); }
-.text { font-size: 13.5px; color: var(--text-secondary); line-height: 1.55; }
-@keyframes scrollLeft { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@keyframes scrollRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@keyframes scrollLeft { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
+@keyframes scrollRight { from { transform: translateX(-33.333%); } to { transform: translateX(0); } }

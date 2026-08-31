@@ -1,34 +1,34 @@
 import styles from './Testimonials.module.css'
 
-type Testimonial = { handle: string; name: string; avatar: string; text: string }
+type T = { handle: string; name: string; avatar: string; text: string }
 
-function Card({ item }: { item: Testimonial }) {
+function Card({ t }: { t: T }) {
   return (
     <div className={styles.card}>
-      <div className={styles.header}>
-        <img src={item.avatar} alt={item.name} className={styles.avatar} width={36} height={36} />
+      <p className={styles.text}>{t.text}</p>
+      <div className={styles.author}>
+        <img src={t.avatar} alt={t.name} className={styles.avatar} width={32} height={32} />
         <div>
-          <div className={styles.name}>{item.name}</div>
-          <div className={styles.handle}>{item.handle}</div>
+          <div className={styles.name}>{t.name}</div>
+          <div className={styles.handle}>{t.handle}</div>
         </div>
       </div>
-      <p className={styles.text}>{item.text}</p>
     </div>
   )
 }
 
-export default function Testimonials({ items }: { items: Testimonial[] }) {
-  const doubled = [...items, ...items]
+export default function Testimonials({ items }: { items: T[] }) {
+  const d = [...items, ...items, ...items]
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrap}>
       <div className={styles.row}>
-        <div className={styles.track} style={{ animationDuration: '35s' }}>
-          {doubled.map((item, i) => <Card key={`r1-${i}`} item={item} />)}
+        <div className={styles.track} style={{ animationDuration: '40s' }}>
+          {d.map((t, i) => <Card key={`a${i}`} t={t} />)}
         </div>
       </div>
       <div className={styles.row}>
-        <div className={`${styles.track} ${styles.reverse}`} style={{ animationDuration: '45s' }}>
-          {[...doubled].reverse().map((item, i) => <Card key={`r2-${i}`} item={item} />)}
+        <div className={`${styles.track} ${styles.rev}`} style={{ animationDuration: '52s' }}>
+          {[...d].reverse().map((t, i) => <Card key={`b${i}`} t={t} />)}
         </div>
       </div>
     </div>

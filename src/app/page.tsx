@@ -3,9 +3,10 @@ import { SITE, PRICING, TESTIMONIALS } from '@/lib/config'
 import { supabase } from '@/lib/supabase'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
+import Marquee from '@/components/Marquee'
+import ProductGrid from '@/components/ProductGrid'
 import PricingCard from '@/components/PricingCard'
 import Testimonials from '@/components/Testimonials'
-import ProductGrid from '@/components/ProductGrid'
 import styles from './page.module.css'
 
 export const revalidate = 60
@@ -16,70 +17,100 @@ export default async function Home() {
     .select('*')
     .eq('active', true)
     .order('created_at', { ascending: false })
-    .limit(8)
+
+  const all = products || []
+  const latest = all.slice(0, 12)
+  const marquee1 = all.slice(0, 6).length >= 3 ? all : all
 
   return (
     <>
       <Nav />
       <main className={styles.main}>
 
-        {/* Hero */}
+        {/* ── Hero ─────────────────────────────────── */}
         <section className={styles.hero}>
           <div className={styles.heroInner}>
-            <p className="label animate-fade-up delay-1">{SITE.tagline}</p>
-            <h1 className="display-xl animate-fade-up delay-2">
-              {SITE.name}<br /><em>high-quality</em><br />Photoshop mockups
-            </h1>
-            <p className={`${styles.heroDesc} animate-fade-up delay-3`}>{SITE.description}</p>
-            <div className={`${styles.heroCtas} animate-fade-up delay-4`}>
-              <Link href="/mockups" className="btn-primary">
-                Browse mockups
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </Link>
-              <Link href={PRICING.href} className="btn-ghost">Get access from {PRICING.amount}</Link>
+            <div className={styles.heroText}>
+              <p className={`label animate-fade-up delay-1`}>{SITE.tagline}</p>
+              <h1 className={`display-xl animate-fade-up delay-2`}>
+                {SITE.name}<br /><em>{SITE.heroItalic || 'high-quality'}</em><br />Photoshop mockups
+              </h1>
+              <p className={`${styles.heroDesc} animate-fade-up delay-3`}>{SITE.description}</p>
+              <div className={`${styles.heroCtas} animate-fade-up delay-4`}>
+                <Link href="/mockups" className="btn-primary">
+                  Browse mockups
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5h10M8.5 4l3.5 3.5L8.5 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </Link>
+                <Link href={PRICING.href} className="btn-ghost">
+                  Get access from {PRICING.amount}
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Latest products */}
-        {products && products.length > 0 && (
-          <section className="section">
+        {/* ── Marquee strip ─────────────────────────── */}
+        {all.length > 0 && (
+          <div className={styles.marqueeSection}>
+            <Marquee products={all} direction="left" speed={38} />
+          </div>
+        )}
+
+        {/* ── Latest products ───────────────────────── */}
+        {latest.length > 0 && (
+          <section className={`${styles.section} section`}>
             <div className="container">
               <div className={styles.sectionHead}>
                 <p className="label">What's new</p>
                 <h2 className="display-lg">Latest mockups</h2>
               </div>
-              <ProductGrid products={products} />
+              <ProductGrid products={latest} cols={4} />
               <div className={styles.viewAll}>
                 <Link href="/mockups" className="btn-ghost">
                   View all mockups
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5h9M7.5 3l3 3.5-3 3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </Link>
               </div>
             </div>
           </section>
         )}
 
-        {/* Testimonials */}
-        <section className={styles.socialSection}>
+        {/* ── Testimonials ──────────────────────────── */}
+        <section className={styles.testimonialsSection}>
+          <div className="container" style={{ marginBottom: '40px' }}>
+            <p className="label">What people say</p>
+          </div>
           <Testimonials items={TESTIMONIALS} />
         </section>
 
-        {/* Pricing */}
-        <section className="section">
-          <div className="container"><PricingCard /></div>
+        {/* ── Pricing + second marquee ──────────────── */}
+        <section className={styles.pricingSection}>
+          <div className="container">
+            <div className={styles.pricingTop}>
+              <p className="label">The best deal in the market</p>
+              <h2 className="display-sm" style={{ marginTop: 8 }}>The price of a few mockups.<br />Access to everything.</h2>
+            </div>
+          </div>
+          {all.length > 0 && (
+            <div className={styles.pricingMarquee}>
+              <Marquee products={[...all].reverse()} direction="right" speed={50} />
+            </div>
+          )}
+          <div className="container" style={{ marginTop: 56 }}>
+            <PricingCard />
+          </div>
         </section>
 
-        {/* Founder */}
-        <section className="section" style={{ borderTop: '1px solid var(--border)' }}>
+        {/* ── Founder ───────────────────────────────── */}
+        <section className={`section ${styles.founderSection}`}>
           <div className="container">
             <div className={styles.founder}>
               <p className="label">Why {SITE.name}?</p>
               <h2 className="display-sm">I build these like I'd use them myself</h2>
               <div className={styles.founderBio}>
-                {SITE.founderBio.split('\n\n').map((para, i) => <p key={i}>{para}</p>)}
+                {SITE.founderBio.split('\n\n').map((p, i) => <p key={i}>{p}</p>)}
               </div>
-              <p className={styles.founderName}>{SITE.founderName}</p>
+              <p className={styles.sig}>{SITE.founderName}</p>
             </div>
           </div>
         </section>
