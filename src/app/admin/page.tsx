@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import styles from './page.module.css'
 
 type Product = {
@@ -16,16 +16,7 @@ type Product = {
 }
 
 const CATEGORIES = ['Billboard', 'Screen', 'Apparel', 'Print', 'Signage', 'Packaging', 'Other']
-
-const empty = {
-  title: '',
-  description: '',
-  download_url: '',
-  image_default: '',
-  image_hover: '',
-  images_extra: ['', '', ''],
-  category: 'Other',
-}
+const empty = { title: '', description: '', download_url: '', image_default: '', image_hover: '', images_extra: ['', '', ''], category: 'Other' }
 
 export default function AdminPage() {
   const [password, setPassword] = useState('')
@@ -39,17 +30,13 @@ export default function AdminPage() {
   const [tab, setTab] = useState<'add' | 'manage'>('add')
 
   async function login() {
-    const testRes = await fetch('/api/products', {
+    const res = await fetch('/api/products', {
       method: 'POST',
       headers: { 'x-admin-password': password, 'Content-Type': 'application/json' },
       body: JSON.stringify({ _test: true }),
     })
-    if (testRes.status !== 401) {
-      setAuthed(true)
-      loadProducts()
-    } else {
-      setAuthError(true)
-    }
+    if (res.status !== 401) { setAuthed(true); loadProducts() }
+    else setAuthError(true)
   }
 
   async function loadProducts() {
@@ -59,74 +46,43 @@ export default function AdminPage() {
   }
 
   async function save() {
-    setSaving(true)
-    setMsg('')
-    const extras = form.images_extra.filter(Boolean)
-    const payload = { ...form, images_extra: extras }
+    setSaving(true); setMsg('')
+    const payload = { ...form, images_extra: form.images_extra.filter(Boolean) }
     const url = editId ? `/api/products/${editId}` : '/api/products'
-    const method = editId ? 'PATCH' : 'POST'
     const res = await fetch(url, {
-      method,
+      method: editId ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
       body: JSON.stringify(payload),
     })
-    if (res.ok) {
-      setMsg(editId ? 'Product updated!' : 'Product added!')
-      setForm(empty)
-      setEditId(null)
-      loadProducts()
-      setTab('manage')
-    } else {
-      const err = await res.json()
-      setMsg('Error: ' + err.error)
-    }
+    if (res.ok) { setMsg(editId ? 'Updated!' : 'Product added!'); setForm(empty); setEditId(null); loadProducts(); setTab('manage') }
+    else { const e = await res.json(); setMsg('Error: ' + e.error) }
     setSaving(false)
   }
 
   async function deleteProduct(id: string) {
     if (!confirm('Remove this product?')) return
-    await fetch(`/api/products/${id}`, {
-      method: 'DELETE',
-      headers: { 'x-admin-password': password },
-    })
+    await fetch(`/api/products/${id}`, { method: 'DELETE', headers: { 'x-admin-password': password } })
     loadProducts()
   }
 
   function editProduct(p: Product) {
-    setForm({
-      title: p.title,
-      description: p.description,
-      download_url: p.download_url,
-      image_default: p.image_default,
-      image_hover: p.image_hover,
-      images_extra: [...(p.images_extra || []), '', '', ''].slice(0, 3),
-      category: p.category,
-    })
-    setEditId(p.id)
-    setTab('add')
-    window.scrollTo(0, 0)
+    setForm({ title: p.title, description: p.description, download_url: p.download_url, image_default: p.image_default, image_hover: p.image_hover, images_extra: [...(p.images_extra || []), '', '', ''].slice(0, 3), category: p.category })
+    setEditId(p.id); setTab('add'); window.scrollTo(0, 0)
   }
 
-  if (!authed) {
-    return (
-      <div className={styles.loginWrap}>
-        <div className={styles.loginCard}>
-          <h1 className={styles.loginTitle}>Admin</h1>
-          <p className={styles.loginSub}>Enter your admin password to continue</p>
-          <input
-            className={styles.input}
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={e => { setPassword(e.target.value); setAuthError(false) }}
-            onKeyDown={e => e.key === 'Enter' && login()}
-          />
-          {authError && <p className={styles.error}>Wrong password</p>}
-          <button className={styles.btnPrimary} onClick={login}>Enter</button>
-        </div>
+  if (!authed) return (
+    <div className={styles.loginWrap}>
+      <div className={styles.loginCard}>
+        <h1 className={styles.loginTitle}>Admin</h1>
+        <p className={styles.loginSub}>Enter your admin password</p>
+        <input className={styles.input} type="password" placeholder="Password" value={password}
+          onChange={e => { setPassword(e.target.value); setAuthError(false) }}
+          onKeyDown={e => e.key === 'Enter' && login()} />
+        {authError && <p className={styles.error}>Wrong password</p>}
+        <button className={styles.btnPrimary} onClick={login}>Enter</button>
       </div>
-    )
-  }
+    </div>
+  )
 
   return (
     <div className={styles.wrap}>
@@ -134,14 +90,9 @@ export default function AdminPage() {
         <h1 className={styles.title}>Product Admin</h1>
         <span className={styles.count}>{products.length} products</span>
       </div>
-
       <div className={styles.tabs}>
-        <button className={`${styles.tab} ${tab === 'add' ? styles.tabActive : ''}`} onClick={() => { setTab('add'); setEditId(null); setForm(empty) }}>
-          {editId ? 'Edit product' : '+ Add product'}
-        </button>
-        <button className={`${styles.tab} ${tab === 'manage' ? styles.tabActive : ''}`} onClick={() => setTab('manage')}>
-          Manage ({products.length})
-        </button>
+        <button className={`${styles.tab} ${tab === 'add' ? styles.tabActive : ''}`} onClick={() => { setTab('add'); setEditId(null); setForm(empty) }}>{editId ? 'Edit product' : '+ Add product'}</button>
+        <button className={`${styles.tab} ${tab === 'manage' ? styles.tabActive : ''}`} onClick={() => setTab('manage')}>Manage ({products.length})</button>
       </div>
 
       {tab === 'add' && (
@@ -159,11 +110,11 @@ export default function AdminPage() {
             </div>
             <div className={`${styles.field} ${styles.fullWidth}`}>
               <label className={styles.label}>Description</label>
-              <textarea className={`${styles.input} ${styles.textarea}`} placeholder="Describe what's included, file specs, etc." value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+              <textarea className={`${styles.input} ${styles.textarea}`} placeholder="What's included, specs, etc." value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
             </div>
             <div className={`${styles.field} ${styles.fullWidth}`}>
               <label className={styles.label}>Download link *</label>
-              <input className={styles.input} placeholder="https://your-download-link.com/file.zip" value={form.download_url} onChange={e => setForm({ ...form, download_url: e.target.value })} />
+              <input className={styles.input} placeholder="https://your-download-link.com" value={form.download_url} onChange={e => setForm({ ...form, download_url: e.target.value })} />
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Default image URL *</label>
@@ -173,23 +124,19 @@ export default function AdminPage() {
             <div className={styles.field}>
               <label className={styles.label}>Hover image URL</label>
               <input className={styles.input} placeholder="https://..." value={form.image_hover} onChange={e => setForm({ ...form, image_hover: e.target.value })} />
-              {form.image_hover && <img src={form.image_hover} className={styles.preview} alt="hover preview" />}
+              {form.image_hover && <img src={form.image_hover} className={styles.preview} alt="hover" />}
             </div>
             <div className={`${styles.field} ${styles.fullWidth}`}>
               <label className={styles.label}>Extra images (up to 3 URLs)</label>
               {form.images_extra.map((url, i) => (
-                <input key={i} className={`${styles.input} ${styles.extraInput}`} placeholder={`Extra image ${i + 1} URL`} value={url}
-                  onChange={e => {
-                    const next = [...form.images_extra]
-                    next[i] = e.target.value
-                    setForm({ ...form, images_extra: next })
-                  }} />
+                <input key={i} className={`${styles.input} ${styles.extraInput}`} placeholder={`Extra image ${i + 1}`} value={url}
+                  onChange={e => { const n = [...form.images_extra]; n[i] = e.target.value; setForm({ ...form, images_extra: n }) }} />
               ))}
             </div>
           </div>
           {msg && <p className={msg.startsWith('Error') ? styles.error : styles.success}>{msg}</p>}
           <div className={styles.formActions}>
-            {editId && <button className={styles.btnGhost} onClick={() => { setEditId(null); setForm(empty); setMsg('') }}>Cancel edit</button>}
+            {editId && <button className={styles.btnGhost} onClick={() => { setEditId(null); setForm(empty); setMsg('') }}>Cancel</button>}
             <button className={styles.btnPrimary} onClick={save} disabled={saving || !form.title || !form.image_default || !form.download_url}>
               {saving ? 'Saving…' : editId ? 'Save changes' : 'Add product'}
             </button>
@@ -199,7 +146,7 @@ export default function AdminPage() {
 
       {tab === 'manage' && (
         <div className={styles.productList}>
-          {products.length === 0 && <p className={styles.empty}>No products yet. Add your first one!</p>}
+          {products.length === 0 && <p className={styles.empty}>No products yet.</p>}
           {products.map(p => (
             <div key={p.id} className={styles.productRow}>
               <img src={p.image_default} className={styles.thumb} alt={p.title} />

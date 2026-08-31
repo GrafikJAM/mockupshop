@@ -1,35 +1,13 @@
-.loginWrap {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #0c0c0b;
-  padding: 24px;
-}
-.loginCard {
-  background: #141413;
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 20px;
-  padding: 40px;
-  width: 100%;
-  max-width: 380px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.loginTitle {
-  font-family: Georgia, serif;
-  font-size: 2rem;
-  color: #f0ede8;
-  letter-spacing: -0.02em;
-}
+.loginWrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0c0c0b; padding: 24px; }
+.loginCard { background: #141413; border: 1px solid rgba(255,255,255,0.07); border-radius: 20px; padding: 40px; width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 16px; }
+.loginTitle { font-family: Georgia, serif; font-size: 2rem; color: #f0ede8; letter-spacing: -0.02em; }
 .loginSub { font-size: 14px; color: #8a8880; margin-top: -8px; }
 .wrap { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; background: #0c0c0b; min-height: 100vh; }
 .header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 32px; }
 .title { font-family: Georgia, serif; font-size: 2rem; color: #f0ede8; letter-spacing: -0.02em; }
 .count { font-size: 13px; color: #555450; }
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 32px; }
-.tab { font-size: 14px; color: #555450; padding: 10px 16px; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; background: none; border-top: none; border-left: none; border-right: none; color: #8a8880; transition: color 0.15s; }
+.tab { font-size: 14px; color: #8a8880; padding: 10px 16px; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; background: none; border-top: none; border-left: none; border-right: none; transition: color 0.15s; font-family: system-ui, sans-serif; }
 .tab:hover { color: #f0ede8; }
 .tabActive { color: #f0ede8 !important; border-bottom-color: #f0ede8 !important; }
 .form { display: flex; flex-direction: column; gap: 24px; }
@@ -49,15 +27,15 @@
 .btnPrimary:disabled { opacity: 0.4; cursor: not-allowed; }
 .btnGhost { font-size: 14px; color: #8a8880; background: none; border: none; cursor: pointer; font-family: system-ui, sans-serif; }
 .btnGhost:hover { color: #f0ede8; }
-.btnEdit { font-size: 12px; color: #8a8880; background: #1a1a18; border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: system-ui, sans-serif; }
-.btnEdit:hover { color: #f0ede8; border-color: rgba(255,255,255,0.15); }
+.btnEdit { font-size: 12px; color: #8a8880; background: #1a1a18; border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: system-ui, sans-serif; transition: all 0.15s; }
+.btnEdit:hover { color: #f0ede8; }
 .btnDelete { font-size: 12px; color: #c0392b; background: none; border: 1px solid rgba(192,57,43,0.2); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: system-ui, sans-serif; }
 .btnDelete:hover { border-color: rgba(192,57,43,0.5); }
 .error { font-size: 13px; color: #c0392b; }
 .success { font-size: 13px; color: #27ae60; }
 .productList { display: flex; flex-direction: column; gap: 10px; }
 .empty { font-size: 14px; color: #555450; text-align: center; padding: 48px 0; }
-.productRow { display: flex; align-items: center; gap: 16px; background: #141413; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 14px 16px; }
+.productRow { display: flex; align-items: center; gap: 16px; background: #141413; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 14px 16px; transition: border-color 0.15s; }
 .productRow:hover { border-color: rgba(255,255,255,0.15); }
 .thumb { width: 60px; height: 45px; object-fit: cover; border-radius: 6px; flex-shrink: 0; background: #1a1a18; }
 .productInfo { flex: 1; min-width: 0; }

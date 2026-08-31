@@ -1,0 +1,14 @@
+.main { padding-top: var(--nav-h); }
+.hero { padding: 100px 0 80px; border-bottom: 1px solid var(--border); }
+.heroInner { max-width: 800px; margin: 0 auto; padding: 0 32px; display: flex; flex-direction: column; gap: 20px; }
+.heroInner h1 em { font-style: italic; color: var(--accent-warm); }
+.heroDesc { font-size: 16px; color: var(--text-secondary); max-width: 520px; line-height: 1.7; }
+.heroCtas { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.sectionHead { display: flex; flex-direction: column; gap: 10px; margin-bottom: 40px; }
+.viewAll { display: flex; justify-content: center; margin-top: 48px; }
+.socialSection { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 64px 0; overflow: hidden; }
+.founder { max-width: 640px; display: flex; flex-direction: column; gap: 18px; }
+.founderBio { display: flex; flex-direction: column; gap: 14px; }
+.founderBio p { font-size: 15px; color: var(--text-secondary); line-height: 1.75; }
+.founderName { font-family: var(--font-display); font-style: italic; font-size: 1.2rem; color: var(--accent-warm); }
+@media (max-width: 640px) { .hero { padding: 72px 0 56px; } .heroInner { padding: 0 20px; } }

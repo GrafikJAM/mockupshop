@@ -7,7 +7,6 @@ export async function GET() {
     .select('*')
     .eq('active', true)
     .order('created_at', { ascending: false })
-
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }
@@ -17,13 +16,8 @@ export async function POST(req: NextRequest) {
   if (adminPassword !== process.env.ADMIN_PASSWORD) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-
   const body = await req.json()
-
-  if (body._test) {
-    return NextResponse.json({ ok: true })
-  }
-
+  if (body._test) return NextResponse.json({ ok: true })
   const { data, error } = await supabase.from('products').insert([{
     title: body.title,
     description: body.description,
@@ -34,7 +28,6 @@ export async function POST(req: NextRequest) {
     category: body.category || 'Other',
     active: true,
   }]).select().single()
-
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }
