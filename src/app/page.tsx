@@ -33,7 +33,7 @@ export default async function Home() {
             <div className={styles.heroText}>
               <p className={`label animate-fade-up delay-1`}>{SITE.tagline}</p>
               <h1 className={`display-xl animate-fade-up delay-2`}>
-                {SITE.name}<br /><em>{SITE.heroItalic || 'high-quality'}</em><br />Photoshop mockups
+               {SITE.name}<br /><em>high-quality</em><br />Photoshop mockups
               </h1>
               <p className={`${styles.heroDesc} animate-fade-up delay-3`}>{SITE.description}</p>
               <div className={`${styles.heroCtas} animate-fade-up delay-4`}>
