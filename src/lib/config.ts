@@ -33,3 +33,11 @@ export const TESTIMONIALS = [
   { handle: '@typographer', name: 'James Wright', avatar: 'https://i.pravatar.cc/48?img=12', text: 'Incredible quality. Worth every penny for the lifetime access.' },
   { handle: '@uidesigner', name: 'Emma Torres', avatar: 'https://i.pravatar.cc/48?img=15', text: 'Gorgeous mockups. My clients love the presentations.' },
 ]
+
+export const LICENSE_TIERS = [
+  { key: 'freelancer', label: 'Freelancer', scale: '1–2 person design team', price: 19 },
+  { key: 'studio', label: 'Studio', scale: '3–6 person design team', price: 39 },
+  { key: 'commercial', label: 'Commercial', scale: '7+ person design team', price: 69 },
+]
+
+export const LICENSES_HREF = '/licenses'
