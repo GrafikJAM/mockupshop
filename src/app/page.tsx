@@ -39,11 +39,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {all.length > 0 && (
-          <div className={styles.marqueeSection}>
-            <Marquee products={all} direction="left" speed={38} />
-          </div>
-        )}
 
         {latest.length > 0 && (
           <section className={`${styles.section} section`}>
