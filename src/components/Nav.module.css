@@ -1,0 +1,17 @@
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: transparent;
+  transition: background 0.25s;
+}
+.top { display: flex; justify-content: center; padding: 20px 0 0; }
+.logo { display: flex; align-items: center; }
+.bottom { display: flex; align-items: center; justify-content: space-between; padding: 8px 40px; }
+.links { display: flex; align-items: center; gap: 24px; }
+.link { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); transition: color 0.15s; }
+.link:hover { color: var(--text-primary); }
+.right { display: flex; align-items: center; gap: 10px; }
+.toggle { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); background: var(--bg-elevated); border: 1px solid var(--border); transition: all 0.15s; cursor: pointer; }
+.toggle:hover { color: var(--text-primary); border-color: var(--border-hover); }
+.cta { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; color: var(--cta-text); background: var(--cta-bg); padding: 8px 18px; border-radius: 6px; transition: opacity 0.15s; }
+.cta:hover { opacity: 0.85; }
+@media (max-width: 640px) { .bottom { padding: 8px 20px; } }
