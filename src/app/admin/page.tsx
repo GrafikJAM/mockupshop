@@ -12,11 +12,12 @@ type Product = {
   images_extra: string[]
   category: string
   tags: string[]
+  price: string
   active: boolean
   created_at: string
 }
 
-const ALL_TAGS = ['Billboard', 'Screen', 'Apparel', 'Print', 'Signage', 'Packaging', 'Vehicle', 'Interior', 'Stationery', 'Other']
+const ALL_TAGS = ['Human', 'Devices', 'Outdoor', 'Poster', 'Billboard', 'Screen', 'Apparel', 'Print', 'Signage', 'Packaging', 'Vehicle', 'Interior', 'Stationery', 'Other']
 
 const empty = {
   title: '',
@@ -27,6 +28,7 @@ const empty = {
   images_extra: ['', '', ''],
   category: 'Other',
   tags: [] as string[],
+  price: '',
 }
 
 export default function AdminPage() {
@@ -98,6 +100,7 @@ export default function AdminPage() {
       images_extra: [...(p.images_extra || []), '', '', ''].slice(0, 3),
       category: p.category,
       tags: p.tags || [],
+      price: p.price || '',
     })
     setEditId(p.id); setTab('add'); window.scrollTo(0, 0)
   }
@@ -130,9 +133,13 @@ export default function AdminPage() {
       {tab === 'add' && (
         <div className={styles.form}>
           <div className={styles.formGrid}>
-            <div className={`${styles.field} ${styles.fullWidth}`}>
+            <div className={styles.field}>
               <label className={styles.label}>Product title *</label>
               <input className={styles.input} placeholder="e.g. Billboard Mockup Vol. 1" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Price</label>
+              <input className={styles.input} placeholder="e.g. $19" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} />
             </div>
             <div className={`${styles.field} ${styles.fullWidth}`}>
               <label className={styles.label}>Tags (select all that apply)</label>
@@ -189,7 +196,7 @@ export default function AdminPage() {
             <div key={p.id} className={styles.productRow}>
               <img src={p.image_default} className={styles.thumb} alt={p.title} />
               <div className={styles.productInfo}>
-                <div className={styles.productTitle}>{p.title}</div>
+                <div className={styles.productTitle}>{p.title} {p.price && <span style={{color:'#555450'}}>· {p.price}</span>}</div>
                 <div className={styles.productMeta}>
                   {(p.tags || [p.category]).join(', ')} · {new Date(p.created_at).toLocaleDateString()}
                 </div>

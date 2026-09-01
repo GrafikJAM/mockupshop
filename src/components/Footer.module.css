@@ -1,7 +1,0 @@
-.footer { border-top: 1px solid var(--border); padding: 28px 0; transition: border-color 0.25s; }
-.inner { display: flex; align-items: center; justify-content: space-between; max-width: var(--max-w); margin: 0 auto; padding: 0 40px; }
-.brand { font-family: var(--font-display); font-size: 0.95rem; color: var(--text-muted); }
-.links { display: flex; gap: 24px; }
-.link { font-size: 13px; color: var(--text-muted); transition: color 0.15s; }
-.link:hover { color: var(--text-secondary); }
-@media (max-width: 640px) { .inner { flex-direction: column; gap: 16px; padding: 0 20px; text-align: center; } }

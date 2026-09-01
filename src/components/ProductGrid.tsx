@@ -3,22 +3,42 @@ import Link from 'next/link'
 import { useState } from 'react'
 import styles from './ProductGrid.module.css'
 
-type Product = { id: string; title: string; image_default: string; image_hover?: string }
+type Product = {
+  id: string
+  title: string
+  image_default: string
+  image_hover?: string
+  price?: string
+}
 
 function Card({ product }: { product: Product }) {
   const [hovered, setHovered] = useState(false)
   const src = hovered && product.image_hover ? product.image_hover : product.image_default
+
   return (
-    <Link href={`/product/${product.id}`} className={styles.card}
-      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+    <Link
+      href={`/product/${product.id}`}
+      className={styles.card}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
       <div className={styles.imgWrap}>
-        <img src={src} alt={product.title} className={styles.img} />
+        <img
+          src={product.image_default}
+          alt={product.title}
+          className={`${styles.img} ${styles.imgDefault} ${hovered ? styles.hidden : ''}`}
+        />
+        {product.image_hover && (
+          <img
+            src={product.image_hover}
+            alt={product.title}
+            className={`${styles.img} ${styles.imgHover} ${hovered ? styles.visible : ''}`}
+          />
+        )}
       </div>
       <div className={styles.meta}>
         <span className={styles.title}>{product.title}</span>
-        <svg className={styles.arrow} width="13" height="13" viewBox="0 0 13 13" fill="none">
-          <path d="M2 6.5h9M7.5 3l3 3.5-3 3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        {product.price && <span className={styles.price}>{product.price}</span>}
       </div>
     </Link>
   )
