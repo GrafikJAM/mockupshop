@@ -1,7 +1,7 @@
 export const SITE = {
   name: 'Mockup Shop',
   tagline: 'High-quality Photoshop mockups',
-  description: 'Premium mockups crafted with care',
+  description: 'Premium mockups – crafted with care',
   established: '2025',
   founderName: 'Your Name',
   founderBio: `My name is Your Name and this is my playground for exploring what Photoshop mockups can really be.\n\nI've been building mockups since 2020, refining details and raising the bar along the way.\n\nThe goal is simple: I want to help you present your work in the quality it deserves.`,
