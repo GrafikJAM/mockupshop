@@ -78,8 +78,8 @@ export default async function Home() {
         <section className={`section ${styles.founderSection}`}>
           <div className="container">
             <div className={styles.founder}>
-              <p className="label">Why {SITE.name}?</p>
-              <h2 className="display-sm">I build these like I'd use them myself</h2>
+              <p className="label">About GrafikJAM</p>
+<h2 className="display-sm">Mockups built for real branding work</h2>
               <div className={styles.founderBio}>
                 {SITE.founderBio.split('\n\n').map((p, i) => <p key={i}>{p}</p>)}
               </div>
