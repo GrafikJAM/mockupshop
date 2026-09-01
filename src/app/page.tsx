@@ -52,7 +52,7 @@ export default async function Home() {
                 <p className="label">What's new</p>
                 <h2 className="display-lg">Latest mockups</h2>
               </div>
-              <ProductGrid products={latest} cols={4} />
+              <ProductGrid products={latest} cols={3} />
               <div className={styles.viewAll}>
                 <Link href="/mockups" className="btn-ghost">
                   View all mockups
