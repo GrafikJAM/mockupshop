@@ -134,13 +134,13 @@ export default function AdminPage() {
         <div className={styles.form}>
           <div className={styles.formGrid}>
             <div className={styles.field}>
-              <label className={styles.label}>Product title *</label>
-              <input className={styles.input} placeholder="e.g. Billboard Mockup Vol. 1" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label}>Price</label>
-              <input className={styles.input} placeholder="e.g. $19" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} />
-            </div>
+  <label className={styles.label}>Product title *</label>
+  <input className={styles.input} placeholder="e.g. Billboard Mockup Vol. 1" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+</div>
+<div className={styles.field}>
+  <label className={styles.label}>Price</label>
+  <input className={styles.input} placeholder="e.g. $19" value={form.price || ''} onChange={e => setForm({ ...form, price: e.target.value })} />
+</div>
             <div className={`${styles.field} ${styles.fullWidth}`}>
               <label className={styles.label}>Tags (select all that apply)</label>
               <div className={styles.tagGrid}>
