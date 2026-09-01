@@ -1,9 +1,9 @@
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import PricingCard from '@/components/PricingCard'
+import LicenseSelector from '@/components/LicenseSelector'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { PRICING } from '@/lib/config'
 import styles from './page.module.css'
 
 export const revalidate = 60
@@ -11,6 +11,9 @@ export const revalidate = 60
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const { data: product } = await supabase.from('products').select('*').eq('id', params.slug).single()
   if (!product) return <div style={{ padding: '100px', color: '#f0ede8' }}>Product not found.</div>
+
+  const { count } = await supabase.from('products').select('id', { count: 'exact', head: true }).eq('active', true)
+  const productCount = count || 0
 
   const allImages = [product.image_default, product.image_hover, ...(product.images_extra || [])].filter(Boolean)
 
@@ -39,7 +42,6 @@ export default async function ProductPage({ params }: { params: { slug: string }
                 ))}
               </div>
               <h1 className="display-sm">{product.title}</h1>
-              {product.price && <p className={styles.price}>{product.price}</p>}
               {product.description && (
                 <div className={styles.desc}>
                   {product.description.split('\n').map((line: string, i: number) => (
@@ -55,13 +57,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
                   </li>
                 ))}
               </ul>
-              <div className={styles.ctaBlock}>
-                <Link href={PRICING.href} className="btn-primary">
-                  Get access — {PRICING.amount}
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </Link>
-                <p className={styles.ctaNote}>{PRICING.description}</p>
-              </div>
+              <LicenseSelector productCount={productCount} />
             </div>
           </div>
         </div>
