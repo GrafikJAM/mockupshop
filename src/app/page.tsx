@@ -27,7 +27,7 @@ export default async function Home() {
       <main className={styles.main}>
 
         <section className={styles.hero}>
-          <p className={styles.heroDesc}>{SITE.description}</p>
+          <h1 className={styles.heroDesc}>{SITE.description}</h1>
           <div className={styles.heroCtas}>
             <Link href="/mockups" className="btn-primary">
               Browse mockups
