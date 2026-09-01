@@ -62,8 +62,7 @@ export default async function Home() {
         <section className={styles.pricingSection}>
           <div className="container">
             <div className={styles.pricingTop}>
-              <p className="label">The best deal in the market</p>
-              <h2 className="display-sm" style={{ marginTop: 8 }}>The price of a few mockups.<br />Access to everything.</h2>
+          
             </div>
           </div>
           {all.length > 0 && (
