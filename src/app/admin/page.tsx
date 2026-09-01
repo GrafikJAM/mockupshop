@@ -11,12 +11,23 @@ type Product = {
   image_hover: string
   images_extra: string[]
   category: string
+  tags: string[]
   active: boolean
   created_at: string
 }
 
-const CATEGORIES = ['Billboard', 'Screen', 'Apparel', 'Print', 'Signage', 'Packaging', 'Other']
-const empty = { title: '', description: '', download_url: '', image_default: '', image_hover: '', images_extra: ['', '', ''], category: 'Other' }
+const ALL_TAGS = ['Billboard', 'Screen', 'Apparel', 'Print', 'Signage', 'Packaging', 'Vehicle', 'Interior', 'Stationery', 'Other']
+
+const empty = {
+  title: '',
+  description: '',
+  download_url: '',
+  image_default: '',
+  image_hover: '',
+  images_extra: ['', '', ''],
+  category: 'Other',
+  tags: [] as string[],
+}
 
 export default function AdminPage() {
   const [password, setPassword] = useState('')
@@ -45,9 +56,21 @@ export default function AdminPage() {
     setProducts(Array.isArray(data) ? data : [])
   }
 
+  function toggleTag(tag: string) {
+    const tags = form.tags.includes(tag)
+      ? form.tags.filter(t => t !== tag)
+      : [...form.tags, tag]
+    setForm({ ...form, tags, category: tags[0] || 'Other' })
+  }
+
   async function save() {
     setSaving(true); setMsg('')
-    const payload = { ...form, images_extra: form.images_extra.filter(Boolean) }
+    const payload = {
+      ...form,
+      images_extra: form.images_extra.filter(Boolean),
+      tags: form.tags,
+      category: form.tags[0] || 'Other',
+    }
     const url = editId ? `/api/products/${editId}` : '/api/products'
     const res = await fetch(url, {
       method: editId ? 'PATCH' : 'POST',
@@ -66,7 +89,16 @@ export default function AdminPage() {
   }
 
   function editProduct(p: Product) {
-    setForm({ title: p.title, description: p.description, download_url: p.download_url, image_default: p.image_default, image_hover: p.image_hover, images_extra: [...(p.images_extra || []), '', '', ''].slice(0, 3), category: p.category })
+    setForm({
+      title: p.title,
+      description: p.description,
+      download_url: p.download_url,
+      image_default: p.image_default,
+      image_hover: p.image_hover,
+      images_extra: [...(p.images_extra || []), '', '', ''].slice(0, 3),
+      category: p.category,
+      tags: p.tags || [],
+    })
     setEditId(p.id); setTab('add'); window.scrollTo(0, 0)
   }
 
@@ -98,15 +130,21 @@ export default function AdminPage() {
       {tab === 'add' && (
         <div className={styles.form}>
           <div className={styles.formGrid}>
-            <div className={styles.field}>
+            <div className={`${styles.field} ${styles.fullWidth}`}>
               <label className={styles.label}>Product title *</label>
               <input className={styles.input} placeholder="e.g. Billboard Mockup Vol. 1" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
             </div>
-            <div className={styles.field}>
-              <label className={styles.label}>Category</label>
-              <select className={styles.input} value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
-                {CATEGORIES.map(c => <option key={c}>{c}</option>)}
-              </select>
+            <div className={`${styles.field} ${styles.fullWidth}`}>
+              <label className={styles.label}>Tags (select all that apply)</label>
+              <div className={styles.tagGrid}>
+                {ALL_TAGS.map(tag => (
+                  <button key={tag} type="button"
+                    className={`${styles.tagBtn} ${form.tags.includes(tag) ? styles.tagActive : ''}`}
+                    onClick={() => toggleTag(tag)}>
+                    {tag}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className={`${styles.field} ${styles.fullWidth}`}>
               <label className={styles.label}>Description</label>
@@ -152,7 +190,9 @@ export default function AdminPage() {
               <img src={p.image_default} className={styles.thumb} alt={p.title} />
               <div className={styles.productInfo}>
                 <div className={styles.productTitle}>{p.title}</div>
-                <div className={styles.productMeta}>{p.category} · {new Date(p.created_at).toLocaleDateString()}</div>
+                <div className={styles.productMeta}>
+                  {(p.tags || [p.category]).join(', ')} · {new Date(p.created_at).toLocaleDateString()}
+                </div>
               </div>
               <div className={styles.productActions}>
                 <button className={styles.btnEdit} onClick={() => editProduct(p)}>Edit</button>
