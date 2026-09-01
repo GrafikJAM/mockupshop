@@ -44,7 +44,13 @@ export default async function ProductPage({ params }: { params: { slug: string }
             <div className={styles.info}>
               <p className="label">{product.category}</p>
               <h1 className="display-sm">{product.title}</h1>
-              {product.description && <p className={styles.desc}>{product.description}</p>}
+              {product.description && (
+  <div className={styles.desc}>
+    {product.description.split('\n').map((line, i) => (
+      <p key={i}>{line}</p>
+    ))}
+  </div>
+)}
               <ul className={styles.specs}>
                 {['Smart object layers', 'High resolution', 'Photoshop CC+', 'Included in all-access pass'].map(spec => (
                   <li key={spec} className={styles.spec}>
