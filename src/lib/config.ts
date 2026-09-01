@@ -2,9 +2,9 @@ export const SITE = {
   name: 'Mockup Shop',
   tagline: 'High-quality Photoshop mockups',
   description: 'Premium mockups – crafted with care',
-  established: '2025',
-  founderName: 'Your Name',
-  founderBio: `My name is Your Name and this is my playground for exploring what Photoshop mockups can really be.\n\nI've been building mockups since 2020, refining details and raising the bar along the way.\n\nThe goal is simple: I want to help you present your work in the quality it deserves.`,
+  established: '2022',
+  founderName: 'Jekabs A. Mucenieks',
+  founderBio: `My name is Jekabs A. Mucenieks — a branding designer and the person behind GrafikJAM.\ \n\nI've been crafting mockups since 2021, not as a side project, but as part of my actual branding work. Every file I sell is something I'd use myself.\n\n,
   nav: [
     { label: 'Mockups', href: '/mockups' },
   ],
