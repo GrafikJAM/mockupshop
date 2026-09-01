@@ -44,6 +44,9 @@ export default async function ProductPage({ params }: { params: { slug: string }
             <div className={styles.info}>
               <p className="label">{product.category}</p>
               <h1 className="display-sm">{product.title}</h1>
+
+
+
               {product.description && (
   <div className={styles.desc}>
     {product.description.split('\n').map((line, i) => (
