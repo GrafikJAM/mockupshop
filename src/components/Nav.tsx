@@ -11,7 +11,7 @@ export default function Nav() {
     <nav className={styles.nav}>
       <div className={styles.top}>
         <Link href="/" className={styles.logo}>
-          <Image src={theme === 'dark' ? '/jam_white.svg' : '/JAM-11.svg'} alt={SITE.name} width={64} height={38} priority />
+          <Image src={theme === 'dark' ? '/jam_white.svg' : '/JAM-06.svg'} alt={SITE.name} width={64} height={38} priority />
         </Link>
       </div>
       <div className={styles.bottom}>
