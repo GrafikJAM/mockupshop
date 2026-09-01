@@ -58,10 +58,7 @@ export default async function Home() {
           </section>
         )}
 
-        <section className={styles.testimonialsSection}>
-          <Testimonials items={TESTIMONIALS} />
-        </section>
-
+    
         <section className={styles.pricingSection}>
           <div className="container">
             <div className={styles.pricingTop}>
