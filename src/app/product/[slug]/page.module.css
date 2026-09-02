@@ -11,8 +11,8 @@
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); border: 1px solid var(--border); border-radius: 100px; padding: 3px 10px; }
 .price { font-size: 1.4rem; color: var(--text-primary); font-weight: 500; }
-.desc { display: flex; flex-direction: column; gap: 4px; }
-.desc p { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+.desc { display: flex; flex-direction: column; gap: 10px; }
+.desc p { font-size: 15px; color: var(--text-secondary); line-height: 1.4; }
 .desc p:empty { display: none; }
 .specs { list-style: none; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 18px 0; }
 .spec { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--text-secondary); }
