@@ -17,7 +17,13 @@
 .pricingMarquee { padding: 8px 0; }
 
 .founderSection { border-top: none; }
-.founder { max-width: 600px; display: flex; flex-direction: column; gap: 16px; }
+.founderRow { display: flex; align-items: center; justify-content: center; gap: 48px; max-width: 900px; margin: 0 auto; }
+.founderImg { width: 220px; height: auto; flex-shrink: 0; }
+.founder { max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
 .founderBio { display: flex; flex-direction: column; gap: 12px; }
 .founderBio p { font-size: 15px; color: var(--text-secondary); line-height: 1.8; }
 .sig { font-family: var(--font-display); font-style: italic; font-size: 1.15rem; color: var(--accent-warm); margin-top: 8px; }
+@media (max-width: 768px) {
+  .founderRow { flex-direction: column; text-align: center; gap: 24px; }
+  .founder { max-width: 100%; align-items: center; }
+}
