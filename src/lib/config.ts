@@ -4,7 +4,7 @@ export const SITE = {
   description: 'Premium mockups – crafted with care',
   established: '2022',
   founderName: 'Jekabs A. Mucenieks',
-    founderBio: `My name is Jekabs A. Mucenieks — I'm a brand designer and the person behind GrafikJAM.\n\nI've been crafting mockups since 2021, not as a side project, but as part of my actual branding work. Every file I sell is something I'd use myself.`,
+  founderBio: `My name is Jekabs A. Mucenieks — I'm a brand designer and the person behind GrafikJAM.\n\nI've been crafting mockups since 2021, not as a side project, but as part of my actual branding work. Every file I sell is something I'd use myself.`,
   nav: [
     { label: 'Mockups', href: '/mockups' },
   ],
@@ -19,7 +19,7 @@ export const PRICING = {
   headline: 'Pay once & Access forever',
   subline: 'The best deal in the market. The price of a few mockups. Access to everything.',
   badge: 'Great deal',
-    amount: '$199',
+  amount: '$199',
   amountValue: 199,
   description: 'Access all mockups & new releases for life',
   cta: 'Purchase',
