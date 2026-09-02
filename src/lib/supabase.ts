@@ -16,4 +16,5 @@ export type Product = {
   images_extra: string[]
   category: string
   active: boolean
+  sort_order: number | null
 }
