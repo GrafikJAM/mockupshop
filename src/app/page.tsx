@@ -28,7 +28,11 @@ export default async function Home() {
       <main className={styles.main}>
 
         <section className={styles.hero}>
-          <h1 className={styles.heroDesc}>{SITE.description}</h1>
+                    <h1 className={styles.heroDesc}>
+            {SITE.description.split('\n').map((line, i, arr) => (
+              <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
+            ))}
+          </h1>
           <div className={styles.heroCtas}>
             <Link href="/mockups" className="btn-primary">
               Browse mockups
