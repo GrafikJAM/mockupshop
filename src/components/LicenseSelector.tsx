@@ -1,12 +1,26 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { useCart } from '@/lib/cart'
 import { LICENSE_TIERS, LICENSES_HREF, PRICING } from '@/lib/config'
 import styles from './LicenseSelector.module.css'
 
-export default function LicenseSelector({ productCount }: { productCount: number }) {
+type Props = {
+  productCount: number
+  productId: string
+  productTitle: string
+  productImage: string
+}
+
+export default function LicenseSelector({ productCount, productId, productTitle, productImage }: Props) {
   const [selected, setSelected] = useState(0)
   const tier = LICENSE_TIERS[selected]
+  const { addItem, openCart } = useCart()
+
+  function handleAddToCart() {
+    addItem({ productId, title: productTitle, image: productImage, tierKey: tier.key, tierLabel: tier.label, price: tier.price })
+    openCart()
+  }
 
   return (
     <div className={styles.wrap}>
@@ -28,11 +42,9 @@ export default function LicenseSelector({ productCount }: { productCount: number
         ))}
       </div>
 
-      {/* Buy links go to the full-access checkout for now — swap PRICING.href
-          for per-tier payment links once single-license checkout exists. */}
-      <Link href={PRICING.href} className={styles.addToCart}>
+      <button type="button" onClick={handleAddToCart} className={styles.addToCart}>
         Add to cart
-      </Link>
+      </button>
 
       <div className={styles.divider}>
         <span />
