@@ -12,10 +12,11 @@ import styles from './page.module.css'
 export const revalidate = 60
 
 export default async function Home() {
-  const { data: products } = await supabase
+    const { data: products } = await supabase
     .from('products')
     .select('*')
     .eq('active', true)
+    .order('sort_order', { ascending: true, nullsFirst: false })
     .order('created_at', { ascending: false })
 
   const all = products || []
