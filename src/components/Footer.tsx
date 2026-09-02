@@ -19,7 +19,7 @@ export default function Footer() {
       </div>
       <div className={styles.wordmark}>
         <img
-          src={theme === 'dark' ? '/grafikjam-white.svg' : '/grafikjam-black.svg'}
+          src={theme === 'dark' ? '/grafikjam-White.svg' : '/grafikjam-Black.svg'}
           alt={SITE.name}
           className={styles.wordmarkImg}
         />
