@@ -44,6 +44,7 @@ export default function AdminPage() {
   const [tab, setTab] = useState<'add' | 'manage'>('add')
   const [reordering, setReordering] = useState(false)
   const dragIndex = useRef<number | null>(null)
+  const handleActive = useRef(false)
   const [overIndex, setOverIndex] = useState<number | null>(null)
 
   async function login() {
@@ -110,8 +111,7 @@ export default function AdminPage() {
   }
 
   function handleDragStart(e: React.DragEvent, i: number) {
-    const target = e.target as HTMLElement
-    if (!target.closest(`.${styles.dragHandle}`)) { e.preventDefault(); return }
+    if (!handleActive.current) { e.preventDefault(); return }
     dragIndex.current = i
     e.dataTransfer.effectAllowed = 'move'
   }
@@ -130,6 +130,7 @@ export default function AdminPage() {
 
   async function handleDragEnd() {
     dragIndex.current = null
+    handleActive.current = false
     setOverIndex(null)
     setReordering(true)
     await fetch('/api/products/reorder', {
@@ -243,7 +244,12 @@ export default function AdminPage() {
               onDragOver={e => e.preventDefault()}
               onDragEnd={handleDragEnd}
             >
-              <span className={styles.dragHandle} title="Drag to reorder">⠿</span>
+              <span
+                className={styles.dragHandle}
+                title="Drag to reorder"
+                onMouseDown={() => { handleActive.current = true }}
+                onMouseUp={() => { handleActive.current = false }}
+              >⠿</span>
               <img src={p.image_default} className={styles.thumb} alt={p.title} />
               <div className={styles.productInfo}>
                 <div className={styles.productTitle}>{p.title} {p.price && <span style={{color:'#555450'}}>· {p.price}</span>}</div>
