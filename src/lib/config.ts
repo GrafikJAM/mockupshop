@@ -19,6 +19,7 @@ export const PRICING = {
   headline: 'Pay once & Access forever',
   subline: 'The best deal in the market. The price of a few mockups. Access to everything.',
   badge: 'Great deal',
+    amount: '$199',
   amountValue: 199,
   description: 'Access all mockups & new releases for life',
   cta: 'Purchase',
