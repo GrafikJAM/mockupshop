@@ -49,14 +49,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
                   ))}
                 </div>
               )}
-              <ul className={styles.specs}>
-                {['Smart object layers', 'High resolution', 'Photoshop CC+', 'Included in all-access pass'].map(spec => (
-                  <li key={spec} className={styles.spec}>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3 3 6-6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    {spec}
-                  </li>
-                ))}
-              </ul>
+         
               <LicenseSelector productCount={productCount} />
             </div>
           </div>
