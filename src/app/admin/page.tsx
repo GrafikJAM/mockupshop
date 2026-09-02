@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import styles from './page.module.css'
 
 type Product = {
@@ -15,6 +15,7 @@ type Product = {
   price: string
   active: boolean
   created_at: string
+  sort_order: number | null
 }
 
 const ALL_TAGS = ['Human', 'Devices', 'Outdoor', 'Poster', 'Billboard', 'Screen', 'Apparel', 'Print', 'Signage', 'Packaging', 'Vehicle', 'Interior', 'Stationery', 'Other']
@@ -41,6 +42,9 @@ export default function AdminPage() {
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
   const [tab, setTab] = useState<'add' | 'manage'>('add')
+  const [reordering, setReordering] = useState(false)
+  const dragIndex = useRef<number | null>(null)
+  const [overIndex, setOverIndex] = useState<number | null>(null)
 
   async function login() {
     const res = await fetch('/api/products', {
@@ -105,6 +109,37 @@ export default function AdminPage() {
     setEditId(p.id); setTab('add'); window.scrollTo(0, 0)
   }
 
+  function handleDragStart(e: React.DragEvent, i: number) {
+    const target = e.target as HTMLElement
+    if (!target.closest(`.${styles.dragHandle}`)) { e.preventDefault(); return }
+    dragIndex.current = i
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  function handleDragEnter(i: number) {
+    if (dragIndex.current === null || dragIndex.current === i) return
+    setProducts(prev => {
+      const next = [...prev]
+      const [moved] = next.splice(dragIndex.current!, 1)
+      next.splice(i, 0, moved)
+      return next
+    })
+    dragIndex.current = i
+    setOverIndex(i)
+  }
+
+  async function handleDragEnd() {
+    dragIndex.current = null
+    setOverIndex(null)
+    setReordering(true)
+    await fetch('/api/products/reorder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+      body: JSON.stringify({ ids: products.map(p => p.id) }),
+    })
+    setReordering(false)
+  }
+
   if (!authed) return (
     <div className={styles.loginWrap}>
       <div className={styles.loginCard}>
@@ -118,97 +153,3 @@ export default function AdminPage() {
       </div>
     </div>
   )
-
-  return (
-    <div className={styles.wrap}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Product Admin</h1>
-        <span className={styles.count}>{products.length} products</span>
-      </div>
-      <div className={styles.tabs}>
-        <button className={`${styles.tab} ${tab === 'add' ? styles.tabActive : ''}`} onClick={() => { setTab('add'); setEditId(null); setForm(empty) }}>{editId ? 'Edit product' : '+ Add product'}</button>
-        <button className={`${styles.tab} ${tab === 'manage' ? styles.tabActive : ''}`} onClick={() => setTab('manage')}>Manage ({products.length})</button>
-      </div>
-
-      {tab === 'add' && (
-        <div className={styles.form}>
-          <div className={styles.formGrid}>
-            <div className={styles.field}>
-              <label className={styles.label}>Product title *</label>
-              <input className={styles.input} placeholder="e.g. Billboard Mockup Vol. 1" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label}>Price</label>
-              <input className={styles.input} placeholder="e.g. $19" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} />
-            </div>
-            <div className={`${styles.field} ${styles.fullWidth}`}>
-              <label className={styles.label}>Tags (select all that apply)</label>
-              <div className={styles.tagGrid}>
-                {ALL_TAGS.map(tag => (
-                  <button key={tag} type="button"
-                    className={`${styles.tagBtn} ${form.tags.includes(tag) ? styles.tagActive : ''}`}
-                    onClick={() => toggleTag(tag)}>
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className={`${styles.field} ${styles.fullWidth}`}>
-              <label className={styles.label}>Description</label>
-              <textarea className={`${styles.input} ${styles.textarea}`} placeholder="What's included, specs, etc." value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
-            </div>
-            <div className={`${styles.field} ${styles.fullWidth}`}>
-              <label className={styles.label}>Download link *</label>
-              <input className={styles.input} placeholder="https://your-download-link.com" value={form.download_url} onChange={e => setForm({ ...form, download_url: e.target.value })} />
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label}>Default image URL *</label>
-              <input className={styles.input} placeholder="https://..." value={form.image_default} onChange={e => setForm({ ...form, image_default: e.target.value })} />
-              {form.image_default && <img src={form.image_default} className={styles.preview} alt="preview" />}
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label}>Hover image URL</label>
-              <input className={styles.input} placeholder="https://..." value={form.image_hover} onChange={e => setForm({ ...form, image_hover: e.target.value })} />
-              {form.image_hover && <img src={form.image_hover} className={styles.preview} alt="hover" />}
-            </div>
-            <div className={`${styles.field} ${styles.fullWidth}`}>
-              <label className={styles.label}>Extra images (up to 3 URLs)</label>
-              {form.images_extra.map((url, i) => (
-                <input key={i} className={`${styles.input} ${styles.extraInput}`} placeholder={`Extra image ${i + 1}`} value={url}
-                  onChange={e => { const n = [...form.images_extra]; n[i] = e.target.value; setForm({ ...form, images_extra: n }) }} />
-              ))}
-            </div>
-          </div>
-          {msg && <p className={msg.startsWith('Error') ? styles.error : styles.success}>{msg}</p>}
-          <div className={styles.formActions}>
-            {editId && <button className={styles.btnGhost} onClick={() => { setEditId(null); setForm(empty); setMsg('') }}>Cancel</button>}
-            <button className={styles.btnPrimary} onClick={save} disabled={saving || !form.title || !form.image_default || !form.download_url}>
-              {saving ? 'Saving…' : editId ? 'Save changes' : 'Add product'}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {tab === 'manage' && (
-        <div className={styles.productList}>
-          {products.length === 0 && <p className={styles.empty}>No products yet.</p>}
-          {products.map(p => (
-            <div key={p.id} className={styles.productRow}>
-              <img src={p.image_default} className={styles.thumb} alt={p.title} />
-              <div className={styles.productInfo}>
-                <div className={styles.productTitle}>{p.title} {p.price && <span style={{color:'#555450'}}>· {p.price}</span>}</div>
-                <div className={styles.productMeta}>
-                  {(p.tags || [p.category]).join(', ')} · {new Date(p.created_at).toLocaleDateString()}
-                </div>
-              </div>
-              <div className={styles.productActions}>
-                <button className={styles.btnEdit} onClick={() => editProduct(p)}>Edit</button>
-                <button className={styles.btnDelete} onClick={() => deleteProduct(p.id)}>Remove</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
