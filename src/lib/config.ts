@@ -1,8 +1,8 @@
 export const SITE = {
-  name: 'Mockup Shop',
+  name: 'GrafikJAM Mockups',
   tagline: 'High-quality Photoshop mockups',
   description: 'Premium mockups – crafted with care',
-  established: '2022',
+  established: '2021',
   founderName: 'Jekabs A. Mucenieks',
   founderBio: `My name is Jekabs A. Mucenieks — I'm a brand designer and the person behind GrafikJAM.\n\nI've been crafting mockups since 2021, not as a side project, but as part of my actual branding work. Every file I sell is something I'd use myself.`,
   nav: [
@@ -17,7 +17,7 @@ export const SITE = {
 
 export const PRICING = {
   headline: 'Pay once & Access forever',
-  subline: 'The best deal in the market. The price of a few mockups. Access to everything.',
+  subline: 'The best deal in the market. The price of a 10 mockups. Access to everything.',
   badge: 'Great deal',
   amount: '$199',
   amountValue: 199,
