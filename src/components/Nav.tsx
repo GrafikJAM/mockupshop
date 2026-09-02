@@ -2,24 +2,24 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useTheme } from '@/lib/theme'
+import { useCart } from '@/lib/cart'
 import { SITE, PRICING } from '@/lib/config'
 import styles from './Nav.module.css'
 
 export default function Nav() {
   const { theme, toggle } = useTheme()
+  const { items, toggleCart } = useCart()
   return (
     <nav className={styles.nav}>
-      <div className={styles.top}>
-        <Link href="/" className={styles.logo}>
-          <Image src={theme === 'dark' ? '/jam_white.svg' : '/JAM-06.svg'} alt={SITE.name} width={64} height={38} priority />
-        </Link>
-      </div>
-      <div className={styles.bottom}>
+      <div className={styles.bar}>
         <div className={styles.links}>
           {SITE.nav.map(item => (
             <Link key={item.href} href={item.href} className={styles.link}>{item.label}</Link>
           ))}
         </div>
+        <Link href="/" className={styles.logo}>
+          <Image src={theme === 'dark' ? '/jam_white.svg' : '/JAM-06.svg'} alt={SITE.name} width={64} height={38} priority />
+        </Link>
         <div className={styles.right}>
           <button className={styles.toggle} onClick={toggle} aria-label="Toggle theme">
             {theme === 'dark' ? (
@@ -27,6 +27,10 @@ export default function Nav() {
             ) : (
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13.5 8.5A5.5 5.5 0 0 1 7.5 3a5.5 5.5 0 1 0 6 5.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
             )}
+          </button>
+          <button className={styles.toggle} onClick={toggleCart} aria-label="Open cart">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M1.5 1.5h1.5l1.6 8.6a1.2 1.2 0 0 0 1.2 1h6.4a1.2 1.2 0 0 0 1.2-1L14.5 4.5h-10.7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/><circle cx="6.5" cy="14" r="1" fill="currentColor"/><circle cx="11.5" cy="14" r="1" fill="currentColor"/></svg>
+            {items.length > 0 && <span className={styles.badge}>{items.length}</span>}
           </button>
           <Link href={PRICING.href} className={styles.cta}>Get access</Link>
         </div>
