@@ -114,31 +114,42 @@ export default function AdminPage() {
     if (!handleActive.current) { e.preventDefault(); return }
     dragIndex.current = i
     e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', String(i)) // Firefox needs this to allow the drag
   }
 
   function handleDragEnter(i: number) {
     if (dragIndex.current === null || dragIndex.current === i) return
-    setProducts(prev => {
-      const next = [...prev]
-      const [moved] = next.splice(dragIndex.current!, 1)
-      next.splice(i, 0, moved)
-      return next
-    })
-    dragIndex.current = i
     setOverIndex(i)
   }
 
-  async function handleDragEnd() {
-    dragIndex.current = null
-    handleActive.current = false
-    setOverIndex(null)
+  async function persistOrder(list: Product[]) {
     setReordering(true)
     await fetch('/api/products/reorder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
-      body: JSON.stringify({ ids: products.map(p => p.id) }),
+      body: JSON.stringify({ ids: list.map(p => p.id) }),
     })
     setReordering(false)
+  }
+
+  function handleDrop(e: React.DragEvent, i: number) {
+    e.preventDefault()
+    const from = dragIndex.current
+    setOverIndex(null)
+    if (from === null || from === i) return
+    setProducts(prev => {
+      const next = [...prev]
+      const [moved] = next.splice(from, 1)
+      next.splice(i, 0, moved)
+      persistOrder(next)
+      return next
+    })
+  }
+
+  function handleDragEnd() {
+    dragIndex.current = null
+    handleActive.current = false
+    setOverIndex(null)
   }
 
   if (!authed) return (
@@ -242,6 +253,7 @@ export default function AdminPage() {
               onDragStart={e => handleDragStart(e, i)}
               onDragEnter={() => handleDragEnter(i)}
               onDragOver={e => e.preventDefault()}
+              onDrop={e => handleDrop(e, i)}
               onDragEnd={handleDragEnd}
             >
               <span
