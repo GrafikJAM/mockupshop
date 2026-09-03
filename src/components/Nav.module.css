@@ -12,6 +12,7 @@
 .toggle { position: relative; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); background: var(--bg-elevated); border: 1px solid var(--border); transition: all 0.15s; cursor: pointer; }
 .toggle:hover { color: var(--text-primary); border-color: var(--border-hover); }
 .badge { position: absolute; top: -5px; right: -5px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 100px; background: var(--accent-warm); color: #0c0c0b; font-size: 9.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+.dot { position: absolute; top: -2px; right: -2px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent-warm); border: 2px solid var(--bg-elevated); }
 .cta { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; color: var(--cta-text); background: var(--cta-bg); padding: 8px 18px; border-radius: 6px; transition: opacity 0.15s; display: inline-flex; align-items: center; justify-content: center; }
 .cta:hover { opacity: 0.85; }
 .menuToggle { display: none; }

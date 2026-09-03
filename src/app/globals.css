@@ -19,6 +19,8 @@
   --text-secondary: #8a8880;
   --text-muted: #555450;
    --accent-warm: #00ffb0;
+  --danger: #ff6259;
+  --danger-bg: rgba(255,98,89,0.1);
   --cta-bg: #f0ede8;
   --cta-text: #0c0c0b;
   --nav-bg: rgba(12,12,11,0.88);
@@ -41,6 +43,8 @@
   --text-secondary: #6b6865;
   --text-muted: #a09d9a;
      --accent-warm: #00ffb0;
+  --danger: #d64545;
+  --danger-bg: rgba(214,69,69,0.08);
   --cta-bg: #0c0c0b;
   --cta-text: #f0ede8;
   --nav-bg: rgba(250,250,248,0.88);
