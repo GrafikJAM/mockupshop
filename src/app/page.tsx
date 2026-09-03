@@ -7,6 +7,7 @@ import Marquee from '@/components/Marquee'
 import ProductGrid from '@/components/ProductGrid'
 import PricingCard from '@/components/PricingCard'
 import Testimonials from '@/components/Testimonials'
+import BuyFullAccessButton from '@/components/BuyFullAccessButton'
 import styles from './page.module.css'
 
 export const revalidate = 60
@@ -20,7 +21,7 @@ export default async function Home() {
     .order('created_at', { ascending: false })
 
   const all = products || []
-  const latest = all.slice(0, 12)
+  const latest = all.slice(0, 10)
 
   return (
     <>
@@ -38,9 +39,9 @@ export default async function Home() {
               Browse mockups
               <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5h10M8.5 4l3.5 3.5L8.5 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </Link>
-            <Link href={PRICING.href} className="btn-ghost">
+            <BuyFullAccessButton className="btn-ghost">
               Get access from {PRICING.amount}
-            </Link>
+            </BuyFullAccessButton>
           </div>
         </section>
 
