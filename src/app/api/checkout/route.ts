@@ -80,6 +80,29 @@ export async function POST(req: NextRequest) {
       line_items,
       metadata,
       customer_email: user.email || undefined,
+      // Always create a real Stripe Customer for this purchase (rather than
+      // just a bare email) so the billing name/address/tax ID collected
+      // below actually attach to something and carry through to the invoice.
+      customer_creation: 'always',
+      // Collects full billing name + address at checkout, so invoices show a
+      // proper "Bill to" (not just an email) — needed for these to hold up
+      // as real accounting documents for business clients.
+      billing_address_collection: 'required',
+      // Lets business buyers enter their VAT/Tax ID at checkout; Stripe
+      // validates it and prints it on the invoice — required for EU B2B
+      // reverse-charge accounting and generally expected on business invoices.
+      tax_id_collection: { enabled: true },
+      // Optional company name field, separate from the personal/cardholder
+      // name on the billing address, since invoices are often addressed to
+      // a company rather than the individual buyer.
+      custom_fields: [
+        {
+          key: 'company_name',
+          label: { type: 'custom', custom: 'Company name (for invoice)' },
+          type: 'text',
+          optional: true,
+        },
+      ],
       // Lets a Stripe promotion code (e.g. a 100%-off test coupon) be entered
       // on the Checkout page itself, so the full purchase flow — including
       // the webhook that grants access — can be exercised for $0.
