@@ -59,7 +59,7 @@ export default function MockupsPage() {
               const count = products.filter(p => productMatches(p, tag.matches)).length
               return (
                 <button key={tag.key} className={`${styles.filter} ${activeTag === tag.key ? styles.active : ''}`} onClick={() => setActiveTag(tag.key)}>
-                  ({tag.label} {count})
+                  {tag.label} {count}
                 </button>
               )
             })}
