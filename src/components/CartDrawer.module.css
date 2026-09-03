@@ -59,7 +59,7 @@
 .upsellText { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
 .upsellBtn {
   display: flex; align-items: center; justify-content: center; width: 100%;
-  background: var(--accent-warm); color: var(--bg);
+     background: var(--accent-warm); color: #0c0c0b;
   font-size: 13px; font-weight: 600; padding: 12px 20px; border-radius: 100px;
   transition: opacity 0.15s, transform 0.15s;
 }
