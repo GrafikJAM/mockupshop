@@ -52,7 +52,7 @@
 }
 
 .title {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
@@ -61,8 +61,3 @@
 }
 
 .card:hover .title { color: var(--text-primary); }
-
-.price {
-  font-size: 12px;
-  color: var(--text-muted);
-}
