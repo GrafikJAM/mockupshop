@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 import { supabase } from '@/lib/supabase'
 
 export async function GET(req: NextRequest) {
@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
 
   let session
   try {
-    session = await stripe.checkout.sessions.retrieve(sessionId)
+    session = await getStripe().checkout.sessions.retrieve(sessionId)
   } catch {
     return NextResponse.json({ error: 'Invalid session' }, { status: 400 })
   }
