@@ -3,7 +3,7 @@
   background: transparent;
   transition: background 0.25s;
 }
-.bar { position: relative; display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); padding: 0 40px; }
+.bar { position: relative; display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); max-width: var(--max-w); margin: 0 auto; padding: 0 40px; }
 .logo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; }
 .links { display: flex; align-items: center; gap: 24px; }
 .link { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); transition: color 0.15s; }
