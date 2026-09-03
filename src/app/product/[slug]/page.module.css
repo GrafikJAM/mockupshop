@@ -1,5 +1,5 @@
-.main { padding-top: calc(var(--nav-h) + 48px); }
-.breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); margin-bottom: 36px; }
+.main { padding-top: calc(var(--nav-h) - 40px); padding-bottom: 64px; }
+.breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
 .breadcrumb a:hover { color: var(--text-secondary); }
 .layout { display: grid; grid-template-columns: 3fr 2fr; gap: 56px; align-items: start; }
 @media (max-width: 900px) { .layout { grid-template-columns: 1fr; gap: 36px; } }
