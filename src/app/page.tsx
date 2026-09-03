@@ -73,7 +73,7 @@ export default async function Home() {
           </div>
           {all.length > 0 && (
             <div className={styles.pricingMarquee}>
-              <Marquee products={[...all].reverse()} direction="right" speed={50} />
+                 <Marquee products={[...all].reverse()} direction="right" speed={7} />
             </div>
           )}
           <div className="container" style={{ marginTop: 56 }}>
