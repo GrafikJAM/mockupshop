@@ -38,7 +38,6 @@ function Card({ product }: { product: Product }) {
       </div>
       <div className={styles.meta}>
         <span className={styles.title}>{product.title}</span>
-        {product.price && <span className={styles.price}>{product.price}</span>}
       </div>
     </Link>
   )
