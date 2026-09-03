@@ -18,7 +18,7 @@
 .tierActive { border-color: var(--text-primary); background: var(--bg-elevated); }
 
 .tierTop { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
-.tierLabel { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.tierLabel { font-size: 15px; font-weight: 600; color: var(--text-primary); }
 .tierPrice { font-size: 14px; font-weight: 600; color: var(--text-primary); }
 .tierScale { font-size: 10.5px; letter-spacing: 0.04em; color: var(--text-secondary); line-height: 1.4; }
 
