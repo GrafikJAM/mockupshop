@@ -37,11 +37,13 @@ export default function Nav() {
           </button>
           {!loading && (
             user ? (
-              <button className={styles.account} onClick={signOut} title={`Signed in as ${user.email} — click to sign out`}>
-                {user.email?.split('@')[0]}
+              <button className={styles.toggle} onClick={signOut} aria-label="Sign out" title={`Signed in as ${user.email} — click to sign out`}>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6.5 1.5H3a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/><path d="M10.3 11l3-3-3-3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.3 8H6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
               </button>
             ) : (
-              <Link href="/login" className={styles.account}>Sign in</Link>
+              <Link href="/login" className={styles.toggle} aria-label="Sign in" title="Sign in">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="3" stroke="currentColor" strokeWidth="1.3"/><path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
+              </Link>
             )
           )}
           <Link href="/mockups" className={styles.cta}>Get access</Link>

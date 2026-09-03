@@ -14,6 +14,4 @@
 .badge { position: absolute; top: -5px; right: -5px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 100px; background: var(--accent-warm); color: #0c0c0b; font-size: 9.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
 .cta { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; color: var(--cta-text); background: var(--cta-bg); padding: 8px 18px; border-radius: 6px; transition: opacity 0.15s; }
 .cta:hover { opacity: 0.85; }
-.account { font-size: 12px; color: var(--text-secondary); padding: 8px 4px; transition: color 0.15s; white-space: nowrap; max-width: 110px; overflow: hidden; text-overflow: ellipsis; }
-.account:hover { color: var(--text-primary); }
 @media (max-width: 640px) { .bar { padding: 0 20px; } }
