@@ -1,0 +1,30 @@
+.main { padding-top: calc(var(--nav-h) + 48px); padding-bottom: 96px; min-height: 100vh; }
+.wrap { max-width: 760px; margin: 0 auto; }
+.title { margin-top: 8px; margin-bottom: 8px; }
+.updated { font-size: 13px; color: var(--text-muted); margin-bottom: 40px; }
+.intro { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 40px; }
+
+.section { margin-bottom: 36px; }
+.section:last-child { margin-bottom: 0; }
+.heading { font-family: var(--font-display); font-size: 19px; letter-spacing: -0.01em; color: var(--text-primary); margin-bottom: 12px; }
+.text { font-size: 14.5px; color: var(--text-secondary); line-height: 1.75; }
+.text + .text { margin-top: 12px; }
+.list { font-size: 14.5px; color: var(--text-secondary); line-height: 1.75; margin-top: 10px; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+.list li::marker { color: var(--text-muted); }
+.link { color: var(--text-primary); text-decoration: underline; text-underline-offset: 2px; }
+.link:hover { color: var(--accent-warm); }
+
+.tierGrid { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.tierCard { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+.tierName { font-family: var(--font-display); font-size: 16px; color: var(--text-primary); margin-bottom: 4px; }
+.tierScale { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+.tierPrices { font-size: 13.5px; color: var(--text-secondary); }
+
+.faqItem { border-bottom: 1px solid var(--border); padding: 20px 0; }
+.faqItem:first-child { padding-top: 0; }
+.faqItem:last-child { border-bottom: none; padding-bottom: 0; }
+.faqQ { font-family: var(--font-display); font-size: 16px; color: var(--text-primary); margin-bottom: 8px; }
+.faqA { font-size: 14.5px; color: var(--text-secondary); line-height: 1.7; }
+
+.contactBox { margin-top: 48px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; text-align: center; }
+.contactBox .text { margin-bottom: 4px; }
