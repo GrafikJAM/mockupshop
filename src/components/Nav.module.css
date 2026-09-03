@@ -12,8 +12,36 @@
 .toggle { position: relative; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); background: var(--bg-elevated); border: 1px solid var(--border); transition: all 0.15s; cursor: pointer; }
 .toggle:hover { color: var(--text-primary); border-color: var(--border-hover); }
 .badge { position: absolute; top: -5px; right: -5px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 100px; background: var(--accent-warm); color: #0c0c0b; font-size: 9.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
-.cta { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; color: var(--cta-text); background: var(--cta-bg); padding: 8px 18px; border-radius: 6px; transition: opacity 0.15s; }
+.cta { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; color: var(--cta-text); background: var(--cta-bg); padding: 8px 18px; border-radius: 6px; transition: opacity 0.15s; display: inline-flex; align-items: center; justify-content: center; }
 .cta:hover { opacity: 0.85; }
-.account { font-size: 12px; color: var(--text-secondary); padding: 8px 4px; transition: color 0.15s; white-space: nowrap; max-width: 110px; overflow: hidden; text-overflow: ellipsis; }
-.account:hover { color: var(--text-primary); }
-@media (max-width: 640px) { .bar { padding: 0 20px; } }
+.menuToggle { display: none; }
+.mobileMenu { display: none; }
+
+@media (max-width: 768px) {
+  .bar { padding: 0 20px; }
+  .links { display: none; }
+  .ctaDesktop { display: none; }
+  .themeToggle { display: none; }
+  .menuToggle { display: flex; }
+  .mobileMenu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--nav-bg);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 20px 20px;
+    box-shadow: var(--shadow);
+  }
+  .mobileLink {
+    font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-secondary);
+    padding: 14px 2px; text-align: left; border-bottom: 1px solid var(--border); transition: color 0.15s;
+  }
+  .mobileLink:hover { color: var(--text-primary); }
+  .mobileMenu .cta { margin-top: 12px; padding: 12px 18px; }
+}
