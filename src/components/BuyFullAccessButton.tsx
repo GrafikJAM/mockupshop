@@ -7,9 +7,10 @@ type Props = {
   className?: string
   children: React.ReactNode
   onClick?: () => void
+  tierKey: string
 }
 
-export default function BuyFullAccessButton({ className, children, onClick }: Props) {
+export default function BuyFullAccessButton({ className, children, onClick, tierKey }: Props) {
   const { user, accessToken, loading } = useAuth()
   const router = useRouter()
   const [busy, setBusy] = useState(false)
@@ -28,7 +29,7 @@ export default function BuyFullAccessButton({ className, children, onClick }: Pr
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
-        body: JSON.stringify({ mode: 'full-access' }),
+        body: JSON.stringify({ mode: 'full-access', tierKey }),
       })
       const data = await res.json()
       if (data.url) { window.location.href = data.url; return }
