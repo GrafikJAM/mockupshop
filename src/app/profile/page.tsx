@@ -82,6 +82,7 @@ export default function ProfilePage() {
       <Nav />
       <main className={styles.main}>
         <div className="container">
+        <div className={styles.state}>
           <p className="label">My profile</p>
           <h1 className={`display-lg ${styles.title}`}>{user.email}</h1>
 
@@ -159,6 +160,7 @@ export default function ProfilePage() {
               )}
             </div>
           )}
+        </div>
         </div>
       </main>
       <Footer />

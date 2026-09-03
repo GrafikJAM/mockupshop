@@ -23,12 +23,26 @@ export async function GET(req: NextRequest) {
     .map(o => o.product_id as string)
 
   // Full Access grants every currently-active mockup; a cart purchase only
-  // grants the specific products bought.
-  let query = supabaseAdmin.from('products').select('id, title, image_default, download_url')
-  query = hasFullAccess ? query.eq('active', true) : query.in('id', productIds.length > 0 ? productIds : ['__none__'])
+  // grants the specific products bought. Skip the query entirely when
+  // there's nothing to look up — passing an empty/placeholder id into
+  // .in() throws a Postgres uuid-syntax error instead of just matching zero rows.
+  let products: { id: string; title: string; image_default: string; download_url: string }[] = []
 
-  const { data: products, error: productsError } = await query
-  if (productsError) return NextResponse.json({ error: productsError.message }, { status: 500 })
+  if (hasFullAccess) {
+    const { data, error } = await supabaseAdmin
+      .from('products')
+      .select('id, title, image_default, download_url')
+      .eq('active', true)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    products = data || []
+  } else if (productIds.length > 0) {
+    const { data, error } = await supabaseAdmin
+      .from('products')
+      .select('id, title, image_default, download_url')
+      .in('id', productIds)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    products = data || []
+  }
 
-  return NextResponse.json({ hasFullAccess, products: products || [] })
+  return NextResponse.json({ hasFullAccess, products })
 }

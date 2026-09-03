@@ -1,7 +1,8 @@
 .main { padding-top: calc(var(--nav-h) + 48px); padding-bottom: 96px; min-height: 100vh; }
+.state { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .title { margin-top: 8px; margin-bottom: 28px; word-break: break-word; }
 
-.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+.tabs { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
 .tab {
   font-size: 13px; font-family: var(--font-body); color: var(--text-secondary);
   border: 1px solid var(--border); border-radius: 100px; padding: 8px 20px;
@@ -9,13 +10,13 @@
 }
 .tab:hover { color: var(--text-primary); border-color: var(--border-hover); }
 .tabActive { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
-.tabDanger { color: var(--danger); border-color: var(--danger-bg); margin-left: auto; }
+.tabDanger { color: var(--danger); border-color: var(--danger-bg); }
 .tabDanger:hover { color: var(--danger); background: var(--danger-bg); border-color: var(--danger); }
 
-.panel { max-width: 720px; }
+.panel { width: 100%; text-align: left; }
 .stateText { font-size: 14px; color: var(--text-secondary); }
 .error { font-size: 14px; color: var(--danger); }
-.empty { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.empty { display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; }
 
 .list { display: flex; flex-direction: column; gap: 10px; }
 
@@ -26,12 +27,11 @@
 .rowBtn:hover { opacity: 0.85; }
 
 .invoiceRow { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; }
-.invoiceInfo { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.invoiceInfo { display: flex; flex-direction: column; gap: 4px; min-width: 0; text-align: left; }
 .invoiceMeta { font-size: 12.5px; color: var(--text-secondary); }
 .invoiceUnavailable { flex-shrink: 0; font-size: 12.5px; color: var(--text-muted); }
 
 @media (max-width: 640px) {
-  .tabDanger { margin-left: 0; }
   .row { padding: 12px; }
   .invoiceRow { flex-direction: column; align-items: flex-start; }
 }
