@@ -1,4 +1,4 @@
-.main { padding-top: calc(var(--nav-h) + 64px); padding-bottom: 96px; min-height: 100vh; display: flex; justify-content: center; padding-left: 24px; padding-right: 24px; }
+.main { padding-top: var(--nav-h); padding-bottom: 48px; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding-left: 24px; padding-right: 24px; }
 .card { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 14px; text-align: center; align-items: center; }
 .title { margin-top: 4px; }
 .sub { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 8px; }
