@@ -3,6 +3,12 @@ import { supabase } from '@/lib/supabase'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { getStripe } from '@/lib/stripe'
 
+// See account/purchases/route.ts: Next.js caches fetch() calls by default
+// in route handlers, which was silently serving stale Supabase/Stripe data.
+// Force this route to always hit them live.
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization') || ''
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null

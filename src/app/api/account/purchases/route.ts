@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 
+// Next.js caches fetch() calls (including the ones Supabase's client makes
+// under the hood) by default in this route handler unless it's marked
+// dynamic — which meant this endpoint could keep serving a stale cached
+// result (e.g. an early "no orders yet" response) indefinitely, even across
+// deploys and even after the underlying data changed. Force it to always
+// hit Supabase live.
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization') || ''
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null
@@ -16,13 +25,6 @@ export async function GET(req: NextRequest) {
     .eq('user_id', user.id)
 
   if (ordersError) return NextResponse.json({ error: ordersError.message }, { status: 500 })
-
-  // TEMP DEBUG: query with no filter at all, to see whether supabaseAdmin
-  // can see ANY rows in the orders table (tests RLS bypass / service-role key).
-  const { data: allOrders, count: allCount, error: allOrdersError } = await supabaseAdmin
-    .from('orders')
-    .select('id, user_id', { count: 'exact' })
-    .limit(5)
 
   const hasFullAccess = (orders || []).some(o => o.type === 'full-access')
   const productIds = (orders || [])
@@ -51,23 +53,5 @@ export async function GET(req: NextRequest) {
     products = data || []
   }
 
-  return NextResponse.json({
-    hasFullAccess,
-    products,
-    _debug: {
-      userId: user.id,
-      userEmail: user.email,
-      ordersFound: (orders || []).length,
-      ordersError: ordersError ? (ordersError as any).message : null,
-      productIds,
-      allOrdersVisibleToAdmin: allCount,
-      allOrdersError: allOrdersError ? (allOrdersError as any).message : null,
-      sampleUserIds: (allOrders || []).map(o => JSON.stringify(o.user_id)),
-      userIdLength: user.id.length,
-      userIdJson: JSON.stringify(user.id),
-      userIdEqualsTrimmed: user.id === user.id.trim(),
-      exactStringMatchCount: (allOrders || []).filter(o => o.user_id === user.id).length,
-      supabaseUrlHost: (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/^https?:\/\//, '').split('.')[0],
-    },
-  })
+  return NextResponse.json({ hasFullAccess, products })
 }
