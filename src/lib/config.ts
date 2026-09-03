@@ -35,10 +35,10 @@ export const TESTIMONIALS = [
   { handle: '@uidesigner', name: 'Emma Torres', avatar: 'https://i.pravatar.cc/48?img=15', text: 'Gorgeous mockups. My clients love the presentations.' },
 ]
 
-export const LICENSE_TIERS = [
-  { key: 'freelancer', label: 'Freelancer', scale: '1–2 person design team', price: 19 },
-  { key: 'studio', label: 'Studio', scale: '3–6 person design team', price: 39 },
-  { key: 'commercial', label: 'Commercial', scale: '7+ person design team', price: 69 },
-]
+   export const LICENSE_TIERS = [
+     { key: 'freelancer', label: 'Freelancer', scale: '1–2 person design team', price: 99 },
+     { key: 'studio', label: 'Studio', scale: '3–6 person design team', price: 199 },
+     { key: 'commercial', label: 'Commercial', scale: '7+ person design team', price: 299 },
+   ]
 
 export const LICENSES_HREF = '/licenses'
