@@ -7,7 +7,6 @@ import Marquee from '@/components/Marquee'
 import ProductGrid from '@/components/ProductGrid'
 import PricingCard from '@/components/PricingCard'
 import Testimonials from '@/components/Testimonials'
-import BuyFullAccessButton from '@/components/BuyFullAccessButton'
 import styles from './page.module.css'
 
 export const revalidate = 60
@@ -39,9 +38,9 @@ export default async function Home() {
               Browse mockups
               <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5h10M8.5 4l3.5 3.5L8.5 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </Link>
-            <BuyFullAccessButton className="btn-ghost">
+            <Link href="/mockups" className="btn-ghost">
               Get access from {PRICING.amount}
-            </BuyFullAccessButton>
+            </Link>
           </div>
         </section>
 
@@ -50,8 +49,8 @@ export default async function Home() {
           <section className={`${styles.section} section`}>
             <div className="container">
               <div className={styles.sectionHead}>
-                <p className="label">What's new</p>
-                <h2 className="display-lg">Latest mockups</h2>
+                <p className="label">Best sellers</p>
+                <h2 className="display-lg">Featured mockups</h2>
               </div>
               <ProductGrid products={latest} cols={3} />
               <div className={styles.viewAll}>
@@ -73,7 +72,7 @@ export default async function Home() {
           </div>
           {all.length > 0 && (
             <div className={styles.pricingMarquee}>
-                 <Marquee products={[...all].reverse()} direction="right" speed={7} />
+              <Marquee products={[...all].reverse()} direction="right" speed={7} />
             </div>
           )}
           <div className="container" style={{ marginTop: 56 }}>
