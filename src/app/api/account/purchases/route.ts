@@ -44,5 +44,15 @@ export async function GET(req: NextRequest) {
     products = data || []
   }
 
-  return NextResponse.json({ hasFullAccess, products })
+  return NextResponse.json({
+    hasFullAccess,
+    products,
+    _debug: {
+      userId: user.id,
+      userEmail: user.email,
+      ordersFound: (orders || []).length,
+      ordersError: ordersError ? (ordersError as any).message : null,
+      productIds,
+    },
+  })
 }
