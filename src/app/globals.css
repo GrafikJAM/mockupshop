@@ -27,8 +27,8 @@
   --font-body: 'NeueMontreal', system-ui, sans-serif;
   --radius: 8px;
   --radius-lg: 16px;
-     --max-w: 1800px;
-   --nav-h: 130px;
+     --max-w: 2400px;
+   --nav-h: 200px;
 }
 
 [data-theme="light"] {
