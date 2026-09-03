@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabase } from '@/lib/supabase'
-import { PRICING, LICENSE_TIERS } from '@/lib/config'
+import { LICENSE_TIERS } from '@/lib/config'
 
 type CartCheckoutItem = {
   productId: string
@@ -25,15 +25,23 @@ export async function POST(req: NextRequest) {
     const metadata: Record<string, string> = { user_id: user.id }
 
     if (body.mode === 'full-access') {
+      // Full Access price is tiered (Freelancer/Studio/Commercial) — always resolved
+      // server-side from LICENSE_TIERS using the client-supplied tierKey, never a
+      // client-supplied price.
+      const tier = LICENSE_TIERS.find(t => t.key === body.tierKey)
+      if (!tier) {
+        return NextResponse.json({ error: 'Invalid license tier' }, { status: 400 })
+      }
       line_items = [{
         price_data: {
           currency: 'usd',
-          product_data: { name: 'Full Access Pass — all mockups, lifetime access' },
-          unit_amount: Math.round(PRICING.amountValue * 100),
+          product_data: { name: `Full Access Pass — ${tier.label} — all mockups, lifetime access` },
+          unit_amount: Math.round(tier.fullAccessPrice * 100),
         },
         quantity: 1,
       }]
       metadata.mode = 'full-access'
+      metadata.tierKey = tier.key
     } else if (body.mode === 'cart') {
       const items: CartCheckoutItem[] = Array.isArray(body.items) ? body.items : []
       if (items.length === 0) {
