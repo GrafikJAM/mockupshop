@@ -17,6 +17,13 @@ export async function GET(req: NextRequest) {
 
   if (ordersError) return NextResponse.json({ error: ordersError.message }, { status: 500 })
 
+  // TEMP DEBUG: query with no filter at all, to see whether supabaseAdmin
+  // can see ANY rows in the orders table (tests RLS bypass / service-role key).
+  const { data: allOrders, count: allCount, error: allOrdersError } = await supabaseAdmin
+    .from('orders')
+    .select('id, user_id', { count: 'exact' })
+    .limit(5)
+
   const hasFullAccess = (orders || []).some(o => o.type === 'full-access')
   const productIds = (orders || [])
     .filter(o => o.type === 'product' && o.product_id)
@@ -53,6 +60,10 @@ export async function GET(req: NextRequest) {
       ordersFound: (orders || []).length,
       ordersError: ordersError ? (ordersError as any).message : null,
       productIds,
+      allOrdersVisibleToAdmin: allCount,
+      allOrdersError: allOrdersError ? (allOrdersError as any).message : null,
+      sampleUserIds: (allOrders || []).map(o => o.user_id),
+      supabaseUrlHost: (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/^https?:\/\//, '').split('.')[0],
     },
   })
 }
