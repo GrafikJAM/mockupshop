@@ -1,12 +1,43 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useCart } from '@/lib/cart'
+import { useAuth } from '@/lib/auth'
 import { PRICING } from '@/lib/config'
+import BuyFullAccessButton from './BuyFullAccessButton'
 import styles from './CartDrawer.module.css'
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, total } = useCart()
+  const { user, accessToken } = useAuth()
+  const router = useRouter()
+  const [checkingOut, setCheckingOut] = useState(false)
+
+  async function handleCheckout() {
+    if (!user || !accessToken) {
+      closeCart()
+      router.push('/login')
+      return
+    }
+    setCheckingOut(true)
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify({
+          mode: 'cart',
+          items: items.map(i => ({ productId: i.productId, title: i.title, tierKey: i.tierKey })),
+        }),
+      })
+      const data = await res.json()
+      if (data.url) { window.location.href = data.url; return }
+      alert(data.error || 'Something went wrong starting checkout. Please try again.')
+    } catch {
+      alert('Something went wrong starting checkout. Please try again.')
+    }
+    setCheckingOut(false)
+  }
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) { if (e.key === 'Escape') closeCart() }
@@ -57,19 +88,23 @@ export default function CartDrawer() {
                 <span>Subtotal</span>
                 <span className={styles.subtotalAmount}>${total}</span>
               </div>
-              <Link href={PRICING.href} className={styles.checkoutBtn} onClick={closeCart}>
-                Checkout
-              </Link>
-              <p className={styles.note}>You'll receive download links by email once payment clears.</p>
+              <button type="button" className={styles.checkoutBtn} onClick={handleCheckout} disabled={checkingOut}>
+                {checkingOut ? 'Redirecting…' : user ? 'Checkout' : 'Sign in to checkout'}
+              </button>
+              <p className={styles.note}>
+                {user
+                  ? "You'll get your download link(s) on the confirmation page right after payment."
+                  : "You'll be asked to sign in with a magic link before paying, so your purchases are saved to your account."}
+              </p>
 
               {remaining > 0 && (
                 <>
                   <div className={styles.divider}><span /><span className={styles.dividerLabel}>or</span><span /></div>
                   <div className={styles.upsell}>
                     <p className={styles.upsellText}>Unlock every mockup instead — just ${remaining} more.</p>
-                    <Link href={PRICING.href} className={styles.upsellBtn} onClick={closeCart}>
+                    <BuyFullAccessButton className={styles.upsellBtn} onClick={closeCart}>
                       Get full access — {PRICING.amount}
-                    </Link>
+                    </BuyFullAccessButton>
                   </div>
                 </>
               )}
