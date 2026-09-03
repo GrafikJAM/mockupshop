@@ -1,0 +1,9 @@
+.main { padding-top: calc(var(--nav-h) + 48px); padding-bottom: 96px; min-height: 100vh; }
+.state { max-width: 640px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.title { margin-top: 8px; margin-bottom: 16px; }
+.stateText { font-size: 15px; color: var(--text-secondary); line-height: 1.6; margin-top: 4px; }
+.downloads { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 36px; text-align: left; }
+.downloadRow { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; }
+.downloadTitle { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.downloadBtn { flex-shrink: 0; font-size: 13px; font-weight: 500; color: var(--cta-text); background: var(--cta-bg); padding: 9px 18px; border-radius: var(--radius); transition: opacity 0.15s; }
+.downloadBtn:hover { opacity: 0.85; }
