@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useCart } from '@/lib/cart'
 import { useAuth } from '@/lib/auth'
-import { LICENSE_TIERS, LICENSES_HREF, PRICING } from '@/lib/config'
+import { LICENSE_TIERS, LICENSES_HREF } from '@/lib/config'
 import BuyFullAccessButton from './BuyFullAccessButton'
 import styles from './LicenseSelector.module.css'
 
@@ -95,12 +95,12 @@ export default function LicenseSelector({ productCount, productId, productTitle,
             <div className={styles.fullAccessLabel}>Full Access</div>
             <div className={styles.fullAccessScale}>{tier.scale}</div>
           </div>
-          <span className={styles.fullAccessPrice}>{PRICING.amount}</span>
+          <span className={styles.fullAccessPrice}>${tier.fullAccessPrice}</span>
         </div>
         <p className={styles.fullAccessDesc}>
-          Get this mockup for ${tier.price} or get all {productCount}+ mockups with Full Access for {PRICING.amount}
+          Get this mockup for ${tier.price} or get all {productCount}+ mockups with Full Access for ${tier.fullAccessPrice}
         </p>
-        <BuyFullAccessButton className={styles.purchaseBtn}>
+        <BuyFullAccessButton className={styles.purchaseBtn} tierKey={tier.key}>
           Purchase full access
         </BuyFullAccessButton>
       </div>
