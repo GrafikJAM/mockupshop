@@ -4,8 +4,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/lib/cart'
 import { useAuth } from '@/lib/auth'
-import { PRICING } from '@/lib/config'
-import BuyFullAccessButton from './BuyFullAccessButton'
 import styles from './CartDrawer.module.css'
 
 export default function CartDrawer() {
@@ -51,8 +49,6 @@ export default function CartDrawer() {
 
   if (!isOpen) return null
 
-  const remaining = Math.max(PRICING.amountValue - total, 0)
-
   return (
     <div className={styles.overlay} onClick={closeCart}>
       <aside className={styles.panel} onClick={e => e.stopPropagation()}>
@@ -97,17 +93,13 @@ export default function CartDrawer() {
                   : "You'll be asked to sign in with a magic link before paying, so your purchases are saved to your account."}
               </p>
 
-              {remaining > 0 && (
-                <>
-                  <div className={styles.divider}><span /><span className={styles.dividerLabel}>or</span><span /></div>
-                  <div className={styles.upsell}>
-                    <p className={styles.upsellText}>Unlock every mockup instead — just ${remaining} more.</p>
-                    <BuyFullAccessButton className={styles.upsellBtn} onClick={closeCart}>
-                      Get full access — {PRICING.amount}
-                    </BuyFullAccessButton>
-                  </div>
-                </>
-              )}
+              <div className={styles.divider}><span /><span className={styles.dividerLabel}>or</span><span /></div>
+              <div className={styles.upsell}>
+                <p className={styles.upsellText}>Want every mockup instead? Full Access pricing depends on your team size.</p>
+                <Link href="/mockups" className={styles.upsellBtn} onClick={closeCart}>
+                  See Full Access pricing
+                </Link>
+              </div>
             </div>
           </>
         )}
