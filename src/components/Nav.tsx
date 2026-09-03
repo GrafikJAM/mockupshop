@@ -3,12 +3,16 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useTheme } from '@/lib/theme'
 import { useCart } from '@/lib/cart'
-import { SITE, PRICING } from '@/lib/config'
+import { useAuth } from '@/lib/auth'
+import { SITE } from '@/lib/config'
+import BuyFullAccessButton from './BuyFullAccessButton'
 import styles from './Nav.module.css'
 
 export default function Nav() {
   const { theme, toggle } = useTheme()
   const { items, toggleCart } = useCart()
+  const { user, loading, signOut } = useAuth()
+
   return (
     <nav className={styles.nav}>
       <div className={styles.bar}>
@@ -32,7 +36,16 @@ export default function Nav() {
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M1.5 1.5h1.5l1.6 8.6a1.2 1.2 0 0 0 1.2 1h6.4a1.2 1.2 0 0 0 1.2-1L14.5 4.5h-10.7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/><circle cx="6.5" cy="14" r="1" fill="currentColor"/><circle cx="11.5" cy="14" r="1" fill="currentColor"/></svg>
             {items.length > 0 && <span className={styles.badge}>{items.length}</span>}
           </button>
-          <Link href={PRICING.href} className={styles.cta}>Get access</Link>
+          {!loading && (
+            user ? (
+              <button className={styles.account} onClick={signOut} title={`Signed in as ${user.email} — click to sign out`}>
+                {user.email?.split('@')[0]}
+              </button>
+            ) : (
+              <Link href="/login" className={styles.account}>Sign in</Link>
+            )
+          )}
+          <BuyFullAccessButton className={styles.cta}>Get access</BuyFullAccessButton>
         </div>
       </div>
     </nav>
