@@ -84,6 +84,9 @@ export async function POST(req: NextRequest) {
       // on the Checkout page itself, so the full purchase flow — including
       // the webhook that grants access — can be exercised for $0.
       allow_promotion_codes: true,
+      // Generates a real Stripe invoice for every order (even $0 ones from a
+      // 100%-off promo code) so buyers can see/download it from their profile.
+      invoice_creation: { enabled: true },
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/`,
     })
