@@ -80,6 +80,10 @@ export async function POST(req: NextRequest) {
       line_items,
       metadata,
       customer_email: user.email || undefined,
+      // Lets a Stripe promotion code (e.g. a 100%-off test coupon) be entered
+      // on the Checkout page itself, so the full purchase flow — including
+      // the webhook that grants access — can be exercised for $0.
+      allow_promotion_codes: true,
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/`,
     })
