@@ -5,7 +5,6 @@ import { useTheme } from '@/lib/theme'
 import { useCart } from '@/lib/cart'
 import { useAuth } from '@/lib/auth'
 import { SITE } from '@/lib/config'
-import BuyFullAccessButton from './BuyFullAccessButton'
 import styles from './Nav.module.css'
 
 export default function Nav() {
@@ -45,7 +44,7 @@ export default function Nav() {
               <Link href="/login" className={styles.account}>Sign in</Link>
             )
           )}
-          <BuyFullAccessButton className={styles.cta}>Get access</BuyFullAccessButton>
+          <Link href="/mockups" className={styles.cta}>Get access</Link>
         </div>
       </div>
     </nav>
