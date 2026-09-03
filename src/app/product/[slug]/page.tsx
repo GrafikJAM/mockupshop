@@ -49,12 +49,12 @@ export default async function ProductPage({ params }: { params: { slug: string }
                   ))}
                 </div>
               )}
-         
-                           <LicenseSelector
+              <LicenseSelector
                 productCount={productCount}
                 productId={product.id}
                 productTitle={product.title}
                 productImage={product.image_default}
+                downloadUrl={product.download_url}
               />
             </div>
           </div>
