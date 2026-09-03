@@ -62,7 +62,11 @@ export async function GET(req: NextRequest) {
       productIds,
       allOrdersVisibleToAdmin: allCount,
       allOrdersError: allOrdersError ? (allOrdersError as any).message : null,
-      sampleUserIds: (allOrders || []).map(o => o.user_id),
+      sampleUserIds: (allOrders || []).map(o => JSON.stringify(o.user_id)),
+      userIdLength: user.id.length,
+      userIdJson: JSON.stringify(user.id),
+      userIdEqualsTrimmed: user.id === user.id.trim(),
+      exactStringMatchCount: (allOrders || []).filter(o => o.user_id === user.id).length,
       supabaseUrlHost: (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/^https?:\/\//, '').split('.')[0],
     },
   })
