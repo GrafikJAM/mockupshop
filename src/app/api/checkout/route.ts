@@ -24,6 +24,14 @@ export async function POST(req: NextRequest) {
     let line_items: { price_data: any; quantity: number }[] = []
     const metadata: Record<string, string> = { user_id: user.id }
 
+    // Basic affiliate/referral tracking — see src/lib/referral.ts. Purely
+    // informational (no automatic payouts): it just rides along on the
+    // order row so referred sales can be found and paid out manually.
+    if (typeof body.referralCode === 'string') {
+      const cleanReferral = body.referralCode.trim().slice(0, 40).replace(/[^a-zA-Z0-9_-]/g, '')
+      if (cleanReferral) metadata.referral_code = cleanReferral
+    }
+
     if (body.mode === 'full-access') {
       // Full Access price is tiered (Freelancer/Studio/Commercial) — always resolved
       // server-side from LICENSE_TIERS using the client-supplied tierKey, never a

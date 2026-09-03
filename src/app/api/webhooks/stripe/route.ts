@@ -29,6 +29,11 @@ async function recordOrder(session: Stripe.Checkout.Session) {
   const mode = session.metadata?.mode
   if (!userId || !mode) return
 
+  // Basic affiliate/referral tracking — see src/lib/referral.ts and
+  // checkout/route.ts. Purely for later manual lookup (filter `orders` by
+  // referral_code in Supabase); nothing here pays anyone automatically.
+  const referralCode = session.metadata?.referral_code || null
+
   // Idempotency guard: Stripe retries webhooks on non-2xx responses, so make sure
   // we don't double-record the same checkout session if this handler runs twice.
   const { data: existing } = await supabaseAdmin
@@ -45,6 +50,7 @@ async function recordOrder(session: Stripe.Checkout.Session) {
       type: 'full-access',
       tier_key: session.metadata?.tierKey || null,
       stripe_session_id: session.id,
+      referral_code: referralCode,
     }])
     return
   }
@@ -58,6 +64,7 @@ async function recordOrder(session: Stripe.Checkout.Session) {
       type: 'product',
       tier_key: tierKeys[i] || null,
       stripe_session_id: session.id,
+      referral_code: referralCode,
     }))
     if (rows.length > 0) await supabaseAdmin.from('orders').insert(rows)
   }

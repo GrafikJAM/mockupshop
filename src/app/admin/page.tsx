@@ -16,6 +16,7 @@ type Product = {
   active: boolean
   created_at: string
   sort_order: number | null
+  is_lead_magnet: boolean
 }
 
 const ALL_TAGS = ['Human', 'Devices', 'Outdoor', 'Poster', 'Billboard', 'Screen', 'Apparel', 'Print', 'Signage', 'Packaging', 'Vehicle', 'Interior', 'Stationery', 'Other']
@@ -30,6 +31,7 @@ const empty = {
   category: 'Other',
   tags: [] as string[],
   price: '',
+  is_lead_magnet: false,
 }
 
 export default function AdminPage() {
@@ -106,6 +108,7 @@ export default function AdminPage() {
       category: p.category,
       tags: p.tags || [],
       price: p.price || '',
+      is_lead_magnet: !!p.is_lead_magnet,
     })
     setEditId(p.id); setTab('add'); window.scrollTo(0, 0)
   }
@@ -224,6 +227,16 @@ export default function AdminPage() {
                 <input key={i} className={`${styles.input} ${styles.extraInput}`} placeholder={`Extra image ${i + 1}`} value={url}
                   onChange={e => { const n = [...form.images_extra]; n[i] = e.target.value; setForm({ ...form, images_extra: n }) }} />
               ))}
+            </div>
+            <div className={`${styles.field} ${styles.fullWidth}`}>
+              <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={form.is_lead_magnet}
+                  onChange={e => setForm({ ...form, is_lead_magnet: e.target.checked })}
+                />
+                Give away free on /free-mockup (only one product should be flagged at a time)
+              </label>
             </div>
           </div>
           {msg && <p className={msg.startsWith('Error') ? styles.error : styles.success}>{msg}</p>}

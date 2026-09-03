@@ -9,6 +9,8 @@ export const SITE = {
     { label: 'Mockups', href: '/mockups' },
   ],
   footer: [
+    { label: 'Free Mockup', href: '/free-mockup' },
+    { label: 'Licenses', href: '/licenses' },
     { label: 'Help', href: '/help' },
     { label: 'Terms', href: '/terms' },
     { label: 'Privacy', href: '/privacy' },

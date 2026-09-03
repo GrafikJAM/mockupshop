@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     image_default: body.image_default, image_hover: body.image_hover,
     images_extra: body.images_extra || [], category: body.category || 'Other',
     tags: body.tags || [], price: body.price || '', active: true,
-    sort_order: newOrder,
+    sort_order: newOrder, is_lead_magnet: !!body.is_lead_magnet,
   }]).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)

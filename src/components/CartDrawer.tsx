@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/lib/cart'
 import { useAuth } from '@/lib/auth'
+import { getReferralCode } from '@/lib/referral'
 import styles from './CartDrawer.module.css'
 
 export default function CartDrawer() {
@@ -26,6 +27,7 @@ export default function CartDrawer() {
         body: JSON.stringify({
           mode: 'cart',
           items: items.map(i => ({ productId: i.productId, title: i.title, tierKey: i.tierKey })),
+          referralCode: getReferralCode(),
         }),
       })
       const data = await res.json()
