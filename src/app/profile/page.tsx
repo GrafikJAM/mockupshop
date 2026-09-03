@@ -7,7 +7,7 @@ import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
 
-type Purchase = { id: string; title: string; image_default: string; download_url: string }
+type Purchase = { id: string; title: string; image_default: string; download_url: string; tierLabel: string | null }
 type Invoice = {
   sessionId: string
   type: string
@@ -118,8 +118,13 @@ export default function ProfilePage() {
                 <div className={styles.list}>
                   {purchases.map(p => (
                     <div key={p.id} className={styles.row}>
-                      <div className={styles.thumb} style={{ backgroundImage: `url(${p.image_default})` }} />
-                      <span className={styles.rowTitle}>{p.title}</span>
+                      <Link href={`/product/${p.id}`} className={styles.thumbLink}>
+                        <div className={styles.thumb} style={{ backgroundImage: `url(${p.image_default})` }} />
+                      </Link>
+                      <div className={styles.rowInfo}>
+                        <Link href={`/product/${p.id}`} className={styles.rowTitle}>{p.title}</Link>
+                        {p.tierLabel && <span className={styles.rowTier}>{p.tierLabel} License</span>}
+                      </div>
                       <a href={p.download_url} className={styles.rowBtn} target="_blank" rel="noopener noreferrer">
                         Download
                       </a>
