@@ -1,12 +1,11 @@
 import Link from 'next/link'
-import { SITE, PRICING, TESTIMONIALS } from '@/lib/config'
+import { SITE, PRICING } from '@/lib/config'
 import { supabase } from '@/lib/supabase'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import Marquee from '@/components/Marquee'
 import ProductGrid from '@/components/ProductGrid'
 import PricingCard from '@/components/PricingCard'
-import Testimonials from '@/components/Testimonials'
 import styles from './page.module.css'
 
 export const revalidate = 60
