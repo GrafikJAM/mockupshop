@@ -4,9 +4,42 @@ import PricingCard from '@/components/PricingCard'
 import LicenseSelector from '@/components/LicenseSelector'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import type { Metadata } from 'next'
 import styles from './page.module.css'
 
 export const revalidate = 60
+
+// Per-product title/description/OG image, so a link to a specific mockup
+// (e.g. pinned on Pinterest, posted on Dribbble/Behance) previews with that
+// mockup's own image and name instead of the generic site-wide card.
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const { data: product } = await supabase.from('products').select('*').eq('id', params.slug).single()
+  if (!product) return {}
+
+  const description = product.description
+    ? product.description.split('\n')[0].slice(0, 155)
+    : `${product.title} — a premium Photoshop mockup from GrafikJAM Mockups.`
+  const image = product.image_default
+
+  return {
+    title: product.title,
+    description,
+    alternates: { canonical: `/product/${product.id}` },
+    openGraph: {
+      type: 'website',
+      url: `/product/${product.id}`,
+      title: product.title,
+      description,
+      images: image ? [{ url: image, width: 1200, height: 1200, alt: product.title }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.title,
+      description,
+      images: image ? [image] : undefined,
+    },
+  }
+}
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const { data: product } = await supabase.from('products').select('*').eq('id', params.slug).single()
