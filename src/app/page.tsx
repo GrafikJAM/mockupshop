@@ -50,7 +50,7 @@ export default async function Home() {
             <div className="container">
               <div className={styles.sectionHead}>
                 <p className="label">Best sellers</p>
-                <h2 className="display-lg">Featured mockups</h2>
+                <h2 className="display-lg">Top mockups this month</h2>
               </div>
               <ProductGrid products={latest} cols={3} />
               <div className={styles.viewAll}>
