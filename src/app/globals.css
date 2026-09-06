@@ -76,9 +76,9 @@ button { font-family: var(--font-body); cursor: pointer; border: none; backgroun
 .display-sm { font-family: var(--font-display); font-size: clamp(1.3rem, 2vw, 1.8rem); line-height: 1.2; letter-spacing: -0.015em; }
 .label { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
 
-.btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--cta-bg); color: var(--cta-text); font-family: var(--font-body); font-size: 14px; font-weight: 500; padding: 11px 20px; border-radius: var(--radius); transition: opacity 0.15s, transform 0.15s; }
+.btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--cta-bg); color: var(--cta-text); font-family: var(--font-body); font-size: 14px; font-weight: 500; padding: 11px 20px; border-radius: var(--radius); border: none; cursor: pointer; transition: opacity 0.15s, transform 0.15s; }
 .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
-.btn-ghost { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 14px; transition: color 0.15s; }
+.btn-ghost { display: inline-flex; align-items: center; gap: 6px; background: none; color: var(--text-secondary); font-family: var(--font-body); font-size: 14px; border: none; padding: 0; cursor: pointer; transition: color 0.15s; }
 .btn-ghost:hover { color: var(--text-primary); }
 
 .section { padding: 88px 0; }
