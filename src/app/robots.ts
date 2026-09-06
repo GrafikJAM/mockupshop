@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/admin', '/profile', '/success'],
+        disallow: ['/api/', '/admin', '/profile', '/success', '/login'],
       },
     ],
     sitemap: 'https://grafikjam.shop/sitemap.xml',
