@@ -1,10 +1,10 @@
 export const SITE = {
   name: 'GrafikJAM Mockups',
-  tagline: 'High-quality Photoshop mockups',
-  description: 'Premium mockups –\ncrafted with care',
+  tagline: "Photoshop mockups that don't blend in",
+  description: 'Mockups that make\nyour work look loud',
   established: '2021',
   founderName: 'Jekabs A. Mucenieks',
-  founderBio: `My name is Jekabs A. Mucenieks — I'm a brand designer and the person behind GrafikJAM.\n\nI've been crafting mockups since 2021, not as a side project, but as part of my actual branding work. Every file I sell is something I'd use myself.`,
+  founderBio: `I'm Jekabs — brand designer by day, mockup hoarder by night. GrafikJAM started because I got tired of dropping real client work into scenes that looked like everyone else's. So I started building my own.\n\nEvery mockup in this shop has sat inside an actual client deck before it ever went up for sale. If it's not good enough for my own work, it's not good enough to sell you.`,
   nav: [
     { label: 'Mockups', href: '/mockups' },
   ],
@@ -18,13 +18,13 @@ export const SITE = {
 }
 
 export const PRICING = {
-  headline: 'Pay once & Access forever',
-  subline: 'The best deal in the market. The price of a 10 mockups. Access to everything.',
-  badge: 'Great deal',
+  headline: 'One price. Every mockup. Forever.',
+  subline: "Less than a stock-photo subscription, minus the recurring bill you'll forget to cancel.",
+  badge: 'Zero regrets',
   amount: '$99',
   amountValue: 99,
-  description: 'Access all mockups & new releases for life',
-  cta: 'Purchase',
+  description: 'The whole library, plus everything I make next — no subscriptions, no catch',
+  cta: 'Get Full Access',
   href: 'https://your-payment-link.com',
 }
 
