@@ -4,8 +4,11 @@ import PricingCard from '@/components/PricingCard'
 import LicenseSelector from '@/components/LicenseSelector'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { LICENSE_TIERS } from '@/lib/config'
 import type { Metadata } from 'next'
 import styles from './page.module.css'
+
+const SITE_URL = 'https://grafikjam.shop'
 
 export const revalidate = 60
 
@@ -50,8 +53,37 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
   const allImages = [product.image_default, product.image_hover, ...(product.images_extra || [])].filter(Boolean)
 
+  // Product structured data — lets Google understand price/availability for
+  // this mockup and makes it eligible for rich results in search listings.
+  const lowPrice = Math.min(...LICENSE_TIERS.map(t => t.price))
+  const highPrice = Math.max(...LICENSE_TIERS.map(t => t.price))
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    description: product.description || `${product.title} — a premium Photoshop mockup from GrafikJAM Mockups.`,
+    image: allImages,
+    url: `${SITE_URL}/product/${product.id}`,
+    brand: { '@type': 'Brand', name: 'GrafikJAM Mockups' },
+    category: product.category,
+    offers: {
+      '@type': 'AggregateOffer',
+      priceCurrency: 'USD',
+      lowPrice,
+      highPrice,
+      offerCount: LICENSE_TIERS.length,
+      availability: 'https://schema.org/InStock',
+      url: `${SITE_URL}/product/${product.id}`,
+    },
+  }
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Nav />
       <main className={styles.main}>
         <div className="container">
