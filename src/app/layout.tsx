@@ -5,7 +5,9 @@ import './globals.css'
 import { ThemeProvider } from '@/lib/theme'
 import { AuthProvider } from '@/lib/auth'
 import { CartProvider } from '@/lib/cart'
+import { FullAccessModalProvider } from '@/lib/fullAccessModal'
 import CartDrawer from '@/components/CartDrawer'
+import FullAccessModal from '@/components/FullAccessModal'
 import ReferralCapture from '@/components/ReferralCapture'
 
 const SITE_URL = 'https://grafikjam.shop'
@@ -49,8 +51,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <AuthProvider>
             <CartProvider>
-              {children}
-              <CartDrawer />
+              <FullAccessModalProvider>
+                {children}
+                <CartDrawer />
+                <FullAccessModal />
+              </FullAccessModalProvider>
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>
