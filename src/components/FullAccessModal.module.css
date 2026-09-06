@@ -1,79 +1,80 @@
-'use client'
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useFullAccessModal } from '@/lib/fullAccessModal'
-import { LICENSE_TIERS, LICENSES_HREF } from '@/lib/config'
-import BuyFullAccessButton from '@/components/BuyFullAccessButton'
-import styles from './FullAccessModal.module.css'
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.18s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-export default function FullAccessModal() {
-  const { isOpen, closeModal } = useFullAccessModal()
-  const [count, setCount] = useState<number | null>(null)
+.panel {
+  width: min(480px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes popIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-  useEffect(() => {
-    if (!isOpen) return
-    fetch('/api/products')
-      .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setCount(data.length) })
-      .catch(() => {})
-  }, [isOpen])
+.header { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; border-bottom: 1px solid var(--border); }
+.title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 500; letter-spacing: -0.01em; }
+.close { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: color 0.15s, background 0.15s; }
+.close:hover { color: var(--text-primary); background: var(--bg-elevated); }
 
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') closeModal() }
-    if (isOpen) document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [isOpen, closeModal])
+.body { padding: 20px 24px 24px; display: flex; flex-direction: column; }
 
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : ''
-  }, [isOpen])
+.row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 14px 0; }
+.rowLabel { font-size: 13px; font-weight: 500; color: var(--text-primary); flex-shrink: 0; }
+.rowValue { font-size: 13px; color: var(--text-secondary); text-align: right; }
+.rowLink { font-size: 13px; color: var(--text-secondary); text-decoration: underline; text-underline-offset: 3px; transition: color 0.15s; }
+.rowLink:hover { color: var(--text-primary); }
 
-  if (!isOpen) return null
+.divider { height: 1px; background: var(--border); }
 
-  return (
-    <div className={styles.overlay} onClick={closeModal}>
-      <div className={styles.panel} onClick={e => e.stopPropagation()}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>Full Access</h2>
-          <button className={styles.close} onClick={closeModal} aria-label="Close">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
-          </button>
-        </div>
+.tiers { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
 
-        <div className={styles.body}>
-          <div className={styles.row}>
-            <span className={styles.rowLabel}>Pay once, access forever</span>
-            <span className={styles.rowValue}>One payment, no subscriptions or renewals</span>
-          </div>
-          <div className={styles.divider} />
+.tier {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+}
 
-          <div className={styles.row}>
-            <span className={styles.rowLabel}>Mockups</span>
-            <span className={styles.rowValue}>{count !== null ? `${count} and counting` : '…'}</span>
-          </div>
-          <div className={styles.divider} />
+.tierInfo { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tierLabel { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.tierScale { font-size: 10.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-secondary); }
 
-          <div className={styles.row}>
-            <span className={styles.rowLabel}>License</span>
-            <Link href={LICENSES_HREF} className={styles.rowLink} onClick={closeModal}>Unlimited — Read more</Link>
-          </div>
-          <div className={styles.divider} />
+.tierBtn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  padding: 10px 16px;
+  border-radius: 100px;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+.tierBtn:hover { border-color: var(--border-hover); background: var(--accent-warm); color: #0c0c0b; transform: translateY(-1px); }
+.tierBtnDash { opacity: 0.6; }
 
-          <div className={styles.tiers}>
-            {LICENSE_TIERS.map(tier => (
-              <div key={tier.key} className={styles.tier}>
-                <div className={styles.tierInfo}>
-                  <span className={styles.tierLabel}>{tier.label}</span>
-                  <span className={styles.tierScale}>{tier.scale}</span>
-                </div>
-                <BuyFullAccessButton tierKey={tier.key} className={styles.tierBtn} onClick={closeModal}>
-                  ${tier.fullAccessPrice} <span className={styles.tierBtnDash}>–</span> Purchase
-                </BuyFullAccessButton>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+@media (max-width: 480px) {
+  .tier { flex-direction: column; align-items: stretch; text-align: left; }
+  .tierBtn { justify-content: center; }
 }
