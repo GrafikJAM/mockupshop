@@ -6,6 +6,7 @@ import Footer from '@/components/Footer'
 import Marquee from '@/components/Marquee'
 import ProductGrid from '@/components/ProductGrid'
 import PricingCard from '@/components/PricingCard'
+import GetAccessButton from '@/components/GetAccessButton'
 import styles from './page.module.css'
 
 export const revalidate = 60
@@ -37,9 +38,9 @@ export default async function Home() {
               Browse mockups
               <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5h10M8.5 4l3.5 3.5L8.5 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </Link>
-            <Link href="/mockups" className="btn-ghost">
+            <GetAccessButton className="btn-ghost">
               Get access from {PRICING.amount}
-            </Link>
+            </GetAccessButton>
           </div>
         </section>
 
