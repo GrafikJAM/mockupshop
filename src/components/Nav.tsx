@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useTheme } from '@/lib/theme'
 import { useCart } from '@/lib/cart'
 import { useAuth } from '@/lib/auth'
+import { useFullAccessModal } from '@/lib/fullAccessModal'
 import { SITE } from '@/lib/config'
 import styles from './Nav.module.css'
 
@@ -12,6 +13,7 @@ export default function Nav() {
   const { theme, toggle } = useTheme()
   const { items, toggleCart } = useCart()
   const { user, loading } = useAuth()
+  const { openModal } = useFullAccessModal()
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
@@ -48,7 +50,7 @@ export default function Nav() {
               {user && <span className={styles.dot} />}
             </Link>
           )}
-          <Link href="/mockups" className={`${styles.cta} ${styles.ctaDesktop}`}>Get access</Link>
+          <button type="button" onClick={openModal} className={`${styles.cta} ${styles.ctaDesktop}`}>Get access</button>
           <button
             className={`${styles.toggle} ${styles.menuToggle}`}
             onClick={() => setMenuOpen(o => !o)}
@@ -73,7 +75,7 @@ export default function Nav() {
           <button className={styles.mobileLink} onClick={toggle}>
             {theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           </button>
-          <Link href="/mockups" className={styles.cta} onClick={() => setMenuOpen(false)}>Get access</Link>
+          <button type="button" className={styles.cta} onClick={() => { setMenuOpen(false); openModal() }}>Get access</button>
         </div>
       )}
     </nav>
