@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/lib/auth'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
+import { toDirectImageUrl } from '@/lib/imageUrl'
 import styles from './page.module.css'
 
 type Purchase = { id: string; title: string; image_default: string; download_url: string; tierLabel: string | null }
@@ -119,7 +120,7 @@ export default function ProfilePage() {
                   {purchases.map(p => (
                     <div key={p.id} className={styles.row}>
                       <Link href={`/product/${p.id}`} className={styles.thumbLink}>
-                        <div className={styles.thumb} style={{ backgroundImage: `url(${p.image_default})` }} />
+                        <div className={styles.thumb} style={{ backgroundImage: `url(${toDirectImageUrl(p.image_default)})` }} />
                       </Link>
                       <div className={styles.rowInfo}>
                         <Link href={`/product/${p.id}`} className={styles.rowTitle}>{p.title}</Link>
