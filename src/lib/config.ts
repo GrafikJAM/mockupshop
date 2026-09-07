@@ -4,8 +4,7 @@ export const SITE = {
   description: 'Mockups that make\nyour work look loud',
   established: '2021',
   founderName: 'Jekabs A. Mucenieks',
-  founderBio: `I'm Jekabs — brand designer by day, mockup hoarder by night. GrafikJAM started because I got tired of dropping real client work into scenes that looked like everyone else's. So I started building my own.\n\nEvery mockup in this shop has sat inside an actual client deck before it ever went up for sale. If it's not good enough for my own work, it's not good enough to sell you.`,
-  nav: [
+  founderBio: `My name is Jekabs A. Mucenieks — I'm a brand designer and the person behind GrafikJAM.\n\nI've been crafting mockups since 2021, not as a side project, but as part of my actual branding work. Every file I sell is something I'd use myself.`,  nav: [
     { label: 'Mockups', href: '/mockups' },
   ],
   footer: [
