@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
+import { toDirectImageUrl } from '@/lib/imageUrl'
 import styles from './page.module.css'
 
 type Product = { id: string; title: string; image_default: string; download_url: string }
@@ -43,7 +44,7 @@ export default function FreeMockupPage() {
               <>
                 <p className="label">It's yours</p>
                 <h1 className={`display-sm ${styles.title}`}>Here's your free mockup</h1>
-                <div className={styles.thumb} style={{ backgroundImage: `url(${product.image_default})` }} />
+                <div className={styles.thumb} style={{ backgroundImage: `url(${toDirectImageUrl(product.image_default)})` }} />
                 <p className={styles.sub}>{product.title}</p>
                 <a href={product.download_url} className={styles.downloadBtn} target="_blank" rel="noopener noreferrer">
                   Download now
