@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
+import { toDirectImageUrl } from '@/lib/imageUrl'
 import styles from './ProductGrid.module.css'
 
 type Product = {
@@ -24,13 +25,13 @@ function Card({ product }: { product: Product }) {
     >
       <div className={styles.imgWrap}>
         <img
-          src={product.image_default}
+          src={toDirectImageUrl(product.image_default)}
           alt={product.title}
           className={`${styles.img} ${styles.imgDefault} ${hovered ? styles.hidden : ''}`}
         />
         {product.image_hover && (
           <img
-            src={product.image_hover}
+            src={toDirectImageUrl(product.image_hover)}
             alt={product.title}
             className={`${styles.img} ${styles.imgHover} ${hovered ? styles.visible : ''}`}
           />
