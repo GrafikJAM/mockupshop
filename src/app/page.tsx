@@ -86,7 +86,7 @@ export default async function Home() {
               <img src="/founder-portrait.png" alt={SITE.founderName} className={styles.founderImg} />
               <div className={styles.founder}>
                 <p className="label">About GrafikJAM</p>
-                <h2 className="display-sm">Made for real client decks, not just nice Dribbble shots</h2>
+         <h2 className="display-sm">Mockups built for real branding work</h2>
                 <div className={styles.founderBio}>
                   {SITE.founderBio.split('\n\n').map((p, i) => <p key={i}>{p}</p>)}
                 </div>
