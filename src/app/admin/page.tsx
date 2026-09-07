@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { toDirectImageUrl } from '@/lib/imageUrl'
 import styles from './page.module.css'
 
 type Product = {
@@ -214,12 +215,12 @@ export default function AdminPage() {
             <div className={styles.field}>
               <label className={styles.label}>Default image URL *</label>
               <input className={styles.input} placeholder="https://..." value={form.image_default} onChange={e => setForm({ ...form, image_default: e.target.value })} />
-              {form.image_default && <img src={form.image_default} className={styles.preview} alt="preview" />}
+              {form.image_default && <img src={toDirectImageUrl(form.image_default)} className={styles.preview} alt="preview" />}
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Hover image URL</label>
               <input className={styles.input} placeholder="https://..." value={form.image_hover} onChange={e => setForm({ ...form, image_hover: e.target.value })} />
-              {form.image_hover && <img src={form.image_hover} className={styles.preview} alt="hover" />}
+              {form.image_hover && <img src={toDirectImageUrl(form.image_hover)} className={styles.preview} alt="hover" />}
             </div>
             <div className={`${styles.field} ${styles.fullWidth}`}>
               <label className={styles.label}>Extra images (up to 3 URLs)</label>
@@ -275,7 +276,7 @@ export default function AdminPage() {
                 onMouseDown={() => { handleActive.current = true }}
                 onMouseUp={() => { handleActive.current = false }}
               >⠿</span>
-              <img src={p.image_default} className={styles.thumb} alt={p.title} />
+              <img src={toDirectImageUrl(p.image_default)} className={styles.thumb} alt={p.title} />
               <div className={styles.productInfo}>
                 <div className={styles.productTitle}>{p.title} {p.price && <span style={{color:'#555450'}}>· {p.price}</span>}</div>
                 <div className={styles.productMeta}>
