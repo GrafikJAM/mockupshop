@@ -5,6 +5,7 @@ import LicenseSelector from '@/components/LicenseSelector'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { LICENSE_TIERS } from '@/lib/config'
+import { toDirectImageUrl } from '@/lib/imageUrl'
 import type { Metadata } from 'next'
 import styles from './page.module.css'
 
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const description = product.description
     ? product.description.split('\n')[0].slice(0, 155)
     : `${product.title} — a premium Photoshop mockup from GrafikJAM Mockups.`
-  const image = product.image_default
+  const image = toDirectImageUrl(product.image_default)
 
   return {
     title: product.title,
@@ -51,7 +52,9 @@ export default async function ProductPage({ params }: { params: { slug: string }
   const { count } = await supabase.from('products').select('id', { count: 'exact', head: true }).eq('active', true)
   const productCount = count || 0
 
-  const allImages = [product.image_default, product.image_hover, ...(product.images_extra || [])].filter(Boolean)
+  const allImages = [product.image_default, product.image_hover, ...(product.images_extra || [])]
+    .filter(Boolean)
+    .map(toDirectImageUrl)
 
   // Product structured data — lets Google understand price/availability for
   // this mockup and makes it eligible for rich results in search listings.
@@ -118,7 +121,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
                 productCount={productCount}
                 productId={product.id}
                 productTitle={product.title}
-                productImage={product.image_default}
+                productImage={toDirectImageUrl(product.image_default)}
                 downloadUrl={product.download_url}
               />
             </div>
