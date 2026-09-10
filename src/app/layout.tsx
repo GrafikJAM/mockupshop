@@ -42,6 +42,18 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
   },
+  icons: {
+    // Two SVG favicons, swapped automatically by the browser based on the
+    // user's OS/browser color scheme (not our site's own light/dark toggle,
+    // which the browser tab has no knowledge of) — a dark mark reads on a
+    // light tab bar, a light mark reads on a dark one. The first entry with
+    // no `media` is the fallback for browsers that ignore the media queries.
+    icon: [
+      { url: '/JAM-06.svg', type: 'image/svg+xml' },
+      { url: '/JAM-06.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: light)' },
+      { url: '/jam_white.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: dark)' },
+    ],
+  },
 }
 
 const organizationJsonLd = {
