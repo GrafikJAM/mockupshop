@@ -123,7 +123,7 @@ export default function TermsPage() {
 
             <div className={styles.contactBox}>
               <p className={styles.text}>Questions about these terms?</p>
-              <a href="mailto:hello@grafikjam.shop" className={styles.link}>hello@grafikjam.shop</a>
+                            <a href="mailto:jekabs@mucenieks.lv" className={styles.link}>jekabs@mucenieks.lv</a>
             </div>
           </div>
         </div>
