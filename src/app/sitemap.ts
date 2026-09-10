@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { supabase } from '@/lib/supabase'
+import { CATEGORIES } from '@/lib/categories'
 
 const SITE_URL = 'https://grafikjam.shop'
 
@@ -16,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const { data: products } = await supabase
     .from('products')
-    .select('id, created_at')
+    .select('id, created_at, tags')
     .eq('active', true)
 
   const productRoutes: MetadataRoute.Sitemap = (products || []).map(p => ({
@@ -26,5 +27,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  return [...staticRoutes, ...productRoutes]
+  // Only list category pages for tags that currently have at least one active
+  // product — matches generateStaticParams in mockups/[category]/page.tsx, so
+  // we never submit an empty landing page to Google.
+  const liveTags = new Set((products || []).flatMap(p => p.tags || []))
+  const categoryRoutes: MetadataRoute.Sitemap = CATEGORIES.filter(c => liveTags.has(c.tag)).map(c => ({
+    url: `${SITE_URL}/mockups/${c.slug}`,
+    changeFrequency: 'weekly',
+    priority: 0.85,
+  }))
+
+  return [...staticRoutes, ...categoryRoutes, ...productRoutes]
 }
