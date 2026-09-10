@@ -73,7 +73,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "Something's not working — how do I reach you?",
-    a: 'Email us at hello@grafikjam.shop and we\'ll get back to you as soon as we can.',
+    a: 'Email us at jekabs@mucenieks.lv and we\'ll get back to you as soon as we can.',
   },
 ]
 
@@ -88,7 +88,7 @@ export default function HelpPage() {
             <h1 className={`display-lg ${styles.title}`}>Frequently asked questions</h1>
             <p className={styles.intro}>
               Can't find what you need here? Email us at{' '}
-              <a href="mailto:hello@grafikjam.shop" className={styles.link}>hello@grafikjam.shop</a>.
+              <a href="mailto:jekabs@mucenieks.lv" className={styles.link}>jekabs@mucenieks.lv</a>.
             </p>
 
             <div>
