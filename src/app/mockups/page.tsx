@@ -1,8 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import ProductGrid from '@/components/ProductGrid'
+import { CATEGORIES } from '@/lib/categories'
 import styles from './page.module.css'
 
 // Each entry is a UI-facing filter. `matches` lists the underlying product tag
@@ -65,6 +67,22 @@ export default function MockupsPage() {
             })}
           </div>
           {loading ? <p className={styles.empty}>Loading...</p> : filtered.length > 0 ? <ProductGrid products={filtered} cols={4} /> : <p className={styles.empty}>No products in this category yet.</p>}
+
+          {!loading && (() => {
+            const liveTags = new Set(products.flatMap(p => (p.tags && p.tags.length > 0 ? p.tags : [p.category])))
+            const liveCategories = CATEGORIES.filter(c => liveTags.has(c.tag))
+            if (liveCategories.length === 0) return null
+            return (
+              <div className={styles.browseByCategory}>
+                <span className={styles.browseByCategoryLabel}>Or jump straight to a category:</span>
+                <div className={styles.browseByCategoryList}>
+                  {liveCategories.map(c => (
+                    <Link key={c.slug} href={`/mockups/${c.slug}`} className={styles.browseByCategoryLink}>{c.label}</Link>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
         </div>
       </main>
       <Footer />
