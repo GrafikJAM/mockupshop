@@ -6,3 +6,10 @@
 .filter:hover { color: var(--text-primary); border-color: var(--border-hover); }
 .filter.active { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
 .empty { font-size: 15px; color: var(--text-muted); padding: 80px 0; text-align: center; }
+
+
+.browseByCategory { margin-top: 72px; padding-top: 32px; border-top: 1px solid var(--border); }
+.browseByCategoryLabel { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+.browseByCategoryList { display: flex; flex-wrap: wrap; gap: 8px; }
+.browseByCategoryLink { font-size: 13px; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 100px; padding: 6px 16px; transition: all 0.15s; }
+.browseByCategoryLink:hover { color: var(--text-primary); border-color: var(--border-hover); }
