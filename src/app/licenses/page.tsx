@@ -72,7 +72,7 @@ export default function LicensesPage() {
 
             <div className={styles.contactBox}>
               <p className={styles.text}>Not sure which tier is right for you, or need a custom license (e.g. for a large agency)?</p>
-              <a href="mailto:hello@grafikjam.shop" className={styles.link}>Get in touch</a>
+                            <a href="mailto:jekabs@mucenieks.lv" className={styles.link}>Get in touch</a>
             </div>
           </div>
         </div>
