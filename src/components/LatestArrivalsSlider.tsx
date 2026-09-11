@@ -14,9 +14,10 @@ type Product = {
 const STEP_MS = 5000
 
 // Splits the newest products into pages of 3 (matching Best Sellers' 3-col
-// grid) and auto-advances between them every 5s, looping back to the start.
-// Pauses while the visitor's mouse is over it, and dots let them jump/control
-// it manually.
+// grid) and auto-advances between them every 5s by sliding the track
+// sideways, looping back to the start. Each page has a progress-bar segment
+// underneath (like Instagram/Stories) that fills over the 5s instead of a
+// plain dot. Pauses on hover, and a segment can be clicked to jump to it.
 export default function LatestArrivalsSlider({ products }: { products: Product[] }) {
   const chunks: Product[][] = []
   for (let i = 0; i < products.length; i += 3) chunks.push(products.slice(i, i + 3))
@@ -37,24 +38,42 @@ export default function LatestArrivalsSlider({ products }: { products: Product[]
 
   return (
     <div
-      className={styles.wrap}
+      className={`${styles.wrap} ${paused ? styles.paused : ''}`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div key={step} className={styles.fade}>
-        <ProductGrid products={chunks[step]} cols={3} />
+      <div className={styles.viewport}>
+        <div
+          className={styles.track}
+          style={{
+            width: `${chunks.length * 100}%`,
+            transform: `translateX(-${step * (100 / chunks.length)}%)`,
+          }}
+        >
+          {chunks.map((chunk, i) => (
+            <div key={i} className={styles.slide} style={{ width: `${100 / chunks.length}%` }}>
+              <ProductGrid products={chunk} cols={3} />
+            </div>
+          ))}
+        </div>
       </div>
 
       {chunks.length > 1 && (
-        <div className={styles.dots}>
+        <div className={styles.progress}>
           {chunks.map((_, i) => (
             <button
               key={i}
               type="button"
-              className={`${styles.dot} ${i === step ? styles.dotActive : ''}`}
+              className={styles.segment}
               onClick={() => setStep(i)}
               aria-label={`Show set ${i + 1} of ${chunks.length}`}
-            />
+            >
+              <span
+                className={`${styles.segmentFill} ${
+                  i < step ? styles.segmentFillDone : i === step ? styles.segmentFillActive : ''
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}
