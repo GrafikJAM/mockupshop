@@ -5,6 +5,7 @@ import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import Marquee from '@/components/Marquee'
 import ProductGrid from '@/components/ProductGrid'
+import LatestArrivalsSlider from '@/components/LatestArrivalsSlider'
 import PricingCard from '@/components/PricingCard'
 import GetAccessButton from '@/components/GetAccessButton'
 import styles from './page.module.css'
@@ -21,6 +22,16 @@ export default async function Home() {
 
   const all = products || []
   const latest = all.slice(0, 10)
+
+  // Best Sellers above is hand-curated via `sort_order`, so it doesn't
+  // reliably surface what was just uploaded. This is a separate, strictly
+  // chronological cut of the same active-products list, sorted by
+  // `created_at` (set automatically by Supabase the moment a product is
+  // inserted) so it always reflects what's actually newest.
+  const newestFirst = [...all].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  )
+  const latestArrivals = newestFirst.slice(0, 6)
 
   return (
     <>
@@ -44,6 +55,24 @@ export default async function Home() {
           </div>
         </section>
 
+
+        {latestArrivals.length > 0 && (
+          <section className={`${styles.section} section`}>
+            <div className="container">
+              <div className={styles.sectionHead}>
+                <p className="label">Just added</p>
+                <h2 className="display-lg">Latest mockups</h2>
+              </div>
+              <LatestArrivalsSlider products={latestArrivals} />
+              <div className={styles.viewAll}>
+                <Link href="/mockups" className="btn-ghost">
+                  View all mockups
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5h9M7.5 3l3 3.5-3 3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
 
         {latest.length > 0 && (
           <section className={`${styles.section} section`}>
