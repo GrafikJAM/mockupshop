@@ -54,7 +54,7 @@ export default function LatestArrivalsSlider({ products }: { products: Product[]
         >
           {chunks.map((chunk, i) => (
             <div key={i} className={styles.slide} style={{ width: `${100 / chunks.length}%` }}>
-              <ProductGrid products={chunk} cols={4} />
+                            <ProductGrid products={chunk} cols={4} uniform />
             </div>
           ))}
         </div>
