@@ -12,7 +12,7 @@ type Product = {
   price?: string
 }
 
-function Card({ product, uniform = false }: { product: Product; uniform?: boolean }) {
+function Card({ product }: { product: Product }) {
   const [hovered, setHovered] = useState(false)
   const src = hovered && product.image_hover ? product.image_hover : product.image_default
 
@@ -23,7 +23,7 @@ function Card({ product, uniform = false }: { product: Product; uniform?: boolea
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className={`${styles.imgWrap} ${uniform ? styles.uniformImgWrap : ''}`}>
+      <div className={styles.imgWrap}>
         <img
           src={toDirectImageUrl(product.image_default)}
           alt={product.title}
@@ -44,17 +44,10 @@ function Card({ product, uniform = false }: { product: Product; uniform?: boolea
   )
 }
 
-// `uniform` opts a grid into fixed-aspect-ratio, cropped (object-fit: cover)
-// cards laid out on a real CSS grid instead of the default masonry columns.
-// Used where mixed product-photo aspect ratios (landscape flat-lays next to
-// portrait studio shots) would otherwise make rows wildly uneven — e.g. the
-// homepage's "Just added" slider, where two pages sit side by side and any
-// height mismatch between them shows up as visible whitespace under the
-// shorter page. Default (masonry) behavior is unchanged everywhere else.
-export default function ProductGrid({ products, cols = 4, uniform = false }: { products: Product[]; cols?: number; uniform?: boolean }) {
+export default function ProductGrid({ products, cols = 4 }: { products: Product[]; cols?: number }) {
   return (
-    <div className={uniform ? styles.uniformGrid : styles.grid} style={{ '--cols': cols } as React.CSSProperties}>
-      {products.map(p => <Card key={p.id} product={p} uniform={uniform} />)}
+    <div className={styles.grid} style={{ '--cols': cols } as React.CSSProperties}>
+      {products.map(p => <Card key={p.id} product={p} />)}
     </div>
   )
 }
