@@ -31,7 +31,7 @@ export default async function Home() {
   const newestFirst = [...all].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   )
-  const latestArrivals = newestFirst.slice(0, 6)
+    const latestArrivals = newestFirst.slice(0, 8)
 
   return (
     <>
