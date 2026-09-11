@@ -1,63 +1,53 @@
-.grid {
-  column-count: var(--cols, 4);
-  column-gap: 24px;
-}
-@media (max-width: 1024px) { .grid { column-count: 3; } }
-@media (max-width: 640px) { .grid { column-count: 2; column-gap: 16px; } }
+'use client'
+import Link from 'next/link'
+import { useState } from 'react'
+import { toDirectImageUrl } from '@/lib/imageUrl'
+import styles from './ProductGrid.module.css'
 
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  cursor: pointer;
-  break-inside: avoid;
-  -webkit-column-break-inside: avoid;
-  margin-bottom: 24px;
-}
-@media (max-width: 640px) { .card { margin-bottom: 16px; } }
-
-.imgWrap {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  background: var(--bg-elevated);
-  border-radius: 4px;
+type Product = {
+  id: string
+  title: string
+  image_default: string
+  image_hover?: string
+  price?: string
 }
 
-.img {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: opacity 0.35s ease;
+function Card({ product }: { product: Product }) {
+  const [hovered, setHovered] = useState(false)
+  const src = hovered && product.image_hover ? product.image_hover : product.image_default
+
+  return (
+    <Link
+      href={`/product/${product.id}`}
+      className={styles.card}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className={styles.imgWrap}>
+        <img
+          src={toDirectImageUrl(product.image_default)}
+          alt={product.title}
+          className={`${styles.img} ${styles.imgDefault} ${hovered ? styles.hidden : ''}`}
+        />
+        {product.image_hover && (
+          <img
+            src={toDirectImageUrl(product.image_hover)}
+            alt={product.title}
+            className={`${styles.img} ${styles.imgHover} ${hovered ? styles.visible : ''}`}
+          />
+        )}
+      </div>
+      <div className={styles.meta}>
+        <span className={styles.title}>{product.title}</span>
+      </div>
+    </Link>
+  )
 }
 
-.imgDefault { opacity: 1; }
-.imgDefault.hidden { opacity: 0; }
-
-.imgHover {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 0.35s ease;
+export default function ProductGrid({ products, cols = 4 }: { products: Product[]; cols?: number }) {
+  return (
+    <div className={styles.grid} style={{ '--cols': cols } as React.CSSProperties}>
+      {products.map(p => <Card key={p.id} product={p} />)}
+    </div>
+  )
 }
-.imgHover.visible { opacity: 1; }
-
-.meta {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 0 2px;
-}
-
-.title {
-  font-size: 14px;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color 0.15s;
-}
-
-.card:hover .title { color: var(--text-primary); }
