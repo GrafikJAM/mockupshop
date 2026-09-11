@@ -27,3 +27,6 @@
   .founderRow { flex-direction: column; text-align: center; gap: 24px; }
   .founder { max-width: 100%; align-items: center; }
 }
+
+.sectionHeadRow { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 36px; flex-wrap: wrap; }
+.sectionHeadRow .sectionHead { margin-bottom: 0; }
