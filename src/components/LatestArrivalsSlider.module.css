@@ -1,14 +1,30 @@
 .wrap { position: relative; }
 
+.headRow {
+  display: grid;
+  grid-template-columns: 1fr 10% 1fr;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+.headText { display: flex; flex-direction: column; gap: 8px; }
+.viewAllLink { justify-self: end; white-space: nowrap; }
+
+@media (max-width: 640px) {
+  .headRow { grid-template-columns: 1fr; row-gap: 14px; }
+  .progress { justify-self: stretch; }
+  .viewAllLink { justify-self: start; }
+}
+
 .viewport { overflow: hidden; }
 .track {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 .slide { flex-shrink: 0; }
 
-.progress { display: flex; gap: 6px; margin-top: 28px; }
+.progress { justify-self: center; display: flex; gap: 6px; min-width: 60px; align-self: center; }
 .segment {
   flex: 1;
   height: 3px;
