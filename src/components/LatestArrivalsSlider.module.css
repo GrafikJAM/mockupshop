@@ -1,0 +1,21 @@
+.wrap { position: relative; }
+
+.fade { animation: fadeIn 0.4s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dots { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 28px; }
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: var(--border);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.dot:hover { background: var(--border-hover); }
+.dotActive { background: var(--text-primary); transform: scale(1.3); }
