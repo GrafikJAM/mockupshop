@@ -35,7 +35,7 @@
   border-radius: 4px;
 }
 
-.uniformImgWrap { aspect-ratio: 1 / 1; }
+.uniformImgWrap { aspect-ratio: 5 / 4; }
 .uniformImgWrap .img { height: 100%; object-fit: cover; }
 
 .img {
