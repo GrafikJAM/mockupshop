@@ -13,14 +13,16 @@ type Product = {
 
 const STEP_MS = 5000
 
-// Splits the newest products into pages of 3 (matching Best Sellers' 3-col
-// grid) and auto-advances between them every 5s by sliding the track
-// sideways, looping back to the start. Each page has a progress-bar segment
-// underneath (like Instagram/Stories) that fills over the 5s instead of a
-// plain dot. Pauses on hover, and a segment can be clicked to jump to it.
+// Splits the newest products into pages of 4 and auto-advances between them
+// every 5s by sliding the track sideways, looping back to the start. Each
+// page has a progress-bar segment underneath (like Instagram/Stories) that
+// fills over the 5s instead of a plain dot. Pauses on hover, and a segment
+// can be clicked to jump to it.
+const PAGE_SIZE = 4
+
 export default function LatestArrivalsSlider({ products }: { products: Product[] }) {
   const chunks: Product[][] = []
-  for (let i = 0; i < products.length; i += 3) chunks.push(products.slice(i, i + 3))
+  for (let i = 0; i < products.length; i += PAGE_SIZE) chunks.push(products.slice(i, i + PAGE_SIZE))
 
   const [step, setStep] = useState(0)
   const [paused, setPaused] = useState(false)
@@ -52,7 +54,7 @@ export default function LatestArrivalsSlider({ products }: { products: Product[]
         >
           {chunks.map((chunk, i) => (
             <div key={i} className={styles.slide} style={{ width: `${100 / chunks.length}%` }}>
-              <ProductGrid products={chunk} cols={3} />
+              <ProductGrid products={chunk} cols={4} />
             </div>
           ))}
         </div>
