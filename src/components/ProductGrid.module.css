@@ -5,6 +5,17 @@
 @media (max-width: 1024px) { .grid { column-count: 3; } }
 @media (max-width: 640px) { .grid { column-count: 2; column-gap: 16px; } }
 
+/* Fixed-aspect-ratio variant (see the `uniform` prop) — a real grid instead
+   of masonry columns, so every card in a row is exactly the same height. */
+.uniformGrid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 4), 1fr);
+  gap: 24px;
+}
+@media (max-width: 1024px) { .uniformGrid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px) { .uniformGrid { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+.uniformGrid .card { margin-bottom: 0; }
+
 .card {
   display: flex;
   flex-direction: column;
@@ -23,6 +34,9 @@
   background: var(--bg-elevated);
   border-radius: 4px;
 }
+
+.uniformImgWrap { aspect-ratio: 1 / 1; }
+.uniformImgWrap .img { height: 100%; object-fit: cover; }
 
 .img {
   width: 100%;
