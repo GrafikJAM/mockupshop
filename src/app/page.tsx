@@ -56,20 +56,20 @@ export default async function Home() {
         </section>
 
 
-        {latestArrivals.length > 0 && (
+               {latestArrivals.length > 0 && (
           <section className={`${styles.section} section`}>
             <div className="container">
-              <div className={styles.sectionHead}>
-                <p className="label">Just added</p>
-                <h2 className="display-lg">Latest mockups</h2>
-              </div>
-              <LatestArrivalsSlider products={latestArrivals} />
-              <div className={styles.viewAll}>
+              <div className={styles.sectionHeadRow}>
+                <div className={styles.sectionHead}>
+                  <p className="label">Just added</p>
+                  <h2 className="display-lg">Latest mockups</h2>
+                </div>
                 <Link href="/mockups" className="btn-ghost">
                   View all mockups
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5h9M7.5 3l3 3.5-3 3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </Link>
               </div>
+              <LatestArrivalsSlider products={latestArrivals} />
             </div>
           </section>
         )}
