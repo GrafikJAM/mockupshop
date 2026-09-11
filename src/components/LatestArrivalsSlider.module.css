@@ -1,21 +1,26 @@
 .wrap { position: relative; }
 
-.fade { animation: fadeIn 0.4s ease; }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+.viewport { overflow: hidden; }
+.track { display: flex; transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1); }
+.slide { flex-shrink: 0; }
 
-.dots { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 28px; }
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.progress { display: flex; gap: 6px; margin-top: 28px; }
+.segment {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
   border: none;
   padding: 0;
   background: var(--border);
+  overflow: hidden;
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
 }
-.dot:hover { background: var(--border-hover); }
-.dotActive { background: var(--text-primary); transform: scale(1.3); }
+.segmentFill { display: block; height: 100%; width: 0%; background: var(--text-primary); }
+.segmentFillDone { width: 100%; }
+.segmentFillActive { animation: segmentFill 5000ms linear forwards; }
+.wrap.paused .segmentFillActive { animation-play-state: paused; }
+
+@keyframes segmentFill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
