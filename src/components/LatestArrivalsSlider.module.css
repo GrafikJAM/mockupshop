@@ -1,7 +1,11 @@
 .wrap { position: relative; }
 
 .viewport { overflow: hidden; }
-.track { display: flex; transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1); }
+.track {
+  display: flex;
+  align-items: center;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
 .slide { flex-shrink: 0; }
 
 .progress { display: flex; gap: 6px; margin-top: 28px; }
