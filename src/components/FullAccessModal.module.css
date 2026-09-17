@@ -38,6 +38,17 @@
 
 .divider { height: 1px; background: var(--border); }
 
+.promoNotice {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: var(--accent-warm);
+  color: #0c0c0b;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: center;
+}
+
 .tiers { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
 
 .tier {
