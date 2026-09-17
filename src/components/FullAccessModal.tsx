@@ -3,12 +3,18 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useFullAccessModal } from '@/lib/fullAccessModal'
 import { LICENSE_TIERS, LICENSES_HREF } from '@/lib/config'
+import { BLACK_FRIDAY, isBlackFridayActive } from '@/lib/blackFriday'
 import BuyFullAccessButton from '@/components/BuyFullAccessButton'
 import styles from './FullAccessModal.module.css'
 
 export default function FullAccessModal() {
   const { isOpen, closeModal } = useFullAccessModal()
   const [count, setCount] = useState<number | null>(null)
+  const [bfActive, setBfActive] = useState(false)
+
+  useEffect(() => {
+    setBfActive(isBlackFridayActive())
+  }, [isOpen])
 
   useEffect(() => {
     if (!isOpen) return
@@ -58,6 +64,12 @@ export default function FullAccessModal() {
             <Link href={LICENSES_HREF} className={styles.rowLink} onClick={closeModal}>Unlimited — Read more</Link>
           </div>
           <div className={styles.divider} />
+
+          {bfActive && (
+            <div className={styles.promoNotice}>
+              🖤 Black Friday: {BLACK_FRIDAY.percentOff}% off applied automatically at checkout
+            </div>
+          )}
 
           <div className={styles.tiers}>
             {LICENSE_TIERS.map(tier => (
