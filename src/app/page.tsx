@@ -8,6 +8,7 @@ import ProductGrid from '@/components/ProductGrid'
 import LatestArrivalsSlider from '@/components/LatestArrivalsSlider'
 import PricingCard from '@/components/PricingCard'
 import GetAccessButton from '@/components/GetAccessButton'
+import BlackFridayBanner from '@/components/BlackFridayBanner'
 import styles from './page.module.css'
 
 export const revalidate = 60
@@ -37,6 +38,7 @@ export default async function Home() {
     <>
       <Nav />
       <main className={styles.main}>
+        <BlackFridayBanner />
 
         <section className={styles.hero}>
                     <h1 className={styles.heroDesc}>
