@@ -54,6 +54,12 @@ export const metadata: Metadata = {
       { url: '/jam_white.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: dark)' },
     ],
   },
+  other: {
+    // Pinterest "Claim your website" verification — renders as
+    // <meta name="p:domain_verify" content="..."/> in <head>. Unlocks pin
+    // analytics/attribution for grafikjam.shop once verified in Pinterest.
+    'p:domain_verify': 'f780c21812437c3eef09cd7780ccece2',
+  },
 }
 
 const organizationJsonLd = {
