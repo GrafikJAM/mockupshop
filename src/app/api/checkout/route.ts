@@ -83,6 +83,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid checkout mode' }, { status: 400 })
     }
 
+    const isFullAccess = body.mode === 'full-access'
+
+    // Promo codes (e.g. the Black Friday BLACKFRIDAY35 code) only ever apply
+    // to Full Access purchases, never single-mockup cart checkouts — see
+    // claude/content-and-black-friday-plan.md. If the client sent a
+    // promoCode (captured from a ?promo= link or the homepage banner — see
+    // src/lib/promo.ts) and it resolves to a real, currently-active Stripe
+    // promotion code, pre-apply it so the discount shows up on the Checkout
+    // page without the buyer having to type anything in. If it doesn't
+    // resolve (typo, expired, or none supplied), fall back to letting
+    // full-access buyers type a code in manually at checkout.
+    let discounts: { promotion_code: string }[] | undefined
+    if (isFullAccess && typeof body.promoCode === 'string' && body.promoCode.trim()) {
+      const cleanPromo = body.promoCode.trim().slice(0, 40).toUpperCase().replace(/[^A-Z0-9_-]/g, '')
+      if (cleanPromo) {
+        try {
+          const found = await getStripe().promotionCodes.list({ code: cleanPromo, active: true, limit: 1 })
+          if (found.data[0]) discounts = [{ promotion_code: found.data[0].id }]
+        } catch {
+          // Lookup failed (bad code, API hiccup) — fall through to manual entry below.
+        }
+      }
+    }
+
     const session = await getStripe().checkout.sessions.create({
       mode: 'payment',
       line_items,
@@ -111,10 +135,14 @@ export async function POST(req: NextRequest) {
           optional: true,
         },
       ],
-      // Lets a Stripe promotion code (e.g. a 100%-off test coupon) be entered
-      // on the Checkout page itself, so the full purchase flow — including
-      // the webhook that grants access — can be exercised for $0.
-      allow_promotion_codes: true,
+      // Either a pre-applied discount (promo code resolved above) or, for
+      // Full Access checkouts only, the option to type a promotion code in
+      // manually (e.g. a 100%-off test coupon, so the full purchase flow —
+      // including the webhook that grants access — can be exercised for
+      // $0). Single-mockup cart checkouts never accept a promo code, by
+      // design — Black Friday and any future codes are Full-Access-only.
+      // Stripe doesn't allow combining `discounts` with `allow_promotion_codes`.
+      ...(discounts ? { discounts } : { allow_promotion_codes: isFullAccess }),
       // Generates a real Stripe invoice for every order (even $0 ones from a
       // 100%-off promo code) so buyers can see/download it from their profile.
       invoice_creation: { enabled: true },
