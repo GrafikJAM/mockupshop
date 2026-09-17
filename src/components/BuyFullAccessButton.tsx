@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 import { getReferralCode } from '@/lib/referral'
+import { getPromoCode } from '@/lib/promo'
 
 type Props = {
   className?: string
@@ -30,7 +31,7 @@ export default function BuyFullAccessButton({ className, children, onClick, tier
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
-        body: JSON.stringify({ mode: 'full-access', tierKey, referralCode: getReferralCode() }),
+        body: JSON.stringify({ mode: 'full-access', tierKey, referralCode: getReferralCode(), promoCode: getPromoCode() }),
       })
       const data = await res.json()
       if (data.url) { window.location.href = data.url; return }
