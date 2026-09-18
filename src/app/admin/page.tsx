@@ -94,7 +94,12 @@ export default function AdminPage() {
 
   async function deleteProduct(id: string) {
     if (!confirm('Remove this product?')) return
-    await fetch(`/api/products/${id}`, { method: 'DELETE', headers: { 'x-admin-password': password } })
+    const res = await fetch(`/api/products/${id}`, { method: 'DELETE', headers: { 'x-admin-password': password } })
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({ error: 'Delete failed' }))
+      setMsg('Error: ' + (e.error || 'Delete failed'))
+      return
+    }
     loadProducts()
   }
 
@@ -181,6 +186,8 @@ export default function AdminPage() {
         <button className={`${styles.tab} ${tab === 'manage' ? styles.tabActive : ''}`} onClick={() => setTab('manage')}>Manage ({products.length})</button>
       </div>
 
+      {msg && <p className={msg.startsWith('Error') ? styles.error : styles.success}>{msg}</p>}
+
       {tab === 'add' && (
         <div className={styles.form}>
           <div className={styles.formGrid}>
@@ -240,7 +247,6 @@ export default function AdminPage() {
               </label>
             </div>
           </div>
-          {msg && <p className={msg.startsWith('Error') ? styles.error : styles.success}>{msg}</p>}
           <div className={styles.formActions}>
             {editId && <button className={styles.btnGhost} onClick={() => { setEditId(null); setForm(empty); setMsg('') }}>Cancel</button>}
             <button className={styles.btnPrimary} onClick={save} disabled={saving || !form.title || !form.image_default || !form.download_url}>
@@ -275,22 +281,3 @@ export default function AdminPage() {
                 title="Drag to reorder"
                 onMouseDown={() => { handleActive.current = true }}
                 onMouseUp={() => { handleActive.current = false }}
-              >⠿</span>
-              <img src={toDirectImageUrl(p.image_default)} className={styles.thumb} alt={p.title} />
-              <div className={styles.productInfo}>
-                <div className={styles.productTitle}>{p.title} {p.price && <span style={{color:'#555450'}}>· {p.price}</span>}</div>
-                <div className={styles.productMeta}>
-                  {(p.tags || [p.category]).join(', ')} · {new Date(p.created_at).toLocaleDateString()}
-                </div>
-              </div>
-              <div className={styles.productActions}>
-                <button className={styles.btnEdit} onClick={() => editProduct(p)}>Edit</button>
-                <button className={styles.btnDelete} onClick={() => deleteProduct(p.id)}>Remove</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
