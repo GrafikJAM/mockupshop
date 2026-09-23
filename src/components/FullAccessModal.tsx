@@ -5,6 +5,7 @@ import { useFullAccessModal } from '@/lib/fullAccessModal'
 import { LICENSE_TIERS, LICENSES_HREF } from '@/lib/config'
 import { BLACK_FRIDAY, isBlackFridayActive } from '@/lib/blackFriday'
 import BuyFullAccessButton from '@/components/BuyFullAccessButton'
+import PriceSticker from '@/components/PriceSticker'
 import styles from './FullAccessModal.module.css'
 
 export default function FullAccessModal() {
@@ -38,7 +39,13 @@ export default function FullAccessModal() {
 
   return (
     <div className={styles.overlay} onClick={closeModal}>
-      <div className={styles.panel} onClick={e => e.stopPropagation()}>
+      <div className={styles.panelWrap}>
+        <PriceSticker
+          amount={`$${LICENSE_TIERS[0].fullAccessPrice}`}
+          size={100}
+          className={styles.sticker}
+        />
+        <div className={styles.panel} onClick={e => e.stopPropagation()}>
         <div className={styles.header}>
           <h2 className={styles.title}>Full Access</h2>
           <button className={styles.close} onClick={closeModal} aria-label="Close">
@@ -84,6 +91,7 @@ export default function FullAccessModal() {
               </div>
             ))}
           </div>
+        </div>
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import ProductGrid from '@/components/ProductGrid'
+import StarburstBadge from '@/components/StarburstBadge'
 import { CATEGORIES } from '@/lib/categories'
 import styles from './page.module.css'
 
@@ -54,6 +55,14 @@ export default function MockupsPage() {
           <div className={styles.header}>
             <h1 className="display-lg">Mockups</h1>
             <span className={styles.count}>{filtered.length} files</span>
+            {!loading && products.length > 0 && (
+              <StarburstBadge
+                text={`${products.length}+`}
+                size={84}
+                rotate={-8}
+                className={styles.headerBadge}
+              />
+            )}
           </div>
           <div className={styles.filters}>
             <button className={`${styles.filter} ${activeTag === 'All' ? styles.active : ''}`} onClick={() => setActiveTag('All')}>All</button>
