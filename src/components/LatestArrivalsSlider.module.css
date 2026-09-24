@@ -16,7 +16,20 @@
   .viewAllLink { justify-self: start; }
 }
 
-.viewport { position: relative; overflow: hidden; padding: 0 64px; }
+/* Full-bleed: breaks out of the page's centered .container (however deeply
+   nested) to span the actual browser width, independent of the container's
+   max-width/padding. Safe against a scrollbar-induced horizontal overflow
+   because body already sets overflow-x: hidden globally. */
+.viewport {
+  position: relative;
+  overflow: hidden;
+  padding: 0 64px;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
 @media (max-width: 640px) { .viewport { padding: 0 40px; } }
 
 .track {
@@ -26,8 +39,13 @@
 }
 
 /* Only the active page is full-strength — its neighbors (peeking into the
-   viewport's side padding, above) sit dimmed until they become active. */
-.slide { flex-shrink: 0; opacity: 0.32; transition: opacity 0.4s ease; }
+   viewport's side padding, above) sit dimmed until they become active.
+   Horizontal padding here (box-sizing: border-box, so it doesn't affect the
+   width math driving the translateX steps) reproduces ProductGrid's own
+   24px/16px inter-card gap at the seam between adjacent chunks, which
+   otherwise sat flush with no spacing. */
+.slide { flex-shrink: 0; opacity: 0.32; transition: opacity 0.4s ease; box-sizing: border-box; padding: 0 12px; }
+@media (max-width: 640px) { .slide { padding: 0 8px; } }
 .slideActive { opacity: 1; }
 
 .arrow {
