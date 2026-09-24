@@ -1,7 +1,19 @@
 'use client'
 import { useState, useRef } from 'react'
 import { toDirectImageUrl } from '@/lib/imageUrl'
+import FileDropField from './FileDropField'
 import styles from './page.module.css'
+
+type Order = {
+  sessionId: string
+  type: string
+  email: string
+  items: string[]
+  amountTotal: number | null
+  currency: string | null
+  referralCode: string | null
+  createdAt: string
+}
 
 type Product = {
   id: string
@@ -40,11 +52,13 @@ export default function AdminPage() {
   const [authed, setAuthed] = useState(false)
   const [authError, setAuthError] = useState(false)
   const [products, setProducts] = useState<Product[]>([])
+  const [orders, setOrders] = useState<Order[]>([])
+  const [ordersLoaded, setOrdersLoaded] = useState(false)
   const [form, setForm] = useState(empty)
   const [editId, setEditId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
-  const [tab, setTab] = useState<'add' | 'manage'>('add')
+  const [tab, setTab] = useState<'add' | 'manage' | 'orders'>('add')
   const [reordering, setReordering] = useState(false)
   const dragIndex = useRef<number | null>(null)
   const handleActive = useRef(false)
@@ -64,6 +78,25 @@ export default function AdminPage() {
     const res = await fetch('/api/products')
     const data = await res.json()
     setProducts(Array.isArray(data) ? data : [])
+  }
+
+  async function loadOrders() {
+    const res = await fetch('/api/admin/orders', { headers: { 'x-admin-password': password } })
+    if (res.ok) {
+      const data = await res.json()
+      setOrders(Array.isArray(data) ? data : [])
+    }
+    setOrdersLoaded(true)
+  }
+
+  function openOrdersTab() {
+    setTab('orders')
+    if (!ordersLoaded) loadOrders()
+  }
+
+  function formatAmount(amountTotal: number | null, currency: string | null) {
+    if (amountTotal === null || !currency) return '—'
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency.toUpperCase() }).format(amountTotal / 100)
   }
 
   function toggleTag(tag: string) {
@@ -94,13 +127,18 @@ export default function AdminPage() {
 
   async function deleteProduct(id: string) {
     if (!confirm('Remove this product?')) return
+    setMsg('')
     const res = await fetch(`/api/products/${id}`, { method: 'DELETE', headers: { 'x-admin-password': password } })
-    if (!res.ok) {
-      const e = await res.json().catch(() => ({ error: 'Delete failed' }))
-      setMsg('Error: ' + (e.error || 'Delete failed'))
-      return
+    if (res.ok) {
+      loadProducts()
+    } else {
+      // Most likely cause: the password in this session is stale (e.g. it
+      // was rotated in Vercel after you logged in here) and the request
+      // came back 401. Surface it instead of silently doing nothing —
+      // refresh this page and log in again with the current password.
+      const e = await res.json().catch(() => ({ error: `Delete failed (${res.status})` }))
+      setMsg('Error: ' + (e.error || `Delete failed (${res.status})`) + ' — try refreshing and logging in again.')
     }
-    loadProducts()
   }
 
   function editProduct(p: Product) {
@@ -184,6 +222,7 @@ export default function AdminPage() {
       <div className={styles.tabs}>
         <button className={`${styles.tab} ${tab === 'add' ? styles.tabActive : ''}`} onClick={() => { setTab('add'); setEditId(null); setForm(empty) }}>{editId ? 'Edit product' : '+ Add product'}</button>
         <button className={`${styles.tab} ${tab === 'manage' ? styles.tabActive : ''}`} onClick={() => setTab('manage')}>Manage ({products.length})</button>
+        <button className={`${styles.tab} ${tab === 'orders' ? styles.tabActive : ''}`} onClick={openOrdersTab}>Orders{ordersLoaded ? ` (${orders.length})` : ''}</button>
       </div>
 
       {msg && <p className={msg.startsWith('Error') ? styles.error : styles.success}>{msg}</p>}
@@ -216,24 +255,57 @@ export default function AdminPage() {
               <textarea className={`${styles.input} ${styles.textarea}`} placeholder="What's included, specs, etc." value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
             </div>
             <div className={`${styles.field} ${styles.fullWidth}`}>
-              <label className={styles.label}>Download link *</label>
-              <input className={styles.input} placeholder="https://your-download-link.com" value={form.download_url} onChange={e => setForm({ ...form, download_url: e.target.value })} />
+              <FileDropField
+                label="Download link"
+                required
+                value={form.download_url}
+                onChange={url => setForm({ ...form, download_url: url })}
+                password={password}
+                folder="downloads"
+                accept=".zip"
+                placeholder="https://your-download-link.com"
+              />
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Default image URL *</label>
-              <input className={styles.input} placeholder="https://..." value={form.image_default} onChange={e => setForm({ ...form, image_default: e.target.value })} />
-              {form.image_default && <img src={toDirectImageUrl(form.image_default)} className={styles.preview} alt="preview" />}
+              <FileDropField
+                label="Default image"
+                required
+                value={form.image_default}
+                onChange={url => setForm({ ...form, image_default: url })}
+                password={password}
+                folder="images"
+                accept="image/*"
+                placeholder="https://..."
+                preview
+              />
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Hover image URL</label>
-              <input className={styles.input} placeholder="https://..." value={form.image_hover} onChange={e => setForm({ ...form, image_hover: e.target.value })} />
-              {form.image_hover && <img src={toDirectImageUrl(form.image_hover)} className={styles.preview} alt="hover" />}
+              <FileDropField
+                label="Hover image"
+                value={form.image_hover}
+                onChange={url => setForm({ ...form, image_hover: url })}
+                password={password}
+                folder="images"
+                accept="image/*"
+                placeholder="https://..."
+                preview
+              />
             </div>
             <div className={`${styles.field} ${styles.fullWidth}`}>
-              <label className={styles.label}>Extra images (up to 3 URLs)</label>
+              <p className={styles.label}>Extra images (up to 3 files)</p>
               {form.images_extra.map((url, i) => (
-                <input key={i} className={`${styles.input} ${styles.extraInput}`} placeholder={`Extra image ${i + 1}`} value={url}
-                  onChange={e => { const n = [...form.images_extra]; n[i] = e.target.value; setForm({ ...form, images_extra: n }) }} />
+                <div key={i} className={styles.extraField}>
+                  <FileDropField
+                    label={`Extra image ${i + 1}`}
+                    value={url}
+                    onChange={newUrl => { const n = [...form.images_extra]; n[i] = newUrl; setForm({ ...form, images_extra: n }) }}
+                    password={password}
+                    folder="images"
+                    accept="image/*"
+                    placeholder={`Extra image ${i + 1}`}
+                    preview
+                  />
+                </div>
               ))}
             </div>
             <div className={`${styles.field} ${styles.fullWidth}`}>
@@ -293,6 +365,31 @@ export default function AdminPage() {
                 <button className={styles.btnEdit} onClick={() => editProduct(p)}>Edit</button>
                 <button className={styles.btnDelete} onClick={() => deleteProduct(p.id)}>Remove</button>
               </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === 'orders' && (
+        <div className={styles.orderList}>
+          <div className={styles.orderListHead}>
+            <p className={styles.dragHint}>Most recent 500 orders, newest first.</p>
+            <button className={styles.btnGhost} onClick={loadOrders}>Refresh</button>
+          </div>
+          {!ordersLoaded && <p className={styles.empty}>Loading…</p>}
+          {ordersLoaded && orders.length === 0 && <p className={styles.empty}>No orders yet.</p>}
+          {orders.map(o => (
+            <div key={o.sessionId} className={styles.orderRow}>
+              <div className={styles.orderMain}>
+                <div className={styles.orderTitle}>
+                  {o.items.join(', ')}
+                </div>
+                <div className={styles.productMeta}>
+                  {o.email} · {new Date(o.createdAt).toLocaleString()}
+                  {o.referralCode && <> · ref: {o.referralCode}</>}
+                </div>
+              </div>
+              <div className={styles.orderAmount}>{formatAmount(o.amountTotal, o.currency)}</div>
             </div>
           ))}
         </div>

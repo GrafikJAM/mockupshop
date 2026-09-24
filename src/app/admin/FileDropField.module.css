@@ -1,0 +1,23 @@
+.field { display: flex; flex-direction: column; gap: 8px; }
+.label { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #555450; font-family: system-ui, sans-serif; }
+.input { background: #141413; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #f0ede8; outline: none; transition: border-color 0.15s; width: 100%; font-family: system-ui, sans-serif; }
+.input:focus { border-color: rgba(255,255,255,0.15); }
+
+.drop {
+  border: 1px dashed rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+  font-size: 12px;
+  color: #8a8880;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  font-family: system-ui, sans-serif;
+}
+.drop:hover { border-color: rgba(255,255,255,0.3); color: #f0ede8; }
+.dropActive { border-color: #f0ede8; background: #1a1a18; color: #f0ede8; }
+.dropBusy { pointer-events: none; opacity: 0.6; }
+.hiddenInput { display: none; }
+
+.error { font-size: 12px; color: #c0392b; }
+.preview { width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.07); margin-top: 4px; }
