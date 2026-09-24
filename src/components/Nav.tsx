@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useTheme } from '@/lib/theme'
@@ -9,12 +9,24 @@ import { useFullAccessModal } from '@/lib/fullAccessModal'
 import { SITE } from '@/lib/config'
 import styles from './Nav.module.css'
 
+const LOGO_FADE_SCROLL_PX = 100
+
 export default function Nav() {
   const { theme, toggle } = useTheme()
   const { items, toggleCart } = useCart()
   const { user, loading } = useAuth()
   const { openModal } = useFullAccessModal()
   const [menuOpen, setMenuOpen] = useState(false)
+  // Fades the centered logo out once the page has scrolled past
+  // LOGO_FADE_SCROLL_PX, rather than having it float over page content.
+  const [logoHidden, setLogoHidden] = useState(false)
+
+  useEffect(() => {
+    function onScroll() { setLogoHidden(window.scrollY > LOGO_FADE_SCROLL_PX) }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
     <nav className={styles.nav}>
@@ -24,7 +36,7 @@ export default function Nav() {
             <Link key={item.href} href={item.href} className={styles.link}>{item.label}</Link>
           ))}
         </div>
-        <Link href="/" className={styles.logo}>
+        <Link href="/" className={`${styles.logo} ${logoHidden ? styles.logoHidden : ''}`}>
           <Image src={theme === 'dark' ? '/jam_white.svg' : '/JAM-06.svg'} alt={SITE.name} width={64} height={38} priority />
         </Link>
         <div className={styles.right}>
