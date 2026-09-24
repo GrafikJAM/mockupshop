@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getStripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
-import { sendOrderNotificationEmail, sendGuestDownloadEmail } from '@/lib/email'
+import { sendOrderNotificationEmail, sendGuestDownloadEmail, sendCartConfirmationEmail, sendFullAccessConfirmationEmail } from '@/lib/email'
 import { LICENSE_TIERS } from '@/lib/config'
 
 export async function POST(req: NextRequest) {
@@ -70,6 +70,14 @@ async function recordOrder(session: Stripe.Checkout.Session) {
       currency: session.currency,
       referralCode,
     })
+
+    // Buyer-facing confirmation — separate from the admin notification
+    // above. Full Access always requires an account (checked at the top
+    // of this function), so buyerEmail here is always the real signed-in
+    // user's email, never a guest/unknown one.
+    if (buyerEmail && buyerEmail !== 'Unknown') {
+      await sendFullAccessConfirmationEmail({ buyerEmail, tierLabel: label || null })
+    }
     return
   }
 
@@ -109,17 +117,23 @@ async function recordOrder(session: Stripe.Checkout.Session) {
         referralCode,
       })
 
-      // Guest checkout (no account) — this email is the only place the
-      // buyer will ever see these download links, since there's no
-      // /account page for them to revisit. Skip if the email lookup above
-      // somehow came up empty rather than send to a bad address.
-      if (!userId && buyerEmail && buyerEmail !== 'Unknown') {
+      // Buyer-facing confirmation with download links — sent either way,
+      // guest or signed-in. Guests get the "this is the only place you'll
+      // find these" version since there's no account for them to revisit;
+      // signed-in buyers get the version that points back to /profile
+      // instead. Skip if the email lookup above somehow came up empty
+      // rather than send to a bad address.
+      if (buyerEmail && buyerEmail !== 'Unknown') {
         const productById = new Map(productRows.map(p => [p.id, p]))
         const downloadItems = productIds
           .map(id => productById.get(id))
           .filter((p): p is { id: string; title: string; download_url: string } => !!p?.download_url)
           .map(p => ({ title: p.title, downloadUrl: p.download_url }))
-        await sendGuestDownloadEmail({ buyerEmail, items: downloadItems })
+        if (!userId) {
+          await sendGuestDownloadEmail({ buyerEmail, items: downloadItems })
+        } else {
+          await sendCartConfirmationEmail({ buyerEmail, items: downloadItems })
+        }
       }
     }
   }

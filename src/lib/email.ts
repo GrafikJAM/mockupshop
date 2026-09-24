@@ -1,6 +1,8 @@
 import { Resend } from 'resend'
 import { SITE } from './config'
 
+const SITE_URL = 'https://grafikjam.shop'
+
 let _resend: Resend | null = null
 
 // Lazily instantiated for the same reason as getStripe() in ./stripe.ts —
@@ -111,6 +113,82 @@ export async function sendGuestDownloadEmail(params: {
     })
   } catch (err) {
     console.error('Guest download email failed:', err)
+  }
+}
+
+// Sent to the buyer right after a *signed-in* cart purchase — same
+// download links as the guest email above, but they're also always
+// reachable again from /profile since there's an account for them to live
+// in, so the copy doesn't carry the guest email's "this is the only place
+// you'll find them" warning.
+export async function sendCartConfirmationEmail(params: {
+  buyerEmail: string
+  items: { title: string; downloadUrl: string }[]
+}) {
+  if (!params.items.length) return
+
+  const linesText = params.items.map(i => `${i.title}\n${i.downloadUrl}`).join('\n\n')
+  const linesHtml = params.items
+    .map(i => `<p style="margin:0 0 16px;"><strong>${escapeHtml(i.title)}</strong><br/><a href="${i.downloadUrl}">${i.downloadUrl}</a></p>`)
+    .join('')
+
+  try {
+    await getResend().emails.send({
+      from: process.env.ORDER_NOTIFICATION_FROM || 'GrafikJAM Orders <onboarding@resend.dev>',
+      to: params.buyerEmail,
+      subject: `Your ${SITE.name} download${params.items.length > 1 ? 's' : ''}`,
+      text: [
+        `Thanks for your purchase from ${SITE.name}!`,
+        '',
+        `Here${params.items.length > 1 ? ' are your download links' : "'s your download link"}:`,
+        '',
+        linesText,
+        '',
+        `You can always come back for these later from your profile: ${SITE_URL}/profile`,
+      ].join('\n'),
+      html: [
+        `<p>Thanks for your purchase from ${escapeHtml(SITE.name)}!</p>`,
+        `<p>Here${params.items.length > 1 ? ' are your download links' : "'s your download link"}:</p>`,
+        linesHtml,
+        `<p style="color:#666;font-size:13px;">You can always come back for these later from <a href="${SITE_URL}/profile">your profile</a>.</p>`,
+      ].join(''),
+    })
+  } catch (err) {
+    console.error('Cart confirmation email failed:', err)
+  }
+}
+
+// Sent to the buyer right after a Full Access purchase. Full Access always
+// requires an account (see checkout/route.ts — there's no guest path for
+// it), so unlike the two functions above this never carries direct
+// download links: access is granted account-wide rather than per file, so
+// it just confirms the purchase and points back to the catalog.
+export async function sendFullAccessConfirmationEmail(params: {
+  buyerEmail: string
+  tierLabel: string | null
+}) {
+  const label = params.tierLabel ? ` — ${params.tierLabel}` : ''
+
+  try {
+    await getResend().emails.send({
+      from: process.env.ORDER_NOTIFICATION_FROM || 'GrafikJAM Orders <onboarding@resend.dev>',
+      to: params.buyerEmail,
+      subject: `You're in — Full Access to ${SITE.name}`,
+      text: [
+        `Thanks for grabbing Full Access${label} on ${SITE.name}!`,
+        '',
+        "You now have lifetime access to every mockup in the library — including everything added after today, no extra charge.",
+        '',
+        `Browse and download anything, any time: ${SITE_URL}/mockups`,
+      ].join('\n'),
+      html: [
+        `<p>Thanks for grabbing Full Access${escapeHtml(label)} on ${escapeHtml(SITE.name)}!</p>`,
+        `<p>You now have lifetime access to every mockup in the library — including everything added after today, no extra charge.</p>`,
+        `<p><a href="${SITE_URL}/mockups">Browse and download anything, any time →</a></p>`,
+      ].join(''),
+    })
+  } catch (err) {
+    console.error('Full Access confirmation email failed:', err)
   }
 }
 
