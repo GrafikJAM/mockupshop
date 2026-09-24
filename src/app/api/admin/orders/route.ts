@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { getStripe } from '@/lib/stripe'
+import { sendOrderNotificationEmail } from '@/lib/email'
 import { LICENSE_TIERS } from '@/lib/config'
 
 // Same staleness concern as account/purchases and account/invoices — force
@@ -19,16 +20,26 @@ type OrderRow = {
   created_at: string
 }
 
+type GroupedOrder = {
+  sessionId: string
+  type: string
+  email: string
+  guest: boolean
+  items: string[]
+  amountTotal: number | null
+  currency: string | null
+  referralCode: string | null
+  createdAt: string
+}
+
 function tierLabel(tierKey: string | null) {
   return LICENSE_TIERS.find(t => t.key === tierKey)?.label || null
 }
 
-export async function GET(req: NextRequest) {
-  const adminPassword = req.headers.get('x-admin-password')
-  if (adminPassword !== process.env.ADMIN_PASSWORD) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
+// Shared by GET (admin order list) and POST (one-time notification
+// backfill below) — both need the same "one order per Stripe session,
+// with buyer email/amount resolved" view of the orders table.
+async function fetchGroupedOrders(): Promise<GroupedOrder[]> {
   // High enough that "All time" earnings stay accurate for a good while —
   // the admin UI sums straight off this list, so silently truncating it
   // would silently under-report real revenue rather than just trimming
@@ -39,7 +50,7 @@ export async function GET(req: NextRequest) {
     .order('created_at', { ascending: false })
     .limit(5000)
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) throw new Error(error.message)
   const rows = (data || []) as OrderRow[]
 
   // A single Stripe Checkout Session can insert several `orders` rows (a
@@ -130,9 +141,61 @@ export async function GET(req: NextRequest) {
     createdAt: o.created_at,
   }))
 
-  const result = [...grouped, ...orphaned].sort(
+  return [...grouped, ...orphaned].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   )
+}
 
-  return NextResponse.json(result)
+export async function GET(req: NextRequest) {
+  const adminPassword = req.headers.get('x-admin-password')
+  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  try {
+    const result = await fetchGroupedOrders()
+    return NextResponse.json(result)
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message || 'Failed to load orders' }, { status: 500 })
+  }
+}
+
+// One-time utility: sends the admin order-notification email for every
+// existing order, for the stretch of time RESEND_API_KEY/
+// ORDER_NOTIFICATION_EMAIL were missing in Production so nothing ever
+// actually went out (see the "wtf, didn't get my order email" thread —
+// those vars had been filled into the Vercel dialog but never saved).
+// Safe to call more than once in the sense that it won't corrupt any
+// data, but it WILL re-send duplicate backfill emails for every order
+// each time it's hit — this is meant to be run once, by hand, not wired
+// into any UI button.
+export async function POST(req: NextRequest) {
+  const adminPassword = req.headers.get('x-admin-password')
+  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  let orders: GroupedOrder[]
+  try {
+    orders = await fetchGroupedOrders()
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message || 'Failed to load orders' }, { status: 500 })
+  }
+
+  let sent = 0
+  let skipped = 0
+  for (const o of orders) {
+    if (!o.email || o.email === 'Unknown') { skipped++; continue }
+    await sendOrderNotificationEmail({
+      buyerEmail: o.email,
+      items: o.items,
+      amountTotal: o.amountTotal,
+      currency: o.currency,
+      referralCode: o.referralCode,
+      backfill: { placedAt: o.createdAt },
+    })
+    sent++
+  }
+
+  return NextResponse.json({ total: orders.length, sent, skipped })
 }

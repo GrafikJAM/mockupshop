@@ -33,6 +33,12 @@ export async function sendOrderNotificationEmail(params: {
   amountTotal: number | null
   currency: string | null
   referralCode?: string | null
+  // Set by the one-time admin backfill (see admin/orders/backfill-emails)
+  // for orders that were placed before RESEND_API_KEY/ORDER_NOTIFICATION_EMAIL
+  // were actually configured, so the notification never went out at the
+  // time. Adds a note + the real order date so it doesn't read as a fresh
+  // order landing right now.
+  backfill?: { placedAt: string }
 }) {
   const to = process.env.ORDER_NOTIFICATION_EMAIL
   if (!to) return // Not configured — silently skip rather than error the webhook.
@@ -44,9 +50,11 @@ export async function sendOrderNotificationEmail(params: {
     await getResend().emails.send({
       from: process.env.ORDER_NOTIFICATION_FROM || 'GrafikJAM Orders <onboarding@resend.dev>',
       to,
-      subject: `New order${amount ? ` — ${amount}` : ''} on ${SITE.name}`,
+      subject: `${params.backfill ? '[Backfill] ' : ''}New order${amount ? ` — ${amount}` : ''} on ${SITE.name}`,
       text: [
-        `New order on ${SITE.name}.`,
+        params.backfill
+          ? `Backfilled notification for an order placed on ${new Date(params.backfill.placedAt).toLocaleString()} — email notifications weren't configured yet at the time, so this didn't go out until now.`
+          : `New order on ${SITE.name}.`,
         '',
         `Buyer: ${params.buyerEmail}`,
         amount ? `Amount: ${amount}` : null,
