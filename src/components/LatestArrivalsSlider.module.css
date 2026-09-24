@@ -95,12 +95,12 @@
   transition: opacity 0.15s, transform 0.15s;
 }
 .arrow:hover { opacity: 0.85; }
-.arrowPrev { left: 8px; }
-.arrowNext { right: 8px; }
+.arrowPrev { left: 40px; }
+.arrowNext { right: 40px; }
 @media (max-width: 640px) {
   .arrow { width: 32px; height: 32px; }
-  .arrowPrev { left: 2px; }
-  .arrowNext { right: 2px; }
+  .arrowPrev { left: 16px; }
+  .arrowNext { right: 16px; }
 }
 
 .progress { justify-self: center; display: flex; gap: 6px; min-width: 60px; align-self: center; }
