@@ -22,7 +22,7 @@
 .founder { max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
 .founderBio { display: flex; flex-direction: column; gap: 12px; }
 .founderBio p { font-size: 15px; color: var(--text-secondary); line-height: 1.8; }
-.sig { font-family: var(--font-display); font-style: italic; font-size: 1.15rem; color: var(--accent-warm); margin-top: 8px; }
+.sig { font-family: var(--font-display); font-style: italic; font-size: 1.15rem; color: var(--accent-red); margin-top: 8px; }
 @media (max-width: 768px) {
   .founderRow { flex-direction: column; text-align: center; gap: 24px; }
   .founder { max-width: 100%; align-items: center; }

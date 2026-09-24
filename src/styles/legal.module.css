@@ -12,7 +12,7 @@
 .list { font-size: 14.5px; color: var(--text-secondary); line-height: 1.75; margin-top: 10px; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
 .list li::marker { color: var(--text-muted); }
 .link { color: var(--text-primary); text-decoration: underline; text-underline-offset: 2px; }
-.link:hover { color: var(--accent-warm); }
+.link:hover { color: var(--accent-red); }
 
 .tierGrid { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
 .tierCard { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }

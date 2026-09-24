@@ -1,10 +1,12 @@
 import { PRICING } from '@/lib/config'
 import GetAccessButton from '@/components/GetAccessButton'
+import PriceSticker from '@/components/PriceSticker'
 import styles from './PricingCard.module.css'
 
 export default function PricingCard() {
   return (
     <div className={styles.card}>
+      <PriceSticker amount={PRICING.amount} size={112} className={styles.sticker} />
       <div className={styles.badge}>{PRICING.badge}</div>
       <div className={styles.headline}>{PRICING.headline}</div>
       <div className={styles.sub}>{PRICING.subline}</div>

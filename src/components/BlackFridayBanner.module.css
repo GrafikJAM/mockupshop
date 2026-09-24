@@ -6,8 +6,8 @@
   flex-wrap: wrap;
   text-align: center;
   padding: 14px 24px;
-  background: var(--accent-warm);
-  color: #0c0c0b;
+  background: var(--accent-yellow);
+  color: var(--accent-red);
 }
 
 .text { display: flex; flex-direction: column; gap: 2px; }

@@ -58,8 +58,8 @@
   margin-top: 16px;
   padding: 10px 14px;
   border-radius: var(--radius);
-  background: var(--accent-warm);
-  color: #0c0c0b;
+  background: var(--accent-yellow);
+  color: var(--accent-red);
   font-size: 12.5px;
   font-weight: 600;
   text-align: center;
@@ -98,7 +98,7 @@
   border-radius: 100px;
   transition: border-color 0.15s, background 0.15s, transform 0.15s;
 }
-.tierBtn:hover { border-color: var(--border-hover); background: var(--accent-warm); color: #0c0c0b; transform: translateY(-1px); }
+.tierBtn:hover { border-color: var(--accent-red); background: var(--accent-yellow); color: var(--accent-red); transform: translateY(-1px); }
 .tierBtnDash { opacity: 0.6; }
 
 @media (max-width: 480px) {
