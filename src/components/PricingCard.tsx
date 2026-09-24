@@ -1,18 +1,17 @@
 import { PRICING } from '@/lib/config'
 import GetAccessButton from '@/components/GetAccessButton'
-import PriceSticker from '@/components/PriceSticker'
+import StarburstBadge from '@/components/StarburstBadge'
 import styles from './PricingCard.module.css'
 
 export default function PricingCard() {
   return (
     <div className={styles.card}>
-      <PriceSticker amount={PRICING.amount} size={112} className={styles.sticker} />
       <div className={styles.badge}>{PRICING.badge}</div>
       <div className={styles.headline}>{PRICING.headline}</div>
       <div className={styles.sub}>{PRICING.subline}</div>
       <div className={styles.price}>
         <span className={styles.from}>Starting from</span>
-        <span className={styles.amount}>{PRICING.amount}</span>
+        <StarburstBadge text={PRICING.amount} size={160} rotate={-4} className={styles.amountBadge} />
       </div>
       <p className={styles.desc}>{PRICING.description}</p>
       <GetAccessButton className={styles.cta}>
