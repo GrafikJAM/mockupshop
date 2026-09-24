@@ -89,15 +89,19 @@ export default function LatestArrivalsSlider({ products }: { products: Product[]
         <div
           className={styles.track}
           style={{
-            width: `${chunks.length * 100}%`,
-            transform: `translateX(-${step * (100 / chunks.length)}%)`,
+            // Each slide has a fixed width (--chunk-w, set in CSS — the same
+            // pixel width the 4-product row always had inside the old
+            // container). This centers the active slide inside the now
+            // full-bleed viewport: viewport-center minus this slide's
+            // center, in px, via the CSS var so it stays correct at any
+            // screen width without a resize listener.
+            transform: `translateX(calc(50vw - (var(--chunk-w) * ${step + 0.5})))`,
           }}
         >
           {chunks.map((chunk, i) => (
             <div
               key={i}
               className={`${styles.slide} ${i === step ? styles.slideActive : ''}`}
-              style={{ width: `${100 / chunks.length}%` }}
             >
               <ProductGrid products={chunk} cols={4} uniform />
             </div>

@@ -1,4 +1,19 @@
-.wrap { position: relative; }
+.wrap {
+  position: relative;
+  /* The fixed width one "page" of 4 products has always rendered at,
+     reproduced exactly: the old container's own padding (40px, 20px below
+     768px) plus the old viewport padding (64px, 40px below 640px), doubled
+     for both sides. Capped by --max-w so it never exceeds the old absolute
+     ceiling either. Everything below (full-bleed viewport, centering
+     transform) is built on this one value. */
+  --chunk-w: min(calc(var(--max-w) - 208px), calc(100vw - 208px));
+}
+@media (max-width: 768px) {
+  .wrap { --chunk-w: min(calc(var(--max-w) - 168px), calc(100vw - 168px)); }
+}
+@media (max-width: 640px) {
+  .wrap { --chunk-w: min(calc(var(--max-w) - 120px), calc(100vw - 120px)); }
+}
 
 .headRow {
   display: grid;
@@ -18,19 +33,21 @@
 
 /* Full-bleed: breaks out of the page's centered .container (however deeply
    nested) to span the actual browser width, independent of the container's
-   max-width/padding. Safe against a scrollbar-induced horizontal overflow
-   because body already sets overflow-x: hidden globally. */
+   max-width/padding, so the dark background reaches both edges. Safe
+   against a scrollbar-induced horizontal overflow because body already
+   sets overflow-x: hidden globally. The actual 4-product row inside stays
+   pinned to --chunk-w (its old, pre-bleed pixel width) and is centered by
+   the track's transform below — the space this opens up on each side is
+   what shows the background and the peek of the next/previous group. */
 .viewport {
   position: relative;
   overflow: hidden;
-  padding: 0 64px;
   width: 100vw;
   left: 50%;
   right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
 }
-@media (max-width: 640px) { .viewport { padding: 0 40px; } }
 
 .track {
   display: flex;
@@ -38,13 +55,24 @@
   transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* Only the active page is full-strength — its neighbors (peeking into the
-   viewport's side padding, above) sit dimmed until they become active.
-   Horizontal padding here (box-sizing: border-box, so it doesn't affect the
-   width math driving the translateX steps) reproduces ProductGrid's own
-   24px/16px inter-card gap at the seam between adjacent chunks, which
-   otherwise sat flush with no spacing. */
-.slide { flex-shrink: 0; opacity: 0.32; transition: opacity 0.4s ease; box-sizing: border-box; padding: 0 12px; }
+/* Fixed width (--chunk-w, from .wrap) rather than a percentage of the now
+   full-bleed viewport — this is what keeps each page of 4 products the
+   same size it always was, instead of stretching to fill the wider
+   viewport. flex: 0 0 auto (via width, no shrink/grow) so the track is
+   free to overflow its clipped parent; only the active page is
+   full-strength, its neighbors (peeking into the space --chunk-w leaves
+   on each side, above) sit dimmed until they become active. The small
+   horizontal padding (box-sizing: border-box, so it doesn't affect
+   --chunk-w itself) reproduces ProductGrid's own 24px/16px inter-card gap
+   at the seam between adjacent chunks, which otherwise sat flush.*/
+.slide {
+  flex: 0 0 var(--chunk-w);
+  width: var(--chunk-w);
+  box-sizing: border-box;
+  opacity: 0.32;
+  transition: opacity 0.4s ease;
+  padding: 0 12px;
+}
 @media (max-width: 640px) { .slide { padding: 0 8px; } }
 .slideActive { opacity: 1; }
 
