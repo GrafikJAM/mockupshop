@@ -35,6 +35,9 @@ export default function Nav() {
           {SITE.nav.map(item => (
             <Link key={item.href} href={item.href} className={styles.link}>{item.label}</Link>
           ))}
+          <a href="https://grafikjam.com" target="_blank" rel="noopener noreferrer" className={styles.brandLink}>
+            GrafikJAM
+          </a>
         </div>
         <Link href="/" className={`${styles.logo} ${logoHidden ? styles.logoHidden : ''}`}>
           <Image src={theme === 'dark' ? '/jam_white.svg' : '/JAM-06.svg'} alt={SITE.name} width={64} height={38} priority />
@@ -84,6 +87,9 @@ export default function Nav() {
               {item.label}
             </Link>
           ))}
+          <a href="https://grafikjam.com" target="_blank" rel="noopener noreferrer" className={styles.mobileBrandLink} onClick={() => setMenuOpen(false)}>
+            GrafikJAM
+          </a>
           <button className={styles.mobileLink} onClick={toggle}>
             {theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           </button>
