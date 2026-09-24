@@ -10,7 +10,7 @@ export const fetchCache = 'force-no-store'
 
 type OrderRow = {
   id: string
-  user_id: string
+  user_id: string | null
   product_id: string | null
   type: string
   tier_key: string | null
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
     : { data: [] as { id: string; title: string }[] }
   const productTitleById = new Map((productRows || []).map(p => [p.id, p.title]))
 
-  const userIds = Array.from(new Set(rows.map(o => o.user_id).filter(Boolean)))
+  const userIds = Array.from(new Set(rows.map(o => o.user_id).filter(Boolean) as string[]))
   const emailById = new Map<string, string>()
   await Promise.all(userIds.map(async id => {
     try {
@@ -88,11 +88,16 @@ export async function GET(req: NextRequest) {
       let amountTotal: number | null = null
       let currency: string | null = null
       let created: number | null = null
+      let sessionEmail: string | null = null
       try {
         const session = await stripe.checkout.sessions.retrieve(sessionId)
         amountTotal = session.amount_total
         currency = session.currency
         created = session.created
+        // Guest orders (see checkout/route.ts) have no user_id to resolve
+        // via Supabase auth below — Stripe's own record of the checkout
+        // email is the only place left to find it.
+        sessionEmail = session.customer_details?.email || session.customer_email || null
       } catch {
         // Stripe lookup failed (deleted/expired test session, etc.) — fall
         // back to what we already have locally instead of dropping the order.
@@ -100,7 +105,8 @@ export async function GET(req: NextRequest) {
       return {
         sessionId,
         type: first.type,
-        email: emailById.get(first.user_id) || 'Unknown',
+        email: (first.user_id && emailById.get(first.user_id)) || sessionEmail || 'Unknown',
+        guest: !first.user_id,
         items: itemsFor(group),
         amountTotal,
         currency,
@@ -115,7 +121,8 @@ export async function GET(req: NextRequest) {
   const orphaned = noSession.map(o => ({
     sessionId: o.id,
     type: o.type,
-    email: emailById.get(o.user_id) || 'Unknown',
+    email: (o.user_id && emailById.get(o.user_id)) || 'Unknown',
+    guest: !o.user_id,
     items: itemsFor([o]),
     amountTotal: null as number | null,
     currency: null as string | null,

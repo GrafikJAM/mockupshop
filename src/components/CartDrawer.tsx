@@ -12,31 +12,46 @@ export default function CartDrawer() {
   const { user, accessToken } = useAuth()
   const router = useRouter()
   const [checkingOut, setCheckingOut] = useState(false)
+  const [showGuestForm, setShowGuestForm] = useState(false)
+  const [guestEmail, setGuestEmail] = useState('')
+  const [guestError, setGuestError] = useState('')
 
-  async function handleCheckout() {
-    if (!user || !accessToken) {
-      closeCart()
-      router.push('/login')
-      return
-    }
+  function goToSignIn() {
+    closeCart()
+    router.push('/login')
+  }
+
+  // Shared by both the signed-in and guest paths — guestEmail is only sent
+  // (and only required server-side) when there's no accessToken.
+  async function startCheckout(guestEmailValue?: string) {
     setCheckingOut(true)
+    setGuestError('')
     try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (accessToken) headers.Authorization = `Bearer ${accessToken}`
       const res = await fetch('/api/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+        headers,
         body: JSON.stringify({
           mode: 'cart',
           items: items.map(i => ({ productId: i.productId, title: i.title, tierKey: i.tierKey })),
           referralCode: getReferralCode(),
+          ...(guestEmailValue ? { guestEmail: guestEmailValue } : {}),
         }),
       })
       const data = await res.json()
       if (data.url) { window.location.href = data.url; return }
-      alert(data.error || 'Something went wrong starting checkout. Please try again.')
+      setGuestError(data.error || 'Something went wrong starting checkout. Please try again.')
     } catch {
-      alert('Something went wrong starting checkout. Please try again.')
+      setGuestError('Something went wrong starting checkout. Please try again.')
     }
     setCheckingOut(false)
+  }
+
+  function handleGuestSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!guestEmail.trim()) return
+    startCheckout(guestEmail.trim())
   }
 
   useEffect(() => {
@@ -86,14 +101,51 @@ export default function CartDrawer() {
                 <span>Subtotal</span>
                 <span className={styles.subtotalAmount}>${total}</span>
               </div>
-              <button type="button" className={styles.checkoutBtn} onClick={handleCheckout} disabled={checkingOut}>
-                {checkingOut ? 'Redirecting…' : user ? 'Checkout' : 'Sign in to checkout'}
-              </button>
-              <p className={styles.note}>
-                {user
-                  ? "You'll get your download link(s) on the confirmation page right after payment."
-                  : "You'll be asked to sign in with a magic link before paying, so your purchases are saved to your account."}
-              </p>
+              {user ? (
+                <>
+                  <button type="button" className={styles.checkoutBtn} onClick={() => startCheckout()} disabled={checkingOut}>
+                    {checkingOut ? 'Redirecting…' : 'Checkout'}
+                  </button>
+                  <p className={styles.note}>
+                    You'll get your download link(s) on the confirmation page right after payment.
+                  </p>
+                </>
+              ) : !showGuestForm ? (
+                <>
+                  <button type="button" className={styles.checkoutBtn} onClick={goToSignIn}>
+                    Sign in to checkout
+                  </button>
+                  <button type="button" className={styles.guestLink} onClick={() => setShowGuestForm(true)}>
+                    Continue as guest instead
+                  </button>
+                  <p className={styles.note}>
+                    Sign in and your purchases are saved to your account for later — or check out as a
+                    guest and we'll email your download link(s) instead.
+                  </p>
+                </>
+              ) : (
+                <form onSubmit={handleGuestSubmit} className={styles.guestForm}>
+                  <input
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                    value={guestEmail}
+                    onChange={e => setGuestEmail(e.target.value)}
+                    className={styles.guestInput}
+                  />
+                  <button type="submit" className={styles.checkoutBtn} disabled={checkingOut}>
+                    {checkingOut ? 'Redirecting…' : 'Continue to payment'}
+                  </button>
+                  <button type="button" className={styles.guestLink} onClick={() => { setShowGuestForm(false); setGuestError('') }}>
+                    Sign in instead
+                  </button>
+                  {guestError && <p className={styles.guestError}>{guestError}</p>}
+                  <p className={styles.note}>
+                    We'll email your download link(s) to this address right after payment — it won't
+                    be saved to an account.
+                  </p>
+                </form>
+              )}
 
               <div className={styles.divider}><span /><span className={styles.dividerLabel}>or</span><span /></div>
               <div className={styles.upsell}>

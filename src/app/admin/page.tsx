@@ -8,6 +8,7 @@ type Order = {
   sessionId: string
   type: string
   email: string
+  guest: boolean
   items: string[]
   amountTotal: number | null
   currency: string | null
@@ -446,7 +447,7 @@ export default function AdminPage() {
                     {o.items.join(', ')}
                   </div>
                   <div className={styles.productMeta}>
-                    {o.email} · {new Date(o.createdAt).toLocaleString()}
+                    {o.email}{o.guest && ' (guest)'} · {new Date(o.createdAt).toLocaleString()}
                     {o.referralCode && <> · ref: {o.referralCode}</>}
                   </div>
                 </div>

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getStripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
-import { sendOrderNotificationEmail } from '@/lib/email'
+import { sendOrderNotificationEmail, sendGuestDownloadEmail } from '@/lib/email'
 import { LICENSE_TIERS } from '@/lib/config'
 
 export async function POST(req: NextRequest) {
@@ -27,9 +27,15 @@ export async function POST(req: NextRequest) {
 }
 
 async function recordOrder(session: Stripe.Checkout.Session) {
-  const userId = session.metadata?.user_id
+  // Guest cart checkouts (see checkout/route.ts) carry no user_id — orders.
+  // user_id must be nullable in Supabase for this insert to succeed; see
+  // the migration note left for the site owner. Full Access always requires
+  // an account, so a missing user_id there shouldn't happen, but bail
+  // defensively rather than record a Full Access grant nobody can use.
+  const userId = session.metadata?.user_id || null
   const mode = session.metadata?.mode
-  if (!userId || !mode) return
+  if (!mode) return
+  if (mode === 'full-access' && !userId) return
 
   // Basic affiliate/referral tracking — see src/lib/referral.ts and
   // checkout/route.ts. Purely for later manual lookup (filter `orders` by
@@ -82,11 +88,14 @@ async function recordOrder(session: Stripe.Checkout.Session) {
       await supabaseAdmin.from('orders').insert(rows)
 
       // Notification lists product titles rather than raw ids — best-effort
-      // lookup; falls back to a generic label per item if it fails.
+      // lookup; falls back to a generic label per item if it fails. Also
+      // pulls download_url, needed below for guest orders' download email.
       let items = productIds.map(() => 'Mockup')
+      let productRows: { id: string; title: string; download_url: string }[] = []
       try {
-        const { data: productRows } = await supabaseAdmin.from('products').select('id, title').in('id', productIds)
-        const titleById = new Map((productRows || []).map(p => [p.id, p.title]))
+        const { data } = await supabaseAdmin.from('products').select('id, title, download_url').in('id', productIds)
+        productRows = data || []
+        const titleById = new Map(productRows.map(p => [p.id, p.title]))
         items = productIds.map(id => titleById.get(id) || 'Unknown product')
       } catch {
         // Fall back to the generic labels above.
@@ -99,6 +108,19 @@ async function recordOrder(session: Stripe.Checkout.Session) {
         currency: session.currency,
         referralCode,
       })
+
+      // Guest checkout (no account) — this email is the only place the
+      // buyer will ever see these download links, since there's no
+      // /account page for them to revisit. Skip if the email lookup above
+      // somehow came up empty rather than send to a bad address.
+      if (!userId && buyerEmail && buyerEmail !== 'Unknown') {
+        const productById = new Map(productRows.map(p => [p.id, p]))
+        const downloadItems = productIds
+          .map(id => productById.get(id))
+          .filter((p): p is { id: string; title: string; download_url: string } => !!p?.download_url)
+          .map(p => ({ title: p.title, downloadUrl: p.download_url }))
+        await sendGuestDownloadEmail({ buyerEmail, items: downloadItems })
+      }
     }
   }
 }

@@ -3,6 +3,7 @@ import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useCart } from '@/lib/cart'
+import { useAuth } from '@/lib/auth'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
@@ -13,6 +14,7 @@ function SuccessContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
   const { clear } = useCart()
+  const { user } = useAuth()
   const [status, setStatus] = useState<'loading' | 'ok' | 'error'>('loading')
   const [products, setProducts] = useState<Product[]>([])
   const [error, setError] = useState('')
@@ -61,8 +63,9 @@ function SuccessContent() {
             <p className="label">Payment confirmed</p>
             <h1 className={`display-lg ${styles.title}`}>You're all set</h1>
             <p className={styles.stateText}>
-              Download your files below now — and since you're signed in, they'll also show as
-              "Download" the next time you visit these product pages.
+              {user
+                ? "Download your files below now — and since you're signed in, they'll also show as \"Download\" the next time you visit these product pages."
+                : "Download your files below now — we've also emailed these download links to you, since they won't be saved to an account."}
             </p>
 
             <div className={styles.downloads}>

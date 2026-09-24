@@ -13,16 +13,37 @@ export async function POST(req: NextRequest) {
   try {
     const authHeader = req.headers.get('authorization') || ''
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null
-    if (!token) return NextResponse.json({ error: 'Please sign in to check out.' }, { status: 401 })
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token)
-    if (userError || !user) return NextResponse.json({ error: 'Please sign in to check out.' }, { status: 401 })
+    let user: { id: string; email?: string | null } | null = null
+    if (token) {
+      const { data, error: userError } = await supabase.auth.getUser(token)
+      if (!userError && data.user) user = data.user
+    }
 
     const body = await req.json()
     const origin = req.nextUrl.origin
 
+    // Full Access always requires an account — it grants "everything I make
+    // next" too, and a one-time guest email can't cover mockups that don't
+    // exist yet. Single/cart purchases can go through as a guest instead,
+    // sign-in stays the primary path (offered first in the UI) but isn't
+    // required — as long as a valid email came along to send the download
+    // link(s) to, since with no account that email is the only place those
+    // links will ever live.
+    let guestEmail: string | null = null
+    if (!user) {
+      if (body.mode === 'full-access') {
+        return NextResponse.json({ error: 'Please sign in to check out.' }, { status: 401 })
+      }
+      const rawEmail = typeof body.guestEmail === 'string' ? body.guestEmail.trim() : ''
+      if (!rawEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
+        return NextResponse.json({ error: 'Please sign in, or enter a valid email to check out as a guest.' }, { status: 401 })
+      }
+      guestEmail = rawEmail
+    }
+
     let line_items: { price_data: any; quantity: number }[] = []
-    const metadata: Record<string, string> = { user_id: user.id }
+    const metadata: Record<string, string> = user ? { user_id: user.id } : { guest: 'true' }
 
     // Basic affiliate/referral tracking — see src/lib/referral.ts. Purely
     // informational (no automatic payouts): it just rides along on the
@@ -111,7 +132,7 @@ export async function POST(req: NextRequest) {
       mode: 'payment',
       line_items,
       metadata,
-      customer_email: user.email || undefined,
+      customer_email: user?.email || guestEmail || undefined,
       // Always create a real Stripe Customer for this purchase (rather than
       // just a bare email) so the billing name/address/tax ID collected
       // below actually attach to something and carry through to the invoice.
