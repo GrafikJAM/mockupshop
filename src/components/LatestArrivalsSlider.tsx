@@ -39,6 +39,9 @@ export default function LatestArrivalsSlider({ products }: { products: Product[]
 
   if (chunks.length === 0) return null
 
+  function prevStep() { setStep(s => (s - 1 + chunks.length) % chunks.length) }
+  function nextStep() { setStep(s => (s + 1) % chunks.length) }
+
   return (
     <div
       className={`${styles.wrap} ${paused ? styles.paused : ''}`}
@@ -78,6 +81,11 @@ export default function LatestArrivalsSlider({ products }: { products: Product[]
       </div>
 
       <div className={styles.viewport}>
+        {chunks.length > 1 && (
+          <button type="button" className={`${styles.arrow} ${styles.arrowPrev}`} onClick={prevStep} aria-label="Previous mockups">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2.5L4 7l5 4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
+        )}
         <div
           className={styles.track}
           style={{
@@ -86,11 +94,20 @@ export default function LatestArrivalsSlider({ products }: { products: Product[]
           }}
         >
           {chunks.map((chunk, i) => (
-            <div key={i} className={styles.slide} style={{ width: `${100 / chunks.length}%` }}>
-                            <ProductGrid products={chunk} cols={4} uniform />
+            <div
+              key={i}
+              className={`${styles.slide} ${i === step ? styles.slideActive : ''}`}
+              style={{ width: `${100 / chunks.length}%` }}
+            >
+              <ProductGrid products={chunk} cols={4} uniform />
             </div>
           ))}
         </div>
+        {chunks.length > 1 && (
+          <button type="button" className={`${styles.arrow} ${styles.arrowNext}`} onClick={nextStep} aria-label="Next mockups">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2.5l5 4.5-5 4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
+        )}
       </div>
     </div>
   )

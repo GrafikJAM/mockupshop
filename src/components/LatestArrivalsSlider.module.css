@@ -16,13 +16,46 @@
   .viewAllLink { justify-self: start; }
 }
 
-.viewport { overflow: hidden; }
+.viewport { position: relative; overflow: hidden; padding: 0 64px; }
+@media (max-width: 640px) { .viewport { padding: 0 40px; } }
+
 .track {
   display: flex;
   align-items: flex-start;
   transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
-.slide { flex-shrink: 0; }
+
+/* Only the active page is full-strength — its neighbors (peeking into the
+   viewport's side padding, above) sit dimmed until they become active. */
+.slide { flex-shrink: 0; opacity: 0.32; transition: opacity 0.4s ease; }
+.slideActive { opacity: 1; }
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cta-bg);
+  color: var(--cta-text);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.15s, transform 0.15s;
+}
+.arrow:hover { opacity: 0.85; }
+.arrowPrev { left: 8px; }
+.arrowNext { right: 8px; }
+@media (max-width: 640px) {
+  .arrow { width: 32px; height: 32px; }
+  .arrowPrev { left: 2px; }
+  .arrowNext { right: 2px; }
+}
 
 .progress { justify-self: center; display: flex; gap: 6px; min-width: 60px; align-self: center; }
 .segment {
