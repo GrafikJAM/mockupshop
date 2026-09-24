@@ -34,6 +34,32 @@ type Product = {
 
 const ALL_TAGS = ['Human', 'Devices', 'Outdoor', 'Poster', 'Billboard', 'Screen', 'Apparel', 'Print', 'Signage', 'Packaging', 'Vehicle', 'Interior', 'Stationery', 'Other']
 
+// Calendar week (Monday start) and calendar month, in the browser's local
+// time zone — "this week"/"this month" as a person would actually mean them,
+// not a rolling 7/30-day window.
+function startOfWeek(d: Date) {
+  const date = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  const day = date.getDay() // 0 = Sun .. 6 = Sat
+  const diff = day === 0 ? -6 : 1 - day // shift back to Monday
+  date.setDate(date.getDate() + diff)
+  return date
+}
+function startOfMonth(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth(), 1)
+}
+
+// Sums amountTotal (in cents) per currency rather than assuming everything
+// is one currency — most shops only ever see one, but this won't silently
+// mix e.g. USD and EUR into one meaningless number if that ever changes.
+function sumEarnings(list: Order[]) {
+  const byCurrency = new Map<string, number>()
+  for (const o of list) {
+    if (o.amountTotal === null || !o.currency) continue
+    byCurrency.set(o.currency, (byCurrency.get(o.currency) || 0) + o.amountTotal)
+  }
+  return { byCurrency, count: list.length }
+}
+
 const empty = {
   title: '',
   description: '',
@@ -59,6 +85,7 @@ export default function AdminPage() {
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
   const [tab, setTab] = useState<'add' | 'manage' | 'orders'>('add')
+  const [orderPeriod, setOrderPeriod] = useState<'week' | 'month' | 'all'>('all')
   const [reordering, setReordering] = useState(false)
   const dragIndex = useRef<number | null>(null)
   const handleActive = useRef(false)
@@ -97,6 +124,12 @@ export default function AdminPage() {
   function formatAmount(amountTotal: number | null, currency: string | null) {
     if (amountTotal === null || !currency) return '—'
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency.toUpperCase() }).format(amountTotal / 100)
+  }
+
+  function formatEarnings(stats: { byCurrency: Map<string, number> }) {
+    const entries = Array.from(stats.byCurrency.entries())
+    if (entries.length === 0) return '$0.00'
+    return entries.map(([currency, total]) => formatAmount(total, currency)).join(' + ')
   }
 
   function toggleTag(tag: string) {
@@ -370,30 +403,59 @@ export default function AdminPage() {
         </div>
       )}
 
-      {tab === 'orders' && (
-        <div className={styles.orderList}>
-          <div className={styles.orderListHead}>
-            <p className={styles.dragHint}>Most recent 500 orders, newest first.</p>
-            <button className={styles.btnGhost} onClick={loadOrders}>Refresh</button>
-          </div>
-          {!ordersLoaded && <p className={styles.empty}>Loading…</p>}
-          {ordersLoaded && orders.length === 0 && <p className={styles.empty}>No orders yet.</p>}
-          {orders.map(o => (
-            <div key={o.sessionId} className={styles.orderRow}>
-              <div className={styles.orderMain}>
-                <div className={styles.orderTitle}>
-                  {o.items.join(', ')}
-                </div>
-                <div className={styles.productMeta}>
-                  {o.email} · {new Date(o.createdAt).toLocaleString()}
-                  {o.referralCode && <> · ref: {o.referralCode}</>}
-                </div>
-              </div>
-              <div className={styles.orderAmount}>{formatAmount(o.amountTotal, o.currency)}</div>
+      {tab === 'orders' && (() => {
+        const now = new Date()
+        const weekOrders = orders.filter(o => new Date(o.createdAt) >= startOfWeek(now))
+        const monthOrders = orders.filter(o => new Date(o.createdAt) >= startOfMonth(now))
+        const weekStats = sumEarnings(weekOrders)
+        const monthStats = sumEarnings(monthOrders)
+        const allStats = sumEarnings(orders)
+        const displayedOrders = orderPeriod === 'week' ? weekOrders : orderPeriod === 'month' ? monthOrders : orders
+        const periodLabel = orderPeriod === 'week' ? 'This week' : orderPeriod === 'month' ? 'This month' : 'All time'
+
+        return (
+          <div className={styles.orderList}>
+            <div className={styles.statsRow}>
+              <button type="button" className={`${styles.statCard} ${orderPeriod === 'week' ? styles.statActive : ''}`} onClick={() => setOrderPeriod('week')}>
+                <span className={styles.statLabel}>This week</span>
+                <span className={styles.statValue}>{formatEarnings(weekStats)}</span>
+                <span className={styles.statCount}>{weekStats.count} order{weekStats.count === 1 ? '' : 's'}</span>
+              </button>
+              <button type="button" className={`${styles.statCard} ${orderPeriod === 'month' ? styles.statActive : ''}`} onClick={() => setOrderPeriod('month')}>
+                <span className={styles.statLabel}>This month</span>
+                <span className={styles.statValue}>{formatEarnings(monthStats)}</span>
+                <span className={styles.statCount}>{monthStats.count} order{monthStats.count === 1 ? '' : 's'}</span>
+              </button>
+              <button type="button" className={`${styles.statCard} ${orderPeriod === 'all' ? styles.statActive : ''}`} onClick={() => setOrderPeriod('all')}>
+                <span className={styles.statLabel}>All time</span>
+                <span className={styles.statValue}>{formatEarnings(allStats)}</span>
+                <span className={styles.statCount}>{allStats.count} order{allStats.count === 1 ? '' : 's'}</span>
+              </button>
             </div>
-          ))}
-        </div>
-      )}
+
+            <div className={styles.orderListHead}>
+              <p className={styles.dragHint}>{periodLabel} · newest first.</p>
+              <button className={styles.btnGhost} onClick={loadOrders}>Refresh</button>
+            </div>
+            {!ordersLoaded && <p className={styles.empty}>Loading…</p>}
+            {ordersLoaded && displayedOrders.length === 0 && <p className={styles.empty}>No orders in this period.</p>}
+            {displayedOrders.map(o => (
+              <div key={o.sessionId} className={styles.orderRow}>
+                <div className={styles.orderMain}>
+                  <div className={styles.orderTitle}>
+                    {o.items.join(', ')}
+                  </div>
+                  <div className={styles.productMeta}>
+                    {o.email} · {new Date(o.createdAt).toLocaleString()}
+                    {o.referralCode && <> · ref: {o.referralCode}</>}
+                  </div>
+                </div>
+                <div className={styles.orderAmount}>{formatAmount(o.amountTotal, o.currency)}</div>
+              </div>
+            ))}
+          </div>
+        )
+      })()}
     </div>
   )
 }

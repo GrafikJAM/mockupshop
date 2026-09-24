@@ -29,11 +29,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // High enough that "All time" earnings stay accurate for a good while —
+  // the admin UI sums straight off this list, so silently truncating it
+  // would silently under-report real revenue rather than just trimming
+  // the visible list.
   const { data, error } = await supabaseAdmin
     .from('orders')
     .select('id, user_id, product_id, type, tier_key, stripe_session_id, referral_code, created_at')
     .order('created_at', { ascending: false })
-    .limit(500)
+    .limit(5000)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   const rows = (data || []) as OrderRow[]
