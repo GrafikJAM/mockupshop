@@ -1,18 +1,26 @@
 .wrap {
   position: relative;
-  /* The fixed width one "page" of 4 products has always rendered at,
-     reproduced exactly: the old container's own padding (40px, 20px below
-     768px) plus the old viewport padding (64px, 40px below 640px), doubled
-     for both sides. Capped by --max-w so it never exceeds the old absolute
-     ceiling either. Everything below (full-bleed viewport, centering
-     transform) is built on this one value. */
-  --chunk-w: min(calc(var(--max-w) - 208px), calc(100vw - 208px));
+  /* --chunk-w reproduces .container's own content width exactly (its
+     max-width minus its own left+right padding), so the 4-product row is
+     pixel-identical in width to the ProductGrid in "Top mockups this
+     month" below, which just sits inside .container directly.
+     --edge-inset reproduces where .container's content starts from the
+     true viewport edge — its own padding, plus (on screens wider than
+     --max-w) the extra margin that centers .container itself. Together
+     these line the slider's left edge up with every other section's, even
+     though the slider itself now bleeds full width for its background. */
+  --chunk-w: min(calc(var(--max-w) - 80px), calc(100vw - 80px));
+  --edge-inset: max(40px, calc((100vw - var(--max-w)) / 2 + 40px));
+  --slide-gap: 24px;
 }
 @media (max-width: 768px) {
-  .wrap { --chunk-w: min(calc(var(--max-w) - 168px), calc(100vw - 168px)); }
+  .wrap {
+    --chunk-w: min(calc(var(--max-w) - 40px), calc(100vw - 40px));
+    --edge-inset: max(20px, calc((100vw - var(--max-w)) / 2 + 20px));
+  }
 }
 @media (max-width: 640px) {
-  .wrap { --chunk-w: min(calc(var(--max-w) - 120px), calc(100vw - 120px)); }
+  .wrap { --slide-gap: 16px; }
 }
 
 .headRow {
@@ -36,9 +44,9 @@
    max-width/padding, so the dark background reaches both edges. Safe
    against a scrollbar-induced horizontal overflow because body already
    sets overflow-x: hidden globally. The actual 4-product row inside stays
-   pinned to --chunk-w (its old, pre-bleed pixel width) and is centered by
-   the track's transform below — the space this opens up on each side is
-   what shows the background and the peek of the next/previous group. */
+   pinned to --chunk-w and is left-aligned to --edge-inset by the track's
+   transform below (not centered — centering was what threw its left edge
+   out of line with "Top mockups this month"'s ProductGrid beneath it). */
 .viewport {
   position: relative;
   overflow: hidden;
@@ -52,28 +60,28 @@
 .track {
   display: flex;
   align-items: flex-start;
+  /* Real spacing between slides via flex gap (matching ProductGrid's own
+     24px/16px inter-card gap) rather than padding on each slide — padding
+     would also inset the very first/active slide from --edge-inset, right
+     back into the misalignment this is fixing. */
+  gap: var(--slide-gap);
   transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* Fixed width (--chunk-w, from .wrap) rather than a percentage of the now
+/* Fixed width (--chunk-w, from .wrap) rather than a percentage of the
    full-bleed viewport — this is what keeps each page of 4 products the
-   same size it always was, instead of stretching to fill the wider
-   viewport. flex: 0 0 auto (via width, no shrink/grow) so the track is
-   free to overflow its clipped parent; only the active page is
-   full-strength, its neighbors (peeking into the space --chunk-w leaves
-   on each side, above) sit dimmed until they become active. The small
-   horizontal padding (box-sizing: border-box, so it doesn't affect
-   --chunk-w itself) reproduces ProductGrid's own 24px/16px inter-card gap
-   at the seam between adjacent chunks, which otherwise sat flush.*/
+   same size as the ProductGrid sections around it, instead of stretching
+   to fill the wider viewport. flex: 0 0 var(--chunk-w) (no shrink/grow) so
+   the track is free to overflow its clipped parent; only the active page
+   is full-strength, its neighbors (whatever falls into the space around
+   it, cropped by .viewport's overflow) sit dimmed until they become
+   active. */
 .slide {
   flex: 0 0 var(--chunk-w);
   width: var(--chunk-w);
-  box-sizing: border-box;
   opacity: 0.32;
   transition: opacity 0.4s ease;
-  padding: 0 12px;
 }
-@media (max-width: 640px) { .slide { padding: 0 8px; } }
 .slideActive { opacity: 1; }
 
 .arrow {
