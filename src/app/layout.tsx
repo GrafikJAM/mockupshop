@@ -48,10 +48,14 @@ export const metadata: Metadata = {
     // which the browser tab has no knowledge of) — a dark mark reads on a
     // light tab bar, a light mark reads on a dark one. The first entry with
     // no `media` is the fallback for browsers that ignore the media queries.
+    // These point at favicon-light/dark.svg (square canvases wrapping the
+    // same JAM logo marks) rather than the raw JAM-06.svg/jam_white.svg —
+    // those are wide rectangles (~1.7:1), so squeezed into a square tab
+    // icon they rendered tiny and letterboxed instead of filling the space.
     icon: [
-      { url: '/JAM-06.svg', type: 'image/svg+xml' },
-      { url: '/JAM-06.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: light)' },
-      { url: '/jam_white.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: dark)' },
+      { url: '/favicon-light.svg', type: 'image/svg+xml' },
+      { url: '/favicon-light.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: light)' },
+      { url: '/favicon-dark.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: dark)' },
     ],
   },
   other: {
