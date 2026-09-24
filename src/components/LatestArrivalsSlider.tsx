@@ -39,17 +39,46 @@ export default function LatestArrivalsSlider({ products }: { products: Product[]
   const [trackIndex, setTrackIndex] = useState(looped ? 1 : 0)
   const [animate, setAnimate] = useState(true)
   const [paused, setPaused] = useState(false)
+  const [hidden, setHidden] = useState(false)
   const raf2Ref = useRef<number | null>(null)
 
   // Real page index (0..chunks.length-1) that trackIndex currently maps to
   // — used for the dots and for which slide is "active" (full opacity).
   const realStep = looped ? (((trackIndex - 1) % chunks.length) + chunks.length) % chunks.length : 0
 
+  // Background tabs don't stop timers, only throttle them — so a tab left
+  // in the background keeps firing setInterval below (just slower) while
+  // never painting a frame, which means onTransitionEnd's wrap-around check
+  // never runs. trackIndex then walks past the extended array's real range
+  // with nothing to catch it, so when the tab is foregrounded again the
+  // track is translated somewhere past all its slides and the section
+  // renders blank. Pausing the interval whenever the tab isn't visible
+  // keeps trackIndex from ever running away like that.
   useEffect(() => {
-    if (!looped || paused) return
+    function onVisibility() { setHidden(document.hidden) }
+    onVisibility()
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => document.removeEventListener('visibilitychange', onVisibility)
+  }, [])
+
+  useEffect(() => {
+    if (!looped || paused || hidden) return
     const id = setInterval(() => setTrackIndex(i => i + 1), STEP_MS)
     return () => clearInterval(id)
-  }, [looped, paused])
+  }, [looped, paused, hidden])
+
+  // Defensive clamp: if trackIndex ever ends up outside the extended
+  // array's valid range (e.g. an already-affected session, or a browser
+  // that still ticks timers through a full system sleep), snap it back to
+  // a valid position without animating rather than leaving the track
+  // translated off into empty space.
+  useEffect(() => {
+    if (!looped) return
+    if (trackIndex < 0 || trackIndex > chunks.length + 1) {
+      setAnimate(false)
+      setTrackIndex(1)
+    }
+  }, [looped, trackIndex, chunks.length])
 
   // After a snap (animate set to false), wait two frames — one for the
   // transition-free jump to actually paint, one more as a safety margin —
