@@ -39,6 +39,8 @@
 }
 .addToCart:hover { opacity: 0.88; transform: translateY(-1px); }
 
+.downloadedNote { text-align: center; font-size: 12px; font-weight: 500; letter-spacing: 0.03em; color: var(--accent-yellow); }
+
 .divider { display: flex; align-items: center; gap: 14px; }
 .divider span:not(.dividerLabel) { flex: 1; height: 1px; background: var(--border); }
 .dividerLabel { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }

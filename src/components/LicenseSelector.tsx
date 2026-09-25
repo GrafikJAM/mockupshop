@@ -15,7 +15,7 @@ type Props = {
   downloadUrl: string
 }
 
-type Ownership = { hasFullAccess: boolean; productIds: string[] }
+type Ownership = { hasFullAccess: boolean; productIds: string[]; downloadedProductIds?: string[] }
 
 export default function LicenseSelector({ productCount, productId, productTitle, productImage, downloadUrl }: Props) {
   const [selected, setSelected] = useState(0)
@@ -23,6 +23,10 @@ export default function LicenseSelector({ productCount, productId, productTitle,
   const { addItem, openCart } = useCart()
   const { user, accessToken } = useAuth()
   const [ownership, setOwnership] = useState<Ownership | null>(null)
+  // Mirrors ownership.downloadedProductIds for this one product, but flips
+  // to true immediately on click rather than waiting on a refetch — see the
+  // onClick on the Download link below.
+  const [downloaded, setDownloaded] = useState(false)
 
   useEffect(() => {
     if (!user || !accessToken) { setOwnership(null); return }
@@ -31,6 +35,10 @@ export default function LicenseSelector({ productCount, productId, productTitle,
       .then(data => { if (data) setOwnership(data) })
       .catch(() => {})
   }, [user, accessToken])
+
+  useEffect(() => {
+    setDownloaded(!!ownership?.downloadedProductIds?.includes(productId))
+  }, [ownership, productId])
 
   const owned = !!ownership && (ownership.hasFullAccess || ownership.productIds.includes(productId))
 
@@ -62,9 +70,16 @@ export default function LicenseSelector({ productCount, productId, productTitle,
               </div>
             </div>
           </div>
-          <a href={dlHref} className={styles.addToCart} target="_blank" rel="noopener noreferrer">
+          <a
+            href={dlHref}
+            className={styles.addToCart}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setDownloaded(true)}
+          >
             Download
           </a>
+          {downloaded && <p className={styles.downloadedNote}>Already downloaded</p>}
         </div>
       </div>
     )

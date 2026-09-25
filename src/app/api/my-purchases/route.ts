@@ -28,5 +28,21 @@ export async function GET(req: NextRequest) {
     .filter(o => o.type === 'product' && o.product_id)
     .map(o => o.product_id as string)
 
-  return NextResponse.json({ hasFullAccess, productIds })
+  // Which products this buyer has actually clicked "Download" on (see
+  // /api/dl) — lets the product page show "Already downloaded" next to the
+  // Download button, same signal as the /profile purchases list.
+  // Best-effort: if the `downloads` table isn't there yet, this just comes
+  // back empty rather than failing ownership lookup for the whole page.
+  let downloadedProductIds: string[] = []
+  try {
+    const { data: downloads } = await supabaseAdmin
+      .from('downloads')
+      .select('product_id')
+      .eq('user_id', user.id)
+    downloadedProductIds = Array.from(new Set((downloads || []).map(d => d.product_id).filter(Boolean) as string[]))
+  } catch {
+    // Left empty.
+  }
+
+  return NextResponse.json({ hasFullAccess, productIds, downloadedProductIds })
 }
