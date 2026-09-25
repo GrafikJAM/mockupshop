@@ -82,18 +82,15 @@ export default async function Home() {
 
     
         <section className={styles.pricingSection}>
-          <div className="container">
-            <div className={styles.pricingTop}>
-          
+          <div className={styles.pricingStack}>
+            {all.length > 0 && (
+              <div className={styles.pricingMarquee}>
+                <Marquee products={[...all].reverse()} direction="right" speed={7} />
+              </div>
+            )}
+            <div className={`container ${styles.pricingCardWrap}`}>
+              <PricingCard />
             </div>
-          </div>
-          {all.length > 0 && (
-            <div className={styles.pricingMarquee}>
-              <Marquee products={[...all].reverse()} direction="right" speed={7} />
-            </div>
-          )}
-          <div className="container" style={{ marginTop: 56 }}>
-            <PricingCard />
           </div>
         </section>
 

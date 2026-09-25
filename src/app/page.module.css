@@ -15,8 +15,14 @@
 .testimonialsSection { padding: 64px 0; border-bottom: 1px solid var(--border); overflow: hidden; transition: border-color 0.25s; }
 
 .pricingSection { padding: 80px 0; border-bottom: 1px solid var(--border); transition: border-color 0.25s; }
-.pricingTop { margin-bottom: 40px; }
-.pricingMarquee { padding: 8px 0; }
+
+/* Marquee and pricing card share one grid cell so the card floats over the
+   marquee instead of stacking below it — the row auto-sizes to the taller
+   child (the card), and the marquee is vertically centered within it via
+   align-self, so it reads as continuing behind the card either side. */
+.pricingStack { display: grid; }
+.pricingMarquee { grid-area: 1 / 1; align-self: center; padding: 8px 0; }
+.pricingCardWrap { grid-area: 1 / 1; z-index: 2; width: 100%; }
 
 .founderSection { border-top: none; }
 .founderRow { display: flex; align-items: center; justify-content: center; gap: 48px; max-width: 900px; margin: 0 auto; }
