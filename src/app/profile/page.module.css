@@ -27,7 +27,9 @@
 .rowInfo { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .rowTitle { font-size: 14px; font-weight: 500; color: var(--text-primary); min-width: 0; }
 .rowTitle:hover { color: var(--text-primary); text-decoration: underline; }
+.rowMeta { display: flex; align-items: center; gap: 8px; }
 .rowTier { font-size: 12px; color: var(--text-muted); }
+.rowDownloaded { font-size: 11px; font-weight: 500; letter-spacing: 0.02em; color: var(--text-secondary); background: var(--bg-elevated); border-radius: 100px; padding: 2px 9px; }
 .rowBtn { flex-shrink: 0; font-size: 13px; font-weight: 500; color: var(--cta-text); background: var(--cta-bg); padding: 9px 18px; border-radius: var(--radius); transition: opacity 0.15s; }
 .rowBtn:hover { opacity: 0.85; }
 

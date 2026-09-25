@@ -75,5 +75,23 @@ export async function GET(req: NextRequest) {
     }))
   }
 
-  return NextResponse.json({ hasFullAccess, products })
+  // Which of these this buyer has actually clicked "Download" on (see
+  // /api/dl) — mainly useful for Full Access buyers, whose purchases list
+  // is the entire library rather than just what they bought. Best-effort:
+  // if the `downloads` table isn't there yet, everything just shows as not
+  // downloaded rather than erroring the whole purchases list.
+  let downloadedIds = new Set<string>()
+  try {
+    const { data } = await supabaseAdmin
+      .from('downloads')
+      .select('product_id')
+      .eq('user_id', user.id)
+    downloadedIds = new Set((data || []).map(d => d.product_id).filter(Boolean) as string[])
+  } catch {
+    // Left empty — every product just shows as not-yet-downloaded.
+  }
+
+  const productsWithDownloadStatus = products.map(p => ({ ...p, downloaded: downloadedIds.has(p.id) }))
+
+  return NextResponse.json({ hasFullAccess, products: productsWithDownloadStatus })
 }

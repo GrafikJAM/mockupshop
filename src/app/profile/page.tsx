@@ -8,7 +8,7 @@ import Footer from '@/components/Footer'
 import { toDirectImageUrl } from '@/lib/imageUrl'
 import styles from './page.module.css'
 
-type Purchase = { id: string; title: string; image_default: string; download_url: string; tierLabel: string | null }
+type Purchase = { id: string; title: string; image_default: string; download_url: string; tierLabel: string | null; downloaded: boolean }
 type Invoice = {
   sessionId: string
   type: string
@@ -38,6 +38,7 @@ export default function ProfilePage() {
 
   const [purchases, setPurchases] = useState<Purchase[] | null>(null)
   const [purchasesError, setPurchasesError] = useState('')
+  const [purchasesFilter, setPurchasesFilter] = useState<'all' | 'downloaded' | 'notDownloaded'>('all')
 
   const [invoices, setInvoices] = useState<Invoice[] | null>(null)
   const [invoicesError, setInvoicesError] = useState('')
@@ -115,32 +116,71 @@ export default function ProfilePage() {
                   <Link href="/mockups" className="btn-ghost">Browse mockups →</Link>
                 </div>
               )}
-              {purchases && purchases.length > 0 && (
-                <div className={styles.list}>
-                  {purchases.map(p => {
-                    // Routed through /api/dl (rather than p.download_url
-                    // directly) so this click logs a download event against
-                    // this signed-in buyer — see that route for why uid/email
-                    // travel as plain query params rather than a signed token.
-                    const dlParams = new URLSearchParams({ uid: user.id, source: 'profile' })
-                    if (user.email) dlParams.set('email', user.email)
-                    return (
-                      <div key={p.id} className={styles.row}>
-                        <Link href={`/product/${p.id}`} className={styles.thumbLink}>
-                          <div className={styles.thumb} style={{ backgroundImage: `url(${toDirectImageUrl(p.image_default)})` }} />
-                        </Link>
-                        <div className={styles.rowInfo}>
-                          <Link href={`/product/${p.id}`} className={styles.rowTitle}>{p.title}</Link>
-                          {p.tierLabel && <span className={styles.rowTier}>{p.tierLabel} License</span>}
-                        </div>
-                        <a href={`/api/dl/${p.id}?${dlParams.toString()}`} className={styles.rowBtn} target="_blank" rel="noopener noreferrer">
-                          Download
-                        </a>
+              {purchases && purchases.length > 0 && (() => {
+                // A filter mainly pays off for Full Access buyers, whose
+                // list is the entire library rather than just what they
+                // bought — an easy way to see what's left to grab.
+                const downloadedCount = purchases.filter(p => p.downloaded).length
+                const visible = purchases.filter(p => {
+                  if (purchasesFilter === 'downloaded') return p.downloaded
+                  if (purchasesFilter === 'notDownloaded') return !p.downloaded
+                  return true
+                })
+                return (
+                  <>
+                    {purchases.length > 1 && (
+                      <div className={styles.tabs} style={{ marginBottom: 20 }}>
+                        <button className={`${styles.tab} ${purchasesFilter === 'all' ? styles.tabActive : ''}`} onClick={() => setPurchasesFilter('all')}>
+                          All ({purchases.length})
+                        </button>
+                        <button className={`${styles.tab} ${purchasesFilter === 'downloaded' ? styles.tabActive : ''}`} onClick={() => setPurchasesFilter('downloaded')}>
+                          Downloaded ({downloadedCount})
+                        </button>
+                        <button className={`${styles.tab} ${purchasesFilter === 'notDownloaded' ? styles.tabActive : ''}`} onClick={() => setPurchasesFilter('notDownloaded')}>
+                          Not downloaded ({purchases.length - downloadedCount})
+                        </button>
                       </div>
-                    )
-                  })}
-                </div>
-              )}
+                    )}
+                    {visible.length === 0 && <p className={styles.stateText}>Nothing matches this filter.</p>}
+                    <div className={styles.list}>
+                      {visible.map(p => {
+                        // Routed through /api/dl (rather than p.download_url
+                        // directly) so this click logs a download event against
+                        // this signed-in buyer — see that route for why uid/email
+                        // travel as plain query params rather than a signed token.
+                        const dlParams = new URLSearchParams({ uid: user.id, source: 'profile' })
+                        if (user.email) dlParams.set('email', user.email)
+                        return (
+                          <div key={p.id} className={styles.row}>
+                            <Link href={`/product/${p.id}`} className={styles.thumbLink}>
+                              <div className={styles.thumb} style={{ backgroundImage: `url(${toDirectImageUrl(p.image_default)})` }} />
+                            </Link>
+                            <div className={styles.rowInfo}>
+                              <Link href={`/product/${p.id}`} className={styles.rowTitle}>{p.title}</Link>
+                              <span className={styles.rowMeta}>
+                                {p.tierLabel && <span className={styles.rowTier}>{p.tierLabel} License</span>}
+                                {p.downloaded && <span className={styles.rowDownloaded}>Downloaded</span>}
+                              </span>
+                            </div>
+                            <a
+                              href={`/api/dl/${p.id}?${dlParams.toString()}`}
+                              className={styles.rowBtn}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => {
+                                if (p.downloaded) return
+                                setPurchases(prev => prev && prev.map(x => x.id === p.id ? { ...x, downloaded: true } : x))
+                              }}
+                            >
+                              {p.downloaded ? 'Download again' : 'Download'}
+                            </a>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </>
+                )
+              })()}
             </div>
           )}
 
