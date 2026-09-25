@@ -24,7 +24,13 @@
    side without the section's layout ever depending on it. */
 .pricingStack { position: relative; }
 .pricingMarquee { position: absolute; inset: 0; display: flex; align-items: center; overflow: hidden; z-index: 1; }
-.pricingCardWrap { position: relative; z-index: 2; width: 100%; }
+/* This wrapper is full page width (via .container) but only paints the
+   actual card in its center — everywhere else is transparent. Without
+   pointer-events: none, that whole invisible band still intercepted clicks
+   meant for the marquee underneath, since hit-testing uses the box, not
+   what's actually painted. .card re-enables pointer-events for itself so
+   the card (and its button) still work normally. */
+.pricingCardWrap { position: relative; z-index: 2; width: 100%; pointer-events: none; }
 
 .founderSection { border-top: none; }
 .founderRow { display: flex; align-items: center; justify-content: center; gap: 48px; max-width: 900px; margin: 0 auto; }
