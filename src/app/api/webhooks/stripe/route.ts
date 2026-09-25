@@ -5,6 +5,8 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { sendOrderNotificationEmail, sendGuestDownloadEmail, sendCartConfirmationEmail, sendFullAccessConfirmationEmail } from '@/lib/email'
 import { LICENSE_TIERS } from '@/lib/config'
 
+const SITE_URL = 'https://grafikjam.shop'
+
 export async function POST(req: NextRequest) {
   const sig = req.headers.get('stripe-signature')
   const rawBody = await req.text()
@@ -125,10 +127,17 @@ async function recordOrder(session: Stripe.Checkout.Session) {
       // rather than send to a bad address.
       if (buyerEmail && buyerEmail !== 'Unknown') {
         const productById = new Map(productRows.map(p => [p.id, p]))
+        // Routed through /api/dl (see that route for why) instead of the
+        // raw download_url, so a click on this email link logs a download
+        // event tied back to this order — same as the buyer's other
+        // download entry points (profile, product page, success page).
         const downloadItems = productIds
           .map(id => productById.get(id))
           .filter((p): p is { id: string; title: string; download_url: string } => !!p?.download_url)
-          .map(p => ({ title: p.title, downloadUrl: p.download_url }))
+          .map(p => ({
+            title: p.title,
+            downloadUrl: `${SITE_URL}/api/dl/${p.id}?session=${encodeURIComponent(session.id)}&email=${encodeURIComponent(buyerEmail)}&source=${userId ? 'email-cart' : 'email-guest'}`,
+          }))
         if (!userId) {
           await sendGuestDownloadEmail({ buyerEmail, items: downloadItems })
         } else {

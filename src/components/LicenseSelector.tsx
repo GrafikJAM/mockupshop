@@ -34,6 +34,17 @@ export default function LicenseSelector({ productCount, productId, productTitle,
 
   const owned = !!ownership && (ownership.hasFullAccess || ownership.productIds.includes(productId))
 
+  // Routed through /api/dl (rather than downloadUrl directly) so this click
+  // logs a download event against this signed-in buyer — see that route for
+  // why uid/email travel as plain query params rather than a signed token.
+  const dlHref = user
+    ? (() => {
+        const p = new URLSearchParams({ uid: user.id, source: 'product' })
+        if (user.email) p.set('email', user.email)
+        return `/api/dl/${productId}?${p.toString()}`
+      })()
+    : downloadUrl
+
   function handleAddToCart() {
     addItem({ productId, title: productTitle, image: productImage, tierKey: tier.key, tierLabel: tier.label, price: tier.price })
     openCart()
@@ -51,7 +62,7 @@ export default function LicenseSelector({ productCount, productId, productTitle,
               </div>
             </div>
           </div>
-          <a href={downloadUrl} className={styles.addToCart} target="_blank" rel="noopener noreferrer">
+          <a href={dlHref} className={styles.addToCart} target="_blank" rel="noopener noreferrer">
             Download
           </a>
         </div>

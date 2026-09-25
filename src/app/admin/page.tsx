@@ -16,6 +16,28 @@ type Order = {
   createdAt: string
 }
 
+type Download = {
+  id: string
+  productId: string | null
+  productTitle: string
+  email: string
+  source: string | null
+  sessionId: string | null
+  createdAt: string
+}
+
+// Labels for the `source` recorded by /api/dl — where the click came from.
+function sourceLabel(source: string | null) {
+  switch (source) {
+    case 'profile': return 'Profile page'
+    case 'product': return 'Product page'
+    case 'success': return 'Checkout success'
+    case 'email-guest': return 'Guest email link'
+    case 'email-cart': return 'Email link'
+    default: return 'Unknown'
+  }
+}
+
 type Product = {
   id: string
   title: string
@@ -81,11 +103,14 @@ export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [ordersLoaded, setOrdersLoaded] = useState(false)
+  const [downloads, setDownloads] = useState<Download[]>([])
+  const [downloadsLoaded, setDownloadsLoaded] = useState(false)
+  const [clientQuery, setClientQuery] = useState('')
   const [form, setForm] = useState(empty)
   const [editId, setEditId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
-  const [tab, setTab] = useState<'add' | 'manage' | 'orders'>('add')
+  const [tab, setTab] = useState<'add' | 'manage' | 'orders' | 'clients'>('add')
   const [orderPeriod, setOrderPeriod] = useState<'week' | 'month' | 'all'>('all')
   const [reordering, setReordering] = useState(false)
   const dragIndex = useRef<number | null>(null)
@@ -120,6 +145,21 @@ export default function AdminPage() {
   function openOrdersTab() {
     setTab('orders')
     if (!ordersLoaded) loadOrders()
+  }
+
+  async function loadDownloads() {
+    const res = await fetch('/api/admin/downloads', { headers: { 'x-admin-password': password } })
+    if (res.ok) {
+      const data = await res.json()
+      setDownloads(Array.isArray(data) ? data : [])
+    }
+    setDownloadsLoaded(true)
+  }
+
+  function openClientsTab() {
+    setTab('clients')
+    if (!ordersLoaded) loadOrders()
+    if (!downloadsLoaded) loadDownloads()
   }
 
   function formatAmount(amountTotal: number | null, currency: string | null) {
@@ -257,6 +297,7 @@ export default function AdminPage() {
         <button className={`${styles.tab} ${tab === 'add' ? styles.tabActive : ''}`} onClick={() => { setTab('add'); setEditId(null); setForm(empty) }}>{editId ? 'Edit product' : '+ Add product'}</button>
         <button className={`${styles.tab} ${tab === 'manage' ? styles.tabActive : ''}`} onClick={() => setTab('manage')}>Manage ({products.length})</button>
         <button className={`${styles.tab} ${tab === 'orders' ? styles.tabActive : ''}`} onClick={openOrdersTab}>Orders{ordersLoaded ? ` (${orders.length})` : ''}</button>
+        <button className={`${styles.tab} ${tab === 'clients' ? styles.tabActive : ''}`} onClick={openClientsTab}>Clients</button>
       </div>
 
       {msg && <p className={msg.startsWith('Error') ? styles.error : styles.success}>{msg}</p>}
@@ -454,6 +495,74 @@ export default function AdminPage() {
                 <div className={styles.orderAmount}>{formatAmount(o.amountTotal, o.currency)}</div>
               </div>
             ))}
+          </div>
+        )
+      })()}
+
+      {tab === 'clients' && (() => {
+        const q = clientQuery.trim().toLowerCase()
+        const matchedOrders = q ? orders.filter(o => o.email.toLowerCase().includes(q)) : []
+        const matchedDownloads = q ? downloads.filter(d => d.email.toLowerCase().includes(q)) : []
+        const stillLoading = !ordersLoaded || !downloadsLoaded
+
+        return (
+          <div className={styles.orderList}>
+            <div className={styles.clientSearch}>
+              <input
+                className={styles.input}
+                placeholder="Search by client email…"
+                value={clientQuery}
+                onChange={e => setClientQuery(e.target.value)}
+              />
+              {stillLoading && <span className={styles.savingTag}>Loading…</span>}
+            </div>
+
+            {!q && <p className={styles.empty}>Enter a client's email to see what they've purchased and downloaded.</p>}
+
+            {q && !stillLoading && matchedOrders.length === 0 && matchedDownloads.length === 0 && (
+              <p className={styles.empty}>No orders or downloads found for "{clientQuery.trim()}".</p>
+            )}
+
+            {q && (matchedOrders.length > 0 || matchedDownloads.length > 0) && (
+              <>
+                <p className={styles.clientSummary}>
+                  {matchedOrders.length} order{matchedOrders.length === 1 ? '' : 's'} · {matchedDownloads.length} download{matchedDownloads.length === 1 ? '' : 's'} logged
+                </p>
+
+                <div className={styles.clientSection}>
+                  <p className={styles.clientSectionTitle}>Purchased</p>
+                  {matchedOrders.length === 0 && <p className={styles.empty}>No orders found.</p>}
+                  {matchedOrders.map(o => (
+                    <div key={o.sessionId} className={styles.orderRow}>
+                      <div className={styles.orderMain}>
+                        <div className={styles.orderTitle}>{o.items.join(', ')}</div>
+                        <div className={styles.productMeta}>
+                          {o.email}{o.guest && ' (guest)'} · {new Date(o.createdAt).toLocaleString()}
+                        </div>
+                      </div>
+                      <div className={styles.orderAmount}>{formatAmount(o.amountTotal, o.currency)}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className={styles.clientSection}>
+                  <p className={styles.clientSectionTitle}>Downloaded</p>
+                  <p className={styles.dragHint} style={{ marginBottom: 12 }}>
+                    Only tracked from here on — purchases made before this was added won't have download history.
+                  </p>
+                  {matchedDownloads.length === 0 && <p className={styles.empty}>No download clicks logged yet for this client.</p>}
+                  {matchedDownloads.map(d => (
+                    <div key={d.id} className={styles.downloadRow}>
+                      <div className={styles.orderMain}>
+                        <div className={styles.orderTitle}>{d.productTitle}</div>
+                        <div className={styles.productMeta}>{new Date(d.createdAt).toLocaleString()}</div>
+                      </div>
+                      <span className={styles.sourceBadge}>{sourceLabel(d.source)}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         )
       })()}

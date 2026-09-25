@@ -17,6 +17,7 @@ function SuccessContent() {
   const { user } = useAuth()
   const [status, setStatus] = useState<'loading' | 'ok' | 'error'>('loading')
   const [products, setProducts] = useState<Product[]>([])
+  const [buyerEmail, setBuyerEmail] = useState<string | null>(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -29,6 +30,7 @@ function SuccessContent() {
       })
       .then(data => {
         setProducts(data.products || [])
+        setBuyerEmail(data.email || null)
         setStatus('ok')
         clear()
       })
@@ -69,14 +71,23 @@ function SuccessContent() {
             </p>
 
             <div className={styles.downloads}>
-              {products.map(p => (
-                <div key={p.id} className={styles.downloadRow}>
-                  <span className={styles.downloadTitle}>{p.title}</span>
-                  <a href={p.download_url} className={styles.downloadBtn} target="_blank" rel="noopener noreferrer">
-                    Download
-                  </a>
-                </div>
-              ))}
+              {products.map(p => {
+                // Routed through /api/dl (rather than p.download_url
+                // directly) so this click logs a download event tied back
+                // to this order — see that route for why the params here
+                // are plain query params, not a signed token.
+                const params = new URLSearchParams({ source: 'success' })
+                if (sessionId) params.set('session', sessionId)
+                if (buyerEmail) params.set('email', buyerEmail)
+                return (
+                  <div key={p.id} className={styles.downloadRow}>
+                    <span className={styles.downloadTitle}>{p.title}</span>
+                    <a href={`/api/dl/${p.id}?${params.toString()}`} className={styles.downloadBtn} target="_blank" rel="noopener noreferrer">
+                      Download
+                    </a>
+                  </div>
+                )
+              })}
               {products.length === 0 && <p className={styles.stateText}>No files found for this order.</p>}
             </div>
 

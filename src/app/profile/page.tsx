@@ -117,20 +117,28 @@ export default function ProfilePage() {
               )}
               {purchases && purchases.length > 0 && (
                 <div className={styles.list}>
-                  {purchases.map(p => (
-                    <div key={p.id} className={styles.row}>
-                      <Link href={`/product/${p.id}`} className={styles.thumbLink}>
-                        <div className={styles.thumb} style={{ backgroundImage: `url(${toDirectImageUrl(p.image_default)})` }} />
-                      </Link>
-                      <div className={styles.rowInfo}>
-                        <Link href={`/product/${p.id}`} className={styles.rowTitle}>{p.title}</Link>
-                        {p.tierLabel && <span className={styles.rowTier}>{p.tierLabel} License</span>}
+                  {purchases.map(p => {
+                    // Routed through /api/dl (rather than p.download_url
+                    // directly) so this click logs a download event against
+                    // this signed-in buyer — see that route for why uid/email
+                    // travel as plain query params rather than a signed token.
+                    const dlParams = new URLSearchParams({ uid: user.id, source: 'profile' })
+                    if (user.email) dlParams.set('email', user.email)
+                    return (
+                      <div key={p.id} className={styles.row}>
+                        <Link href={`/product/${p.id}`} className={styles.thumbLink}>
+                          <div className={styles.thumb} style={{ backgroundImage: `url(${toDirectImageUrl(p.image_default)})` }} />
+                        </Link>
+                        <div className={styles.rowInfo}>
+                          <Link href={`/product/${p.id}`} className={styles.rowTitle}>{p.title}</Link>
+                          {p.tierLabel && <span className={styles.rowTier}>{p.tierLabel} License</span>}
+                        </div>
+                        <a href={`/api/dl/${p.id}?${dlParams.toString()}`} className={styles.rowBtn} target="_blank" rel="noopener noreferrer">
+                          Download
+                        </a>
                       </div>
-                      <a href={p.download_url} className={styles.rowBtn} target="_blank" rel="noopener noreferrer">
-                        Download
-                      </a>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>

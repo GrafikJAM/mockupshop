@@ -18,6 +18,10 @@ export async function GET(req: NextRequest) {
   }
 
   const mode = session.metadata?.mode
+  // Surfaced so the success page can route its download links through
+  // /api/dl with an identity attached (see that route) — same email Stripe
+  // itself collected at checkout, guest or signed-in either way.
+  const email = session.customer_details?.email || session.customer_email || null
 
   if (mode === 'full-access') {
     const { data, error } = await supabase
@@ -27,18 +31,18 @@ export async function GET(req: NextRequest) {
       .order('sort_order', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ mode: 'full-access', products: data })
+    return NextResponse.json({ mode: 'full-access', products: data, email })
   }
 
   if (mode === 'cart') {
     const ids = (session.metadata?.productIds || '').split(',').filter(Boolean)
-    if (ids.length === 0) return NextResponse.json({ mode: 'cart', products: [] })
+    if (ids.length === 0) return NextResponse.json({ mode: 'cart', products: [], email })
     const { data, error } = await supabase
       .from('products')
       .select('id, title, download_url')
       .in('id', ids)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ mode: 'cart', products: data })
+    return NextResponse.json({ mode: 'cart', products: data, email })
   }
 
   return NextResponse.json({ error: 'Unknown purchase type' }, { status: 400 })
