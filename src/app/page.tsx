@@ -22,7 +22,7 @@ export default async function Home() {
     .order('created_at', { ascending: false })
 
   const all = products || []
-  const latest = all.slice(0, 10)
+  const latest = all.slice(0, 12)
 
   // Best Sellers above is hand-curated via `sort_order`, so it doesn't
   // reliably surface what was just uploaded. This is a separate, strictly

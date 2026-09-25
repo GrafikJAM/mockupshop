@@ -1,16 +1,2 @@
 .sectionHeadRow { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 36px; flex-wrap: wrap; }
 .sectionHead { display: flex; flex-direction: column; gap: 8px; }
-
-.colToggle { display: flex; align-items: center; gap: 8px; }
-.colBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 32px;
-  border-radius: 6px;
-  color: var(--text-muted);
-  transition: color 0.15s, background 0.15s;
-}
-.colBtn:hover { color: var(--text-secondary); }
-.colBtnActive { color: var(--text-primary); background: var(--bg-elevated); }

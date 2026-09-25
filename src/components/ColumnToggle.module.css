@@ -1,0 +1,13 @@
+.colToggle { display: flex; align-items: center; gap: 8px; }
+.colBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 32px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  transition: color 0.15s, background 0.15s;
+}
+.colBtn:hover { color: var(--text-secondary); }
+.colBtnActive { color: var(--text-primary); background: var(--bg-elevated); }
