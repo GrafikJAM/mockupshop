@@ -276,7 +276,7 @@ export default function AdminPage() {
   if (!authed) return (
     <div className={styles.loginWrap}>
       <div className={styles.loginCard}>
-        <h1 className={styles.loginTitle}>Admin</h1>
+        <h1 className={`display-lg ${styles.loginTitle}`}>Admin</h1>
         <p className={styles.loginSub}>Enter your admin password</p>
         <input className={styles.input} type="password" placeholder="Password" value={password}
           onChange={e => { setPassword(e.target.value); setAuthError(false) }}
@@ -290,7 +290,7 @@ export default function AdminPage() {
   return (
     <div className={styles.wrap}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Product Admin</h1>
+        <h1 className={`display-lg ${styles.title}`}>Product Admin</h1>
         <span className={styles.count}>{products.length} products</span>
       </div>
       <div className={styles.tabs}>
