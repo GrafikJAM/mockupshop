@@ -16,13 +16,15 @@
 
 .pricingSection { padding: 80px 0; border-bottom: 1px solid var(--border); transition: border-color 0.25s; }
 
-/* Marquee and pricing card share one grid cell so the card floats over the
-   marquee instead of stacking below it — the row auto-sizes to the taller
-   child (the card), and the marquee is vertically centered within it via
-   align-self, so it reads as continuing behind the card either side. */
-.pricingStack { display: grid; }
-.pricingMarquee { grid-area: 1 / 1; align-self: center; padding: 8px 0; }
-.pricingCardWrap { grid-area: 1 / 1; z-index: 2; width: 100%; }
+/* The card stays in normal document flow — its own height always drives
+   this section's height, exactly like before this effect existed, so it
+   can never end up collapsed or missing. The marquee is what's taken out
+   of flow: absolutely positioned behind the card and vertically centered
+   within the section, so it reads as continuing behind the card on either
+   side without the section's layout ever depending on it. */
+.pricingStack { position: relative; }
+.pricingMarquee { position: absolute; inset: 0; display: flex; align-items: center; overflow: hidden; z-index: 1; }
+.pricingCardWrap { position: relative; z-index: 2; width: 100%; }
 
 .founderSection { border-top: none; }
 .founderRow { display: flex; align-items: center; justify-content: center; gap: 48px; max-width: 900px; margin: 0 auto; }
