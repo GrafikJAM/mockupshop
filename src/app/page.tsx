@@ -4,9 +4,9 @@ import { supabase } from '@/lib/supabase'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import Marquee from '@/components/Marquee'
-import ProductGrid from '@/components/ProductGrid'
 import LatestArrivalsSlider from '@/components/LatestArrivalsSlider'
 import PricingCard from '@/components/PricingCard'
+import TopMockupsSection from '@/components/TopMockupsSection'
 import GetAccessButton from '@/components/GetAccessButton'
 import BlackFridayBanner from '@/components/BlackFridayBanner'
 import styles from './page.module.css'
@@ -69,11 +69,7 @@ export default async function Home() {
         {latest.length > 0 && (
           <section className={`${styles.section} section`}>
             <div className="container">
-              <div className={styles.sectionHead}>
-                <p className="label">Best sellers</p>
-                <h2 className="display-lg">Top mockups this month</h2>
-              </div>
-              <ProductGrid products={latest} cols={3} />
+              <TopMockupsSection products={latest} />
               <div className={styles.viewAll}>
                 <Link href="/mockups" className="btn-ghost">
                   View all mockups
