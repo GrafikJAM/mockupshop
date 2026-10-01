@@ -50,14 +50,14 @@ export default function Nav() {
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13.5 8.5A5.5 5.5 0 0 1 7.5 3a5.5 5.5 0 1 0 6 5.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
             )}
           </button>
-          <button className={styles.toggle} onClick={toggleCart} aria-label="Open cart">
+          <button className={`${styles.toggle} ${styles.cartToggle}`} onClick={toggleCart} aria-label="Open cart">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M1.5 1.5h1.5l1.6 8.6a1.2 1.2 0 0 0 1.2 1h6.4a1.2 1.2 0 0 0 1.2-1L14.5 4.5h-10.7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/><circle cx="6.5" cy="14" r="1" fill="currentColor"/><circle cx="11.5" cy="14" r="1" fill="currentColor"/></svg>
             {items.length > 0 && <span className={styles.badge}>{items.length}</span>}
           </button>
           {!loading && (
             <Link
               href={user ? '/profile' : '/login'}
-              className={styles.toggle}
+              className={`${styles.toggle} ${styles.profileToggle}`}
               aria-label={user ? 'My profile' : 'Sign in'}
               title={user ? `Signed in as ${user.email}` : 'Sign in'}
             >
@@ -90,6 +90,14 @@ export default function Nav() {
           <a href="https://grafikjam.com" target="_blank" rel="noopener noreferrer" className={styles.mobileBrandLink} onClick={() => setMenuOpen(false)}>
             GrafikJAM
           </a>
+          <button className={styles.mobileLink} onClick={() => { setMenuOpen(false); toggleCart() }}>
+            Cart{items.length > 0 ? ` (${items.length})` : ''}
+          </button>
+          {!loading && (
+            <Link href={user ? '/profile' : '/login'} className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+              {user ? 'My profile' : 'Sign in'}
+            </Link>
+          )}
           <button className={styles.mobileLink} onClick={toggle}>
             {theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           </button>
