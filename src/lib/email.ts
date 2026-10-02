@@ -41,7 +41,7 @@ function emailLayout(bodyHtml: string) {
             </tr>
             <tr>
               <td style="padding:28px 40px 20px;">
-                <img src="${SITE_URL}/email-logo.png" width="132" alt="${escapeHtml(SITE.name)}" style="display:block;height:auto;border:0;">
+                <img src="${SITE_URL}/email-logo.png" width="92" alt="${escapeHtml(SITE.name)}" style="display:block;height:auto;border:0;">
               </td>
             </tr>
             <tr>
@@ -78,17 +78,30 @@ function emailButton(href: string, label: string) {
   return `<a href="${href}" style="display:inline-block;background:${BRAND.ctaBg};color:${BRAND.ctaText};font-size:13px;font-weight:500;padding:11px 22px;border-radius:8px;text-decoration:none;">${escapeHtml(label)}</a>`
 }
 
-// Renders each purchased item as a small card with its own download button —
-// the HTML counterpart to the plain-text "title + url on the next line"
-// lists used in the text versions of these emails.
-function downloadItemsHtml(items: { title: string; downloadUrl: string }[]) {
+// Renders each purchased item as a row with its thumbnail, title, and a
+// download button — the HTML counterpart to the plain-text "title + url on
+// the next line" lists used in the text versions of these emails, styled to
+// match the product rows on /profile. Table-based (not flex) since that's
+// what renders reliably across email clients; the thumbnail is skipped
+// rather than left as a broken-image icon when a product has none.
+function downloadItemsHtml(items: { title: string; downloadUrl: string; image?: string }[]) {
   return items
-    .map(
-      i => `<div style="margin:0 0 10px;padding:16px 18px;background:${BRAND.rowBg};border:1px solid ${BRAND.border};border-radius:10px;">
-        <p style="margin:0 0 12px;font-size:14px;font-weight:500;color:${BRAND.textPrimary};">${escapeHtml(i.title)}</p>
-        ${emailButton(i.downloadUrl, 'Download')}
-      </div>`
-    )
+    .map(i => {
+      const thumbCell = i.image
+        ? `<td width="64" style="width:64px;padding:12px 0 12px 12px;vertical-align:middle;">
+            <img src="${i.image}" width="56" height="56" alt="" style="display:block;width:56px;height:56px;object-fit:cover;border-radius:6px;background:${BRAND.border};">
+          </td>`
+        : ''
+      return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 10px;background:${BRAND.rowBg};border:1px solid ${BRAND.border};border-radius:10px;">
+        <tr>
+          ${thumbCell}
+          <td style="padding:${i.image ? '12px 16px 12px 14px' : '16px 18px'};vertical-align:middle;">
+            <p style="margin:0 0 12px;font-size:14px;font-weight:500;color:${BRAND.textPrimary};">${escapeHtml(i.title)}</p>
+            ${emailButton(i.downloadUrl, 'Download')}
+          </td>
+        </tr>
+      </table>`
+    })
     .join('')
 }
 
@@ -174,7 +187,7 @@ export async function sendOrderNotificationEmail(params: {
 // silently on error rather than breaking order recording, same as above.
 export async function sendGuestDownloadEmail(params: {
   buyerEmail: string
-  items: { title: string; downloadUrl: string }[]
+  items: { title: string; downloadUrl: string; image?: string }[]
 }) {
   if (!params.items.length) return
 
@@ -213,7 +226,7 @@ export async function sendGuestDownloadEmail(params: {
 // you'll find them" warning.
 export async function sendCartConfirmationEmail(params: {
   buyerEmail: string
-  items: { title: string; downloadUrl: string }[]
+  items: { title: string; downloadUrl: string; image?: string }[]
 }) {
   if (!params.items.length) return
 

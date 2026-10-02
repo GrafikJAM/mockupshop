@@ -4,6 +4,7 @@ import { getStripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { sendOrderNotificationEmail, sendGuestDownloadEmail, sendCartConfirmationEmail, sendFullAccessConfirmationEmail } from '@/lib/email'
 import { LICENSE_TIERS } from '@/lib/config'
+import { toDirectImageUrl } from '@/lib/imageUrl'
 
 const SITE_URL = 'https://grafikjam.shop'
 
@@ -101,9 +102,9 @@ async function recordOrder(session: Stripe.Checkout.Session) {
       // lookup; falls back to a generic label per item if it fails. Also
       // pulls download_url, needed below for guest orders' download email.
       let items = productIds.map(() => 'Mockup')
-      let productRows: { id: string; title: string; download_url: string }[] = []
+      let productRows: { id: string; title: string; download_url: string; image_default: string }[] = []
       try {
-        const { data } = await supabaseAdmin.from('products').select('id, title, download_url').in('id', productIds)
+        const { data } = await supabaseAdmin.from('products').select('id, title, download_url, image_default').in('id', productIds)
         productRows = data || []
         const titleById = new Map(productRows.map(p => [p.id, p.title]))
         items = productIds.map(id => titleById.get(id) || 'Unknown product')
@@ -133,10 +134,11 @@ async function recordOrder(session: Stripe.Checkout.Session) {
         // download entry points (profile, product page, success page).
         const downloadItems = productIds
           .map(id => productById.get(id))
-          .filter((p): p is { id: string; title: string; download_url: string } => !!p?.download_url)
+          .filter((p): p is { id: string; title: string; download_url: string; image_default: string } => !!p?.download_url)
           .map(p => ({
             title: p.title,
             downloadUrl: `${SITE_URL}/api/dl/${p.id}?session=${encodeURIComponent(session.id)}&email=${encodeURIComponent(buyerEmail)}&source=${userId ? 'email-cart' : 'email-guest'}`,
+            image: toDirectImageUrl(p.image_default),
           }))
         if (!userId) {
           await sendGuestDownloadEmail({ buyerEmail, items: downloadItems })
