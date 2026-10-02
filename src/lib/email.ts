@@ -3,6 +3,99 @@ import { SITE } from './config'
 
 const SITE_URL = 'https://grafikjam.shop'
 
+// Matches the site's light-theme palette (see :root in globals.css) — email
+// clients render on a white/light background regardless of the recipient's
+// OS theme, so these are fixed values rather than CSS variables.
+const BRAND = {
+  bg: '#fafaf8',
+  card: '#ffffff',
+  border: '#ece9e3',
+  rowBg: '#faf9f6',
+  textPrimary: '#0c0c0b',
+  textSecondary: '#6b6865',
+  textMuted: '#a09d9a',
+  accentYellow: '#f6ec3e',
+  accentRed: '#ea1c24',
+  ctaBg: '#0c0c0b',
+  ctaText: '#f0ede8',
+}
+// NeueMontreal (the site's display font) isn't available to email clients,
+// so this falls back to the same system-sans stack most clients render
+// cleanly, same spirit as --font-body's fallback in globals.css.
+const FONT = `-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif`
+
+// Shared letterhead/footer wrapper for every customer-facing email, so they
+// read as one system instead of each being a one-off plain-text message.
+// Table-based layout with inline styles throughout — the only approach that
+// renders reliably across Gmail, Apple Mail, and Outlook alike.
+function emailLayout(bodyHtml: string) {
+  return `<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background:${BRAND.bg};font-family:${FONT};">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND.bg};padding:40px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:${BRAND.card};border:1px solid ${BRAND.border};border-radius:16px;overflow:hidden;">
+            <tr>
+              <td style="height:4px;line-height:4px;font-size:4px;background:${BRAND.accentYellow};">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding:28px 40px 20px;">
+                <img src="${SITE_URL}/email-logo.png" width="132" alt="${escapeHtml(SITE.name)}" style="display:block;height:auto;border:0;">
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:4px 40px 36px;">
+                ${bodyHtml}
+              </td>
+            </tr>
+          </table>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
+            <tr>
+              <td style="padding:20px 40px;text-align:center;">
+                <p style="margin:0;font-size:12px;color:${BRAND.textMuted};">
+                  ${escapeHtml(SITE.name)} · <a href="${SITE_URL}" style="color:${BRAND.textMuted};">grafikjam.shop</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`
+}
+
+function emailHeading(text: string) {
+  return `<h1 style="margin:0 0 14px;font-size:21px;line-height:1.3;font-weight:600;letter-spacing:-0.01em;color:${BRAND.textPrimary};">${escapeHtml(text)}</h1>`
+}
+
+function emailParagraph(html: string) {
+  return `<p style="margin:0 0 22px;font-size:14px;line-height:1.65;color:${BRAND.textSecondary};">${html}</p>`
+}
+
+function emailButton(href: string, label: string) {
+  return `<a href="${href}" style="display:inline-block;background:${BRAND.ctaBg};color:${BRAND.ctaText};font-size:13px;font-weight:500;padding:11px 22px;border-radius:8px;text-decoration:none;">${escapeHtml(label)}</a>`
+}
+
+// Renders each purchased item as a small card with its own download button —
+// the HTML counterpart to the plain-text "title + url on the next line"
+// lists used in the text versions of these emails.
+function downloadItemsHtml(items: { title: string; downloadUrl: string }[]) {
+  return items
+    .map(
+      i => `<div style="margin:0 0 10px;padding:16px 18px;background:${BRAND.rowBg};border:1px solid ${BRAND.border};border-radius:10px;">
+        <p style="margin:0 0 12px;font-size:14px;font-weight:500;color:${BRAND.textPrimary};">${escapeHtml(i.title)}</p>
+        ${emailButton(i.downloadUrl, 'Download')}
+      </div>`
+    )
+    .join('')
+}
+
+function emailNote(html: string) {
+  return `<p style="margin:22px 0 0;font-size:12px;line-height:1.6;color:${BRAND.textMuted};">${html}</p>`
+}
+
 let _resend: Resend | null = null
 
 // Lazily instantiated for the same reason as getStripe() in ./stripe.ts —
@@ -86,9 +179,6 @@ export async function sendGuestDownloadEmail(params: {
   if (!params.items.length) return
 
   const linesText = params.items.map(i => `${i.title}\n${i.downloadUrl}`).join('\n\n')
-  const linesHtml = params.items
-    .map(i => `<p style="margin:0 0 16px;"><strong>${escapeHtml(i.title)}</strong><br/><a href="${i.downloadUrl}">${i.downloadUrl}</a></p>`)
-    .join('')
 
   try {
     await getResend().emails.send({
@@ -104,12 +194,12 @@ export async function sendGuestDownloadEmail(params: {
         '',
         "These links aren't saved to an account, so keep this email — it's the only place you'll find them.",
       ].join('\n'),
-      html: [
-        `<p>Thanks for your purchase from ${escapeHtml(SITE.name)}!</p>`,
-        `<p>Here${params.items.length > 1 ? ' are your download links' : "'s your download link"}:</p>`,
-        linesHtml,
-        `<p style="color:#666;font-size:13px;">These links aren't saved to an account, so keep this email — it's the only place you'll find them.</p>`,
-      ].join(''),
+      html: emailLayout([
+        emailHeading('Thanks for your purchase!'),
+        emailParagraph(`Here${params.items.length > 1 ? ' are your download links' : "'s your download link"} from ${escapeHtml(SITE.name)}:`),
+        downloadItemsHtml(params.items),
+        emailNote("These links aren't saved to an account, so keep this email — it's the only place you'll find them."),
+      ].join('')),
     })
   } catch (err) {
     console.error('Guest download email failed:', err)
@@ -128,9 +218,6 @@ export async function sendCartConfirmationEmail(params: {
   if (!params.items.length) return
 
   const linesText = params.items.map(i => `${i.title}\n${i.downloadUrl}`).join('\n\n')
-  const linesHtml = params.items
-    .map(i => `<p style="margin:0 0 16px;"><strong>${escapeHtml(i.title)}</strong><br/><a href="${i.downloadUrl}">${i.downloadUrl}</a></p>`)
-    .join('')
 
   try {
     await getResend().emails.send({
@@ -146,12 +233,12 @@ export async function sendCartConfirmationEmail(params: {
         '',
         `You can always come back for these later from your profile: ${SITE_URL}/profile`,
       ].join('\n'),
-      html: [
-        `<p>Thanks for your purchase from ${escapeHtml(SITE.name)}!</p>`,
-        `<p>Here${params.items.length > 1 ? ' are your download links' : "'s your download link"}:</p>`,
-        linesHtml,
-        `<p style="color:#666;font-size:13px;">You can always come back for these later from <a href="${SITE_URL}/profile">your profile</a>.</p>`,
-      ].join(''),
+      html: emailLayout([
+        emailHeading('Thanks for your purchase!'),
+        emailParagraph(`Here${params.items.length > 1 ? ' are your download links' : "'s your download link"} from ${escapeHtml(SITE.name)}:`),
+        downloadItemsHtml(params.items),
+        emailNote(`You can always come back for these later from <a href="${SITE_URL}/profile" style="color:${BRAND.textMuted};text-decoration:underline;">your profile</a>.`),
+      ].join('')),
     })
   } catch (err) {
     console.error('Cart confirmation email failed:', err)
@@ -181,11 +268,11 @@ export async function sendFullAccessConfirmationEmail(params: {
         '',
         `Browse and download anything, any time: ${SITE_URL}/mockups`,
       ].join('\n'),
-      html: [
-        `<p>Thanks for grabbing Full Access${escapeHtml(label)} on ${escapeHtml(SITE.name)}!</p>`,
-        `<p>You now have lifetime access to every mockup in the library — including everything added after today, no extra charge.</p>`,
-        `<p><a href="${SITE_URL}/mockups">Browse and download anything, any time →</a></p>`,
-      ].join(''),
+      html: emailLayout([
+        emailHeading(`You're in — Full Access${label}`),
+        emailParagraph(`Thanks for grabbing Full Access${escapeHtml(label)} on ${escapeHtml(SITE.name)}! You now have lifetime access to every mockup in the library — including everything added after today, no extra charge.`),
+        emailButton(`${SITE_URL}/mockups`, 'Browse the library'),
+      ].join('')),
     })
   } catch (err) {
     console.error('Full Access confirmation email failed:', err)
