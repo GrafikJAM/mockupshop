@@ -46,6 +46,7 @@
 .orderMain { flex: 1; min-width: 0; }
 .orderTitle { font-size: 14px; font-weight: 500; color: #f0ede8; }
 .orderAmount { font-size: 14px; font-weight: 500; color: #f0ede8; flex-shrink: 0; font-family: system-ui, sans-serif; }
+.orderActions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .statsRow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 8px; }
 @media (max-width: 640px) { .statsRow { grid-template-columns: 1fr; } }
 .statCard {

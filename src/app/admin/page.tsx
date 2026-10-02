@@ -34,6 +34,8 @@ function sourceLabel(source: string | null) {
     case 'success': return 'Checkout success'
     case 'email-guest': return 'Guest email link'
     case 'email-cart': return 'Email link'
+    case 'email-guest-resend': return 'Guest email link (resent)'
+    case 'email-cart-resend': return 'Email link (resent)'
     default: return 'Unknown'
   }
 }
@@ -106,6 +108,8 @@ export default function AdminPage() {
   const [downloads, setDownloads] = useState<Download[]>([])
   const [downloadsLoaded, setDownloadsLoaded] = useState(false)
   const [clientQuery, setClientQuery] = useState('')
+  const [resending, setResending] = useState<string | null>(null)
+  const [resendResult, setResendResult] = useState<Record<string, string>>({})
   const [form, setForm] = useState(empty)
   const [editId, setEditId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -156,10 +160,48 @@ export default function AdminPage() {
     setDownloadsLoaded(true)
   }
 
+  // Manually re-fires a buyer's confirmation/download email for one order —
+  // the fix for "customer says they never got it" (e.g. a gap before
+  // ORDER_NOTIFICATION_FROM was configured). See api/admin/resend-email.
+  async function resendEmail(sessionId: string) {
+    setResending(sessionId)
+    setResendResult(r => ({ ...r, [sessionId]: '' }))
+    try {
+      const res = await fetch('/api/admin/resend-email', {
+        method: 'POST',
+        headers: { 'x-admin-password': password, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId }),
+      })
+      const data = await res.json()
+      setResendResult(r => ({ ...r, [sessionId]: res.ok ? `Sent to ${data.email}` : (data.error || 'Failed to send') }))
+    } catch {
+      setResendResult(r => ({ ...r, [sessionId]: 'Failed to send' }))
+    } finally {
+      setResending(null)
+    }
+  }
+
   function openClientsTab() {
     setTab('clients')
     if (!ordersLoaded) loadOrders()
     if (!downloadsLoaded) loadDownloads()
+  }
+
+  function ResendButton({ sessionId }: { sessionId: string }) {
+    const result = resendResult[sessionId]
+    return (
+      <div className={styles.orderActions}>
+        <button
+          type="button"
+          className={styles.btnEdit}
+          disabled={resending === sessionId}
+          onClick={() => resendEmail(sessionId)}
+        >
+          {resending === sessionId ? 'Sending…' : 'Resend email'}
+        </button>
+        {result && <span className={styles.productMeta}>{result}</span>}
+      </div>
+    )
   }
 
   function formatAmount(amountTotal: number | null, currency: string | null) {
@@ -493,6 +535,7 @@ export default function AdminPage() {
                   </div>
                 </div>
                 <div className={styles.orderAmount}>{formatAmount(o.amountTotal, o.currency)}</div>
+                <ResendButton sessionId={o.sessionId} />
               </div>
             ))}
           </div>
@@ -541,6 +584,7 @@ export default function AdminPage() {
                         </div>
                       </div>
                       <div className={styles.orderAmount}>{formatAmount(o.amountTotal, o.currency)}</div>
+                      <ResendButton sessionId={o.sessionId} />
                     </div>
                   ))}
                 </div>
