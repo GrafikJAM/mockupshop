@@ -111,14 +111,6 @@ export const CATEGORIES: Category[] = [
     intro: 'Interior mockups for signage, displays and print shown indoors — cafes, offices, retail interiors — for brand work that lives inside a space rather than out on the street.',
   },
   {
-    slug: 'stationery',
-    tag: 'Stationery',
-    label: 'Stationery Mockups',
-    metaTitle: 'Stationery Mockups — Photoshop PSD',
-    metaDescription: 'Business card and stationery mockups for brand identity presentations. Smart Object PSD files. Free and paid licenses available.',
-    intro: 'Stationery mockups for brand identity work — business cards and paper goods — for showing a mark or layout the way it\'ll actually print, not just on screen.',
-  },
-  {
     slug: 'other',
     tag: 'Other',
     label: 'More Mockups',
