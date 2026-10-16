@@ -1,0 +1,107 @@
+.wrap { position: relative; }
+.head { display: flex; flex-direction: column; gap: 8px; margin-bottom: 40px; }
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.55em;
+  row-gap: 0.05em;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 6.2vw, 7rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.item { display: inline-flex; align-items: baseline; }
+
+.link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.08em;
+  color: var(--text-primary);
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+/* Hovering anywhere in the list dims every name except the one under the
+   cursor, which takes the accent colour (red on light, yellow on dark —
+   same swap as the hero's "Get access" link). */
+.list:hover .link { opacity: 0.22; }
+.list:hover .link.linkActive,
+.list .link:hover { opacity: 1; color: var(--accent-red); }
+:global([data-theme="dark"]) .list:hover .link.linkActive,
+:global([data-theme="dark"]) .list .link:hover { color: var(--accent-yellow); }
+.link:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; border-radius: 4px; }
+
+.count {
+  font-family: var(--font-body);
+  font-size: 0.2em;
+  letter-spacing: 0;
+  color: var(--text-muted);
+  align-self: flex-start;
+  margin-top: 0.35em;
+  vertical-align: baseline;
+  position: static;
+}
+
+.all .name { color: var(--text-muted); }
+.list .all:hover .name { color: inherit; }
+
+/* Inline thumbnail: only on touch devices, where there is no hover. */
+.thumb { display: none; }
+
+/* Floating cursor preview (mouse devices only). position: fixed so it
+   follows clientX/Y; pointer-events: none so it never steals the hover. */
+.preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  width: clamp(240px, 22vw, 380px);
+  aspect-ratio: 4 / 3;
+  pointer-events: none;
+  opacity: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  transition: opacity 0.2s ease;
+  will-change: transform;
+}
+.previewOn { opacity: 1; }
+.previewImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.previewImgOn { opacity: 1; }
+
+@media (hover: none) {
+  .preview { display: none; }
+  .list:hover .link { opacity: 1; }
+  .thumb {
+    display: block;
+    align-self: center;
+    width: 1.15em;
+    height: 0.86em;
+    object-fit: cover;
+    border-radius: 0.08em;
+    margin-right: 0.12em;
+    background: var(--bg-elevated);
+  }
+}
+
+@media (max-width: 640px) {
+  .list { font-size: clamp(2rem, 10vw, 3rem); column-gap: 0.4em; row-gap: 0.12em; }
+  .head { margin-bottom: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preview, .previewImg, .link { transition: none; }
+}
