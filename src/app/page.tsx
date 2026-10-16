@@ -106,7 +106,7 @@ export default async function Home() {
               </div>
             )}
             <div className={`container ${styles.pricingCardWrap}`}>
-              <PricingCard />
+              <PricingCard showTiers />
             </div>
           </div>
         </section>
@@ -117,7 +117,7 @@ export default async function Home() {
               <img src="/founder-portrait.png" alt={SITE.founderName} className={styles.founderImg} />
               <div className={styles.founder}>
                 <p className="label">About GrafikJAM</p>
-         <h2 className="display-sm">Mockups built for real branding work</h2>
+         <h2 className={`display-sm ${styles.founderTitle}`}>Mockups built for real branding work</h2>
                 <div className={styles.founderBio}>
                   {SITE.founderBio.split('\n\n').map((p, i) => <p key={i}>{p}</p>)}
                 </div>
