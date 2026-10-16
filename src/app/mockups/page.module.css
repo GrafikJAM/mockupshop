@@ -3,6 +3,14 @@
 .count { font-size: 13px; color: var(--text-muted); }
 .headerBadge { align-self: center; margin-left: 4px; }
 .headerToggle { margin-left: auto; align-self: center; }
+/* Phones: the grid is always 2 columns there (ProductGrid's CSS), so the
+   column toggle did nothing — hide it. The "65+" sticker moves above the
+   title, left-aligned, instead of squeezing into the title row. */
+@media (max-width: 640px) {
+  .header { display: grid; grid-template-columns: auto 1fr; align-items: baseline; column-gap: 12px; row-gap: 12px; }
+  .headerBadge { grid-column: 1 / -1; grid-row: 1; justify-self: start; margin-left: 0; }
+  .headerToggle { display: none; }
+}
 .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 36px; }
 .filter { font-size: 13px; font-family: var(--font-body); color: var(--text-secondary); border: 1px solid var(--border); border-radius: 100px; padding: 6px 16px; background: transparent; transition: all 0.15s; cursor: pointer; }
 .filter:hover { color: var(--text-primary); border-color: var(--border-hover); }

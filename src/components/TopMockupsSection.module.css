@@ -1,2 +1,5 @@
 .sectionHeadRow { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 36px; flex-wrap: wrap; }
 .sectionHead { display: flex; flex-direction: column; gap: 8px; }
+
+/* Grid is fixed at 2 columns on phones, so the toggle does nothing there. */
+@media (max-width: 640px) { .toggle { display: none; } }
