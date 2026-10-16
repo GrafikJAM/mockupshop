@@ -7,19 +7,27 @@
 }
 
 .headRow {
+  /* Middle column is exactly one product-card wide (matches ProductGrid's
+     4 columns / 24px gaps below), so the progress bar spans one thumbnail. */
+  --thumb-w: calc((100% - 72px) / 4);
   display: grid;
-  grid-template-columns: 1fr 10% 1fr;
-  align-items: flex-end;
-  gap: 24px;
+  grid-template-columns: 1fr var(--thumb-w) 1fr;
+  column-gap: 24px;
+  align-items: end;
   margin-bottom: 36px;
 }
 .headText { display: flex; flex-direction: column; gap: 8px; }
-.viewAllLink { justify-self: end; white-space: nowrap; }
+.viewAllLink { grid-column: -2; justify-self: end; white-space: nowrap; line-height: 20px; }
 
+@media (max-width: 1024px) {
+  .headRow { --thumb-w: calc((100% - 48px) / 3); }
+}
+
+/* Phones: heading on its own row, then progress (one card wide, matching
+   the 2-column grid) and "View all" side by side on the next. */
 @media (max-width: 640px) {
-  .headRow { grid-template-columns: 1fr; row-gap: 14px; }
-  .progress { justify-self: stretch; }
-  .viewAllLink { justify-self: start; }
+  .headRow { grid-template-columns: 1fr 1fr; column-gap: 16px; row-gap: 18px; }
+  .headText { grid-column: 1 / -1; }
 }
 
 /* Clipped to the page container, so only the active page of 4 is ever
@@ -72,7 +80,15 @@
   .arrowNext { right: 10px; }
 }
 
-.progress { justify-self: center; display: flex; gap: 6px; min-width: 60px; align-self: center; }
+/* Bottom-aligned with the heading and "View all", then lifted so its
+   centre sits on the centre of the 20px-tall "View all mockups" line. */
+.progress {
+  justify-self: stretch;
+  align-self: end;
+  margin-bottom: 8.5px;
+  display: flex;
+  gap: 6px;
+}
 .segment {
   flex: 1;
   height: 3px;
