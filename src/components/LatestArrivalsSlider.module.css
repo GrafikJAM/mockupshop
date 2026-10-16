@@ -1,23 +1,6 @@
 .wrap {
   position: relative;
-  /* --chunk-w reproduces .container's own content width exactly (its
-     max-width minus its own left+right padding), so the 4-product row is
-     pixel-identical in width to the ProductGrid in "Top mockups this
-     month" below, which just sits inside .container directly.
-     --edge-inset reproduces where .container's content starts from the
-     true viewport edge — its own padding, plus (on screens wider than
-     --max-w) the extra margin that centers .container itself. Together
-     these line the slider's left edge up with every other section's, even
-     though the slider itself now bleeds full width for its background. */
-  --chunk-w: min(calc(var(--max-w) - 80px), calc(100vw - 80px));
-  --edge-inset: max(40px, calc((100vw - var(--max-w)) / 2 + 40px));
   --slide-gap: 24px;
-}
-@media (max-width: 768px) {
-  .wrap {
-    --chunk-w: min(calc(var(--max-w) - 40px), calc(100vw - 40px));
-    --edge-inset: max(20px, calc((100vw - var(--max-w)) / 2 + 20px));
-  }
 }
 @media (max-width: 640px) {
   .wrap { --slide-gap: 16px; }
@@ -39,50 +22,28 @@
   .viewAllLink { justify-self: start; }
 }
 
-/* Full-bleed: breaks out of the page's centered .container (however deeply
-   nested) to span the actual browser width, independent of the container's
-   max-width/padding, so the dark background reaches both edges. Safe
-   against a scrollbar-induced horizontal overflow because body already
-   sets overflow-x: hidden globally. The actual 4-product row inside stays
-   pinned to --chunk-w and is left-aligned to --edge-inset by the track's
-   transform below (not centered — centering was what threw its left edge
-   out of line with "Top mockups this month"'s ProductGrid beneath it). */
+/* Clipped to the page container, so only the active page of 4 is ever
+   visible — same width and edges as every other section on the page. */
 .viewport {
   position: relative;
   overflow: hidden;
-  width: 100vw;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
 }
 
 .track {
   display: flex;
   align-items: flex-start;
-  /* Real spacing between slides via flex gap (matching ProductGrid's own
-     24px/16px inter-card gap) rather than padding on each slide — padding
-     would also inset the very first/active slide from --edge-inset, right
-     back into the misalignment this is fixing. */
+  /* Gap between pages matches ProductGrid's own inter-card gap. */
   gap: var(--slide-gap);
   transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* Fixed width (--chunk-w, from .wrap) rather than a percentage of the
-   full-bleed viewport — this is what keeps each page of 4 products the
-   same size as the ProductGrid sections around it, instead of stretching
-   to fill the wider viewport. flex: 0 0 var(--chunk-w) (no shrink/grow) so
-   the track is free to overflow its clipped parent; only the active page
-   is full-strength, its neighbors (whatever falls into the space around
-   it, cropped by .viewport's overflow) sit dimmed until they become
-   active. */
+/* Each page is exactly the viewport's width; the track's transform
+   (percentages of its own width = the viewport width) steps one page plus
+   one gap at a time. */
 .slide {
-  flex: 0 0 var(--chunk-w);
-  width: var(--chunk-w);
-  opacity: 0.32;
-  transition: opacity 0.4s ease;
+  flex: 0 0 100%;
+  width: 100%;
 }
-.slideActive { opacity: 1; }
 
 .arrow {
   position: absolute;
@@ -103,12 +64,12 @@
   transition: opacity 0.15s, transform 0.15s;
 }
 .arrow:hover { opacity: 0.85; }
-.arrowPrev { left: 40px; }
-.arrowNext { right: 40px; }
+.arrowPrev { left: 16px; }
+.arrowNext { right: 16px; }
 @media (max-width: 640px) {
   .arrow { width: 32px; height: 32px; }
-  .arrowPrev { left: 16px; }
-  .arrowNext { right: 16px; }
+  .arrowPrev { left: 10px; }
+  .arrowNext { right: 10px; }
 }
 
 .progress { justify-self: center; display: flex; gap: 6px; min-width: 60px; align-self: center; }

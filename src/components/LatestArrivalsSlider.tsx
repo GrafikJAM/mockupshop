@@ -159,22 +159,18 @@ export default function LatestArrivalsSlider({ products }: { products: Product[]
           className={styles.track}
           onTransitionEnd={handleTrackTransitionEnd}
           style={{
-            // Each slide has a fixed width (--chunk-w, set in CSS — matching
-            // the ProductGrid sections around it) and slides are separated
-            // by --slide-gap. This lines the active slide's left edge up
-            // with --edge-inset — the same left edge every other section on
-            // the page starts at — rather than centering it in the
-            // full-bleed viewport, via the CSS vars so it stays correct at
-            // any screen width without a resize listener. transitionDuration
-            // is zeroed only for the transition-free loop-snap above.
-            transform: `translateX(calc(var(--edge-inset) - ((var(--chunk-w) + var(--slide-gap)) * ${trackIndex})))`,
+            // One page = the viewport's width plus the gap between pages.
+            // transitionDuration is zeroed only for the transition-free
+            // loop-snap above.
+            transform: `translateX(calc((-100% - var(--slide-gap)) * ${trackIndex}))`,
             transitionDuration: animate ? undefined : '0s',
           }}
         >
           {extended.map((chunk, i) => (
             <div
               key={i}
-              className={`${styles.slide} ${i === trackIndex ? styles.slideActive : ''}`}
+              className={styles.slide}
+              aria-hidden={i !== trackIndex}
             >
               <ProductGrid products={chunk} cols={4} uniform showPrice />
             </div>
