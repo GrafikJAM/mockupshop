@@ -9,6 +9,8 @@ import PricingCard from '@/components/PricingCard'
 import TopMockupsSection from '@/components/TopMockupsSection'
 import GetAccessButton from '@/components/GetAccessButton'
 import BlackFridayBanner from '@/components/BlackFridayBanner'
+import CategoryRow from '@/components/CategoryRow'
+import FreeMockupSection from '@/components/FreeMockupSection'
 import styles from './page.module.css'
 
 export const revalidate = 60
@@ -34,6 +36,13 @@ export default async function Home() {
   )
     const latestArrivals = newestFirst.slice(0, 8)
 
+  // Only the preview fields go to the client component — download_url is
+  // handed out by /api/lead-magnet after an email is submitted.
+  const leadMagnetProduct = all.find(p => p.is_lead_magnet)
+  const leadMagnet = leadMagnetProduct
+    ? { title: leadMagnetProduct.title as string, image_default: leadMagnetProduct.image_default as string }
+    : null
+
   return (
     <>
       <Nav />
@@ -58,10 +67,18 @@ export default async function Home() {
         </section>
 
 
-                      {latestArrivals.length > 0 && (
+        {latestArrivals.length > 0 && (
           <section className={`${styles.section} section`}>
             <div className="container">
               <LatestArrivalsSlider products={latestArrivals} />
+            </div>
+          </section>
+        )}
+
+        {all.length > 0 && (
+          <section className={`${styles.section} section`}>
+            <div className="container">
+              <CategoryRow products={all} />
             </div>
           </section>
         )}
@@ -94,7 +111,15 @@ export default async function Home() {
           </div>
         </section>
 
-               <section className={`section ${styles.founderSection}`}>
+        {leadMagnet && (
+          <section className={`${styles.section} section`}>
+            <div className="container">
+              <FreeMockupSection leadMagnet={leadMagnet} />
+            </div>
+          </section>
+        )}
+
+        <section className={`section ${styles.founderSection}`}>
           <div className="container">
             <div className={styles.founderRow}>
               <img src="/founder-portrait.png" alt={SITE.founderName} className={styles.founderImg} />

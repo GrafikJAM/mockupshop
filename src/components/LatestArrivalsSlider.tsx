@@ -176,7 +176,7 @@ export default function LatestArrivalsSlider({ products }: { products: Product[]
               key={i}
               className={`${styles.slide} ${i === trackIndex ? styles.slideActive : ''}`}
             >
-              <ProductGrid products={chunk} cols={4} uniform />
+              <ProductGrid products={chunk} cols={4} uniform showPrice />
             </div>
           ))}
         </div>

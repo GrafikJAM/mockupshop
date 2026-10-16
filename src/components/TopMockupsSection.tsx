@@ -23,7 +23,7 @@ export default function TopMockupsSection({ products }: { products: Product[] })
         </div>
         <ColumnToggle options={[2, 4]} value={cols} onChange={setCols} />
       </div>
-      <ProductGrid products={products} cols={cols} />
+      <ProductGrid products={products} cols={cols} showPrice />
     </>
   )
 }
