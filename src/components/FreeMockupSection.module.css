@@ -5,7 +5,7 @@
 .img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; border-radius: 4px; background: var(--bg-elevated); }
 .badge {
   position: absolute; top: 16px; left: 16px;
-  background: var(--accent-yellow); color: #0c0c0b;
+  background: var(--accent-yellow); color: #1d1d1b;
   font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
   padding: 7px 14px; border-radius: 999px;
 }
