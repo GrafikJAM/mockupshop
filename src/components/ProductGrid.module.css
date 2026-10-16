@@ -61,12 +61,14 @@
 
 .meta {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
   padding: 0 2px;
 }
 
 .title {
+  min-width: 0;
   font-size: 14px;
   color: var(--text-secondary);
   white-space: nowrap;
@@ -78,6 +80,8 @@
 .card:hover .title { color: var(--text-primary); }
 
 .price {
+  flex-shrink: 0;
+  white-space: nowrap;
   font-size: 13px;
   color: var(--text-primary);
   font-weight: 500;

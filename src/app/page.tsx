@@ -111,14 +111,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {leadMagnet && (
-          <section className={`${styles.section} section`}>
-            <div className="container">
-              <FreeMockupSection leadMagnet={leadMagnet} />
-            </div>
-          </section>
-        )}
-
         <section className={`section ${styles.founderSection}`}>
           <div className="container">
             <div className={styles.founderRow}>
@@ -135,6 +127,14 @@ export default async function Home() {
           </div>
         </section>
 
+
+        {leadMagnet && (
+          <section className={styles.freeSection}>
+            <div className="container">
+              <FreeMockupSection leadMagnet={leadMagnet} />
+            </div>
+          </section>
+        )}
       </main>
       <Footer />
     </>

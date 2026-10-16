@@ -49,7 +49,7 @@ export default function FreeMockupSection({ leadMagnet }: { leadMagnet: LeadMagn
         {status === 'done' ? (
           <>
             <p className="label">It&apos;s yours</p>
-            <h2 className="display-lg">Here&apos;s your free mockup</h2>
+            <h2 className={`display-lg ${styles.title}`}>Here&apos;s your free mockup</h2>
             {delivered ? (
               <>
                 <p className={styles.sub}>{delivered.title} — full-resolution PSD with smart objects.</p>
@@ -64,7 +64,7 @@ export default function FreeMockupSection({ leadMagnet }: { leadMagnet: LeadMagn
         ) : (
           <>
             <p className="label">Not ready to buy?</p>
-            <h2 className="display-lg">Try one free</h2>
+            <h2 className={`display-lg ${styles.title}`}>Try one free</h2>
             <p className={styles.sub}>
               Get <strong>{leadMagnet.title}</strong> as a full Photoshop PSD with smart objects — the same
               quality as the paid library. Drop your email and it&apos;s yours.

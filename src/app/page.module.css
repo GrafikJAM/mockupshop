@@ -51,3 +51,9 @@
 
 .sectionHeadRow { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 36px; flex-wrap: wrap; }
 .sectionHeadRow .sectionHead { margin-bottom: 0; }
+
+/* Last section before the footer — the catch-all for visitors who scrolled
+   the whole page without buying. Extra breathing room so it reads as a
+   finale, not an afterthought. */
+.freeSection { border-top: 1px solid var(--border); padding-top: 96px; padding-bottom: 96px; }
+@media (max-width: 768px) { .freeSection { padding-top: 56px; padding-bottom: 56px; } }
