@@ -21,7 +21,7 @@ export default function TopMockupsSection({ products }: { products: Product[] })
           <p className="label">Best sellers</p>
           <h2 className="display-lg">Top mockups this month</h2>
         </div>
-        <ColumnToggle options={[2, 4]} value={cols} onChange={setCols} />
+        <ColumnToggle options={[2, 4]} value={cols} onChange={setCols} className={styles.toggle} />
       </div>
       <ProductGrid products={products} cols={cols} showPrice />
     </>
