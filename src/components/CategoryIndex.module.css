@@ -8,6 +8,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
+  /* Every line runs flush to both the left and right page edges. */
+  justify-content: space-between;
   column-gap: 0.55em;
   row-gap: 0.05em;
   font-family: var(--font-display);
