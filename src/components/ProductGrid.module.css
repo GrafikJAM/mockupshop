@@ -76,3 +76,9 @@
 }
 
 .card:hover .title { color: var(--text-primary); }
+
+.price {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
