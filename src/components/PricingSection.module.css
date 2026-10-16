@@ -1,0 +1,60 @@
+.wrap { display: flex; flex-direction: column; gap: 56px; }
+
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 48px;
+}
+.headline {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3rem, 8.5vw, 9.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+  color: var(--text-primary);
+}
+.aside { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; max-width: 340px; padding-bottom: 0.6rem; }
+.sticker { margin-left: 12px; }
+.sub { font-size: 16px; line-height: 1.6; color: var(--text-secondary); }
+
+.strip { overflow: hidden; }
+
+.tiers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.tier {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 32px 32px 36px;
+}
+.tier:first-child { padding-left: 0; }
+.tier + .tier { border-left: 1px solid var(--border); }
+.tierTop { display: flex; flex-direction: column; gap: 6px; }
+.tierName { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.4rem, 2vw, 1.9rem); letter-spacing: -0.02em; color: var(--text-primary); }
+.tierScale { font-size: 14px; color: var(--text-secondary); }
+.tierPrice { font-family: var(--font-display); font-size: clamp(2.8rem, 5vw, 5rem); line-height: 1; letter-spacing: -0.04em; color: var(--text-primary); margin-top: auto; }
+.tierBtn { align-self: flex-start; }
+.tierBtn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+.note { margin-top: 20px; font-size: 14px; color: var(--text-secondary); }
+.note a { color: var(--text-primary); text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 900px) {
+  .head { grid-template-columns: 1fr; gap: 32px; }
+  .aside { padding-bottom: 0; }
+  .tiers { grid-template-columns: 1fr; }
+  .tier { padding: 28px 0; }
+  .tier + .tier { border-left: none; border-top: 1px solid var(--border); }
+  .tier { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; }
+  .tierTop { flex: 1 1 100%; }
+  .tierPrice { margin-top: 0; }
+  .tierBtn { align-self: center; }
+}
+@media (max-width: 640px) {
+  .wrap { gap: 40px; }
+}

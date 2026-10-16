@@ -19,34 +19,24 @@
 
 .testimonialsSection { padding: 64px 0; border-bottom: 1px solid var(--border); overflow: hidden; transition: border-color 0.25s; }
 
-.pricingSection { padding: 80px 0; border-bottom: 1px solid var(--border); transition: border-color 0.25s; }
+.pricingSection { padding: 112px 0; border-bottom: 1px solid var(--border); transition: border-color 0.25s; }
+@media (max-width: 768px) { .pricingSection { padding: 64px 0; } }
 
-/* The card stays in normal document flow — its own height always drives
-   this section's height, exactly like before this effect existed, so it
-   can never end up collapsed or missing. The marquee is what's taken out
-   of flow: absolutely positioned behind the card and vertically centered
-   within the section, so it reads as continuing behind the card on either
-   side without the section's layout ever depending on it. */
-.pricingStack { position: relative; }
-.pricingMarquee { position: absolute; inset: 0; display: flex; align-items: center; overflow: hidden; z-index: 1; }
-/* This wrapper is full page width (via .container) but only paints the
-   actual card in its center — everywhere else is transparent. Without
-   pointer-events: none, that whole invisible band still intercepted clicks
-   meant for the marquee underneath, since hit-testing uses the box, not
-   what's actually painted. .card re-enables pointer-events for itself so
-   the card (and its button) still work normally. */
-.pricingCardWrap { position: relative; z-index: 2; width: 100%; pointer-events: none; }
-
-.founderSection { border-top: none; }
-.founderRow { display: flex; align-items: center; justify-content: center; gap: 48px; max-width: 900px; margin: 0 auto; }
-.founderImg { width: 220px; height: auto; flex-shrink: 0; }
-.founder { max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
-.founderBio { display: flex; flex-direction: column; gap: 12px; }
-.founderBio p { font-size: 15px; color: var(--text-secondary); line-height: 1.8; }
-.sig { font-family: var(--font-display); font-style: italic; font-size: 1.15rem; color: var(--accent-red); margin-top: 8px; }
+/* About: portrait and text on the page's own left edge, same as every
+   other section. The statement line is the founder's own sentence, set
+   large; the bio is supporting detail. */
+.founderSection { padding: 112px 0; }
+.founderRow { display: grid; grid-template-columns: minmax(200px, 360px) minmax(0, 760px); align-items: center; gap: clamp(32px, 6vw, 96px); }
+.founderImg { width: 100%; height: auto; }
+.founder { display: flex; flex-direction: column; gap: 24px; }
+.founderStatement { font-family: var(--font-display); font-size: clamp(2rem, 4.2vw, 4.25rem); line-height: 1.02; letter-spacing: -0.035em; color: var(--text-primary); max-width: 16ch; }
+.founderBio { display: flex; flex-direction: column; gap: 12px; max-width: 56ch; }
+.founderBio p { font-size: 16px; color: var(--text-secondary); line-height: 1.7; }
+.sig { font-family: var(--font-display); font-style: italic; font-size: 1.25rem; color: var(--accent-red); }
 @media (max-width: 768px) {
-  .founderRow { flex-direction: column; text-align: center; gap: 24px; }
-  .founder { max-width: 100%; align-items: center; }
+  .founderSection { padding: 64px 0; }
+  .founderRow { grid-template-columns: 1fr; gap: 24px; }
+  .founderImg { width: 180px; }
 }
 
 .sectionHeadRow { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 36px; flex-wrap: wrap; }

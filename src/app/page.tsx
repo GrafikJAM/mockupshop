@@ -5,7 +5,7 @@ import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import Marquee from '@/components/Marquee'
 import LatestArrivalsSlider from '@/components/LatestArrivalsSlider'
-import PricingCard from '@/components/PricingCard'
+import PricingSection from '@/components/PricingSection'
 import TopMockupsSection from '@/components/TopMockupsSection'
 import GetAccessButton from '@/components/GetAccessButton'
 import BlackFridayBanner from '@/components/BlackFridayBanner'
@@ -99,34 +99,27 @@ export default async function Home() {
 
     
         <section className={styles.pricingSection}>
-          <div className={styles.pricingStack}>
-            {all.length > 0 && (
-              <div className={styles.pricingMarquee}>
-                <Marquee products={[...all].reverse()} direction="right" speed={7} />
-              </div>
-            )}
-            <div className={`container ${styles.pricingCardWrap}`}>
-              <PricingCard />
-            </div>
-          </div>
+          <PricingSection
+            productCount={all.length}
+            strip={all.length > 0 ? <Marquee products={[...all].reverse()} direction="right" speed={7} /> : undefined}
+          />
         </section>
 
-        <section className={`section ${styles.founderSection}`}>
+        <section className={styles.founderSection}>
           <div className="container">
             <div className={styles.founderRow}>
               <img src="/founder-portrait.png" alt={SITE.founderName} className={styles.founderImg} />
               <div className={styles.founder}>
-                <p className="label">About GrafikJAM</p>
-         <h2 className="display-sm">Mockups built for real branding work</h2>
+                <p className={styles.founderStatement}>Every file I sell is something I&apos;d use myself.</p>
                 <div className={styles.founderBio}>
-                  {SITE.founderBio.split('\n\n').map((p, i) => <p key={i}>{p}</p>)}
+                  <p>I&apos;m Jekabs A. Mucenieks, a brand designer and the person behind GrafikJAM.</p>
+                  <p>I&apos;ve been making mockups since 2021 — not as a side project, but as part of my actual client branding work. What you buy here is what I present to my own clients.</p>
                 </div>
                 <p className={styles.sig}>{SITE.founderName}</p>
               </div>
             </div>
           </div>
         </section>
-
 
         {leadMagnet && (
           <section className={styles.freeSection}>
