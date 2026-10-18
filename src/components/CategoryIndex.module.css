@@ -1,5 +1,5 @@
 .wrap { position: relative; }
-.head { display: flex; flex-direction: column; gap: 8px; margin-bottom: 40px; }
+.head { margin-bottom: 24px; }
 
 .list {
   list-style: none;
@@ -101,7 +101,7 @@
 
 @media (max-width: 640px) {
   .list { font-size: clamp(2rem, 10vw, 3rem); column-gap: 0.4em; row-gap: 0.12em; }
-  .head { margin-bottom: 28px; }
+  .head { margin-bottom: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
