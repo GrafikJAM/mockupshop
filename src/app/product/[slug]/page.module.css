@@ -19,3 +19,7 @@
 .spec svg { color: var(--accent-red); flex-shrink: 0; }
 .ctaBlock { display: flex; flex-direction: column; gap: 10px; }
 .ctaNote { font-size: 12px; color: var(--text-muted); }
+
+/* Product name is the page's headline — set large, same display face and
+   tight tracking as the homepage section titles. */
+.title { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.2rem, 4vw, 4rem); line-height: 1.02; letter-spacing: -0.035em; color: var(--text-primary); }
