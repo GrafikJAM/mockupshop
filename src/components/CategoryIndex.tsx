@@ -23,8 +23,7 @@ export default function CategoryIndex({ items }: { items: Item[] }) {
   return (
     <div className={styles.wrap}>
       <div className={styles.head}>
-        <p className="label">Browse by category</p>
-        <h2 className="display-lg">What are you presenting?</h2>
+        <h2 className="label">Browse by category</h2>
       </div>
 
       <ul className={styles.list} onMouseMove={onMove} onMouseLeave={() => setActive(null)}>
