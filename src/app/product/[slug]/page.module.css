@@ -23,3 +23,10 @@
 /* Product name is the page's headline — set large, same display face and
    tight tracking as the homepage section titles. */
 .title { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.2rem, 4vw, 4rem); line-height: 1.02; letter-spacing: -0.035em; color: var(--text-primary); }
+
+.tagLink { transition: color 0.15s, border-color 0.15s; }
+.tagLink:hover { color: var(--text-primary); border-color: var(--border-hover); }
+.tagLink:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+
+.similar { border-top: 1px solid var(--border); }
+.similarHead { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 36px; flex-wrap: wrap; }
