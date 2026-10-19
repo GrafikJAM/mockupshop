@@ -12,7 +12,12 @@
 
 .copy { flex: 0 1 520px; max-width: 560px; display: flex; flex-direction: column; gap: 18px; }
 .title { font-size: clamp(2.4rem, 5vw, 4.5rem); line-height: 1.02; }
-@media (max-width: 900px) { .copy { align-items: center; } }
+/* Stacked: the flex-basis widths above would otherwise turn into heights
+   (760px tall preview box with empty space below the image). */
+@media (max-width: 900px) {
+  .preview, .copy { flex: none; }
+  .copy { align-items: center; }
+}
 .sub { font-size: 17px; color: var(--text-secondary); line-height: 1.7; }
 .sub strong { color: var(--text-primary); font-weight: 500; }
 
