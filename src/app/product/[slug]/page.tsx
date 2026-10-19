@@ -3,6 +3,8 @@ import Footer from '@/components/Footer'
 import PricingCard from '@/components/PricingCard'
 import LicenseSelector from '@/components/LicenseSelector'
 import Link from 'next/link'
+import ProductGrid from '@/components/ProductGrid'
+import { CATEGORIES } from '@/lib/categories'
 import { supabase } from '@/lib/supabase'
 import { LICENSE_TIERS } from '@/lib/config'
 import { toDirectImageUrl } from '@/lib/imageUrl'
@@ -49,8 +51,26 @@ export default async function ProductPage({ params }: { params: { slug: string }
   const { data: product } = await supabase.from('products').select('*').eq('id', params.slug).single()
   if (!product) return <div style={{ padding: '100px', color: '#f0ede8' }}>Product not found.</div>
 
-  const { count } = await supabase.from('products').select('id', { count: 'exact', head: true }).eq('active', true)
-  const productCount = count || 0
+  const { data: others } = await supabase
+    .from('products')
+    .select('id, title, image_default, image_hover, tags, sort_order, created_at')
+    .eq('active', true)
+  const productCount = (others || []).length
+
+  // "Similar mockups": rank every other active product by how many tags it
+  // shares with this one (best sellers first on ties, via sort_order), then
+  // top up with the rest of the library so there are always 8.
+  const myTags: string[] = product.tags || (product.category ? [product.category] : [])
+  const similar = (others || [])
+    .filter(p => p.id !== product.id)
+    .map(p => ({ p, shared: (p.tags || []).filter((t: string) => myTags.includes(t)).length }))
+    .sort((a, b) =>
+      b.shared - a.shared ||
+      (a.p.sort_order ?? Number.MAX_SAFE_INTEGER) - (b.p.sort_order ?? Number.MAX_SAFE_INTEGER) ||
+      new Date(b.p.created_at).getTime() - new Date(a.p.created_at).getTime()
+    )
+    .slice(0, 8)
+    .map(x => x.p)
 
   const allImages = [product.image_default, product.image_hover, ...(product.images_extra || [])]
     .filter(Boolean)
@@ -105,9 +125,14 @@ export default async function ProductPage({ params }: { params: { slug: string }
             </div>
             <div className={styles.info}>
               <div className={styles.tags}>
-                {(product.tags || [product.category]).map((tag: string) => (
-                  <span key={tag} className={styles.tag}>{tag}</span>
-                ))}
+                {myTags.map((tag: string) => {
+                  const cat = CATEGORIES.find(c => c.tag === tag)
+                  return cat ? (
+                    <Link key={tag} href={`/mockups/${cat.slug}`} className={`${styles.tag} ${styles.tagLink}`}>{tag}</Link>
+                  ) : (
+                    <span key={tag} className={styles.tag}>{tag}</span>
+                  )
+                })}
               </div>
               <h1 className={styles.title}>{product.title}</h1>
               {product.description && (
@@ -127,6 +152,17 @@ export default async function ProductPage({ params }: { params: { slug: string }
             </div>
           </div>
         </div>
+        {similar.length > 0 && (
+          <section className={`section ${styles.similar}`}>
+            <div className="container">
+              <div className={styles.similarHead}>
+                <h2 className="display-lg">Similar mockups</h2>
+                <Link href="/mockups" className="btn-ghost">View all mockups</Link>
+              </div>
+              <ProductGrid products={similar} cols={4} uniform showPrice />
+            </div>
+          </section>
+        )}
         <div className="section"><div className="container"><PricingCard /></div></div>
       </main>
       <Footer />
