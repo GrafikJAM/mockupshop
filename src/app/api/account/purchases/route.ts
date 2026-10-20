@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { claimGuestOrders } from '@/lib/claimGuestOrders'
 import { LICENSE_TIERS } from '@/lib/config'
 
 // Next.js caches fetch() calls (including the ones Supabase's client makes
@@ -23,6 +24,8 @@ export async function GET(req: NextRequest) {
 
   const { data: { user }, error: userError } = await supabase.auth.getUser(token)
   if (userError || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  await claimGuestOrders(user)
 
   const { data: orders, error: ordersError } = await supabaseAdmin
     .from('orders')
