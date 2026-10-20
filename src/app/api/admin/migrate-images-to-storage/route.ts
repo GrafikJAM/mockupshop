@@ -23,6 +23,12 @@ import { toDirectImageUrl } from '@/lib/imageUrl'
 
 const BUCKET = 'product-files'
 
+// Each call downloads + re-uploads a few files; give it room.
+export const maxDuration = 60
+export const dynamic = 'force-dynamic'
+
+const IMAGE_FIELDS = ['image_default', 'image_hover', 'images_extra']
+
 type Product = {
   id: string
   title: string
@@ -91,6 +97,8 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     totalProducts: (data || []).length,
     remainingDropboxFields: refs.length,
+    remainingImages: refs.filter(r => IMAGE_FIELDS.includes(r.field)).length,
+    remainingDownloads: refs.filter(r => r.field === 'download_url').length,
     productsStillOnDropbox: Array.from(byProduct.entries()).map(([id, v]) => ({ id, title: v.title, fields: v.fields })),
   })
 }
@@ -107,11 +115,18 @@ export async function POST(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   const products = (data || []) as Product[]
-  const allRefs = collectDropboxFields(products)
-  const batch = allRefs.slice(0, limit)
+  // `imagesOnly` (used by the admin button) moves thumbnails first — they're
+  // what visitors see broken. Mockup ZIPs are large; migrate them separately.
+  const imagesOnly = body?.imagesOnly === true
+  const allRefs = collectDropboxFields(products).filter(r => !imagesOnly || IMAGE_FIELDS.includes(r.field))
+  // Skip fields the caller already saw fail this run, so one dead link
+  // can't block the rest of the queue.
+  const skip = new Set<string>(Array.isArray(body?.skip) ? body.skip : [])
+  const keyOf = (r: FieldRef) => `${r.productId}:${r.field}:${r.index ?? ''}`
+  const batch = allRefs.filter(r => !skip.has(keyOf(r))).slice(0, limit)
 
   const migrated: { productId: string; title: string; field: string; newUrl: string }[] = []
-  const failed: { productId: string; title: string; field: string; error: string }[] = []
+  const failed: { key: string; productId: string; title: string; field: string; error: string }[] = []
 
   // Modest concurrency (not fully sequential, not unbounded) — fast enough
   // to make real progress per call without hammering Dropbox hard enough to
@@ -121,9 +136,26 @@ export async function POST(req: NextRequest) {
     const chunk = batch.slice(i, i + CONCURRENCY)
     await Promise.all(chunk.map(async ref => {
       try {
-        const directUrl = toDirectImageUrl(ref.url)
-        const res = await fetch(directUrl)
-        if (!res.ok) throw new Error(`Fetch failed: HTTP ${res.status}`)
+        // Try the inline (raw=1) link first, then the plain download form —
+        // a throttled hotlink sometimes still serves the other variant.
+        const variants = [toDirectImageUrl(ref.url)]
+        try {
+          const u = new URL(ref.url)
+          u.hostname = 'www.dropbox.com'
+          u.searchParams.delete('raw')
+          u.searchParams.set('dl', '1')
+          variants.push(u.toString())
+        } catch {}
+        let res: Response | null = null
+        let lastStatus = 0
+        for (const v of variants) {
+          const r = await fetch(v, { redirect: 'follow', cache: 'no-store' })
+          const type = r.headers.get('content-type') || ''
+          // Dropbox answers a blocked link with an HTML error page, not the file.
+          if (r.ok && !type.includes('text/html')) { res = r; break }
+          lastStatus = r.status
+        }
+        if (!res) throw new Error(`Dropbox refused the file (HTTP ${lastStatus}) — re-upload it in the admin`)
         const contentType = res.headers.get('content-type') || 'application/octet-stream'
         const buffer = Buffer.from(await res.arrayBuffer())
 
@@ -151,6 +183,7 @@ export async function POST(req: NextRequest) {
         migrated.push({ productId: ref.productId, title: ref.title, field: ref.index != null ? `${ref.field}[${ref.index}]` : ref.field, newUrl })
       } catch (err) {
         failed.push({
+          key: keyOf(ref),
           productId: ref.productId,
           title: ref.title,
           field: ref.index != null ? `${ref.field}[${ref.index}]` : ref.field,
