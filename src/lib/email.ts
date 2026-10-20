@@ -1,6 +1,11 @@
 import { Resend } from 'resend'
 import { SITE } from './config'
 
+// orders@grafikjam.shop is send-only (no mailbox), so a customer hitting
+// Reply on any shop email got a bounce. Replies go to ORDER_REPLY_TO, or
+// failing that the same inbox order notifications already go to.
+const REPLY_TO = process.env.ORDER_REPLY_TO || process.env.ORDER_NOTIFICATION_EMAIL || undefined
+
 const SITE_URL = 'https://grafikjam.shop'
 
 // Matches the site's light-theme palette (see :root in globals.css) — email
@@ -157,6 +162,7 @@ export async function sendOrderNotificationEmail(params: {
   try {
     await getResend().emails.send({
       from: process.env.ORDER_NOTIFICATION_FROM || 'GrafikJAM Orders <onboarding@resend.dev>',
+      ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
       to,
       subject: `${params.backfill ? '[Backfill] ' : ''}New order${amount ? ` — ${amount}` : ''} on ${SITE.name}`,
       text: [
@@ -196,6 +202,7 @@ export async function sendGuestDownloadEmail(params: {
   try {
     await getResend().emails.send({
       from: process.env.ORDER_NOTIFICATION_FROM || 'GrafikJAM Orders <onboarding@resend.dev>',
+      ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
       to: params.buyerEmail,
       subject: `Your ${SITE.name} download${params.items.length > 1 ? 's' : ''}`,
       text: [
@@ -235,6 +242,7 @@ export async function sendCartConfirmationEmail(params: {
   try {
     await getResend().emails.send({
       from: process.env.ORDER_NOTIFICATION_FROM || 'GrafikJAM Orders <onboarding@resend.dev>',
+      ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
       to: params.buyerEmail,
       subject: `Your ${SITE.name} download${params.items.length > 1 ? 's' : ''}`,
       text: [
@@ -272,6 +280,7 @@ export async function sendFullAccessConfirmationEmail(params: {
   try {
     await getResend().emails.send({
       from: process.env.ORDER_NOTIFICATION_FROM || 'GrafikJAM Orders <onboarding@resend.dev>',
+      ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
       to: params.buyerEmail,
       subject: `You're in — Full Access to ${SITE.name}`,
       text: [
