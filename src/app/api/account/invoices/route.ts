@@ -35,6 +35,34 @@ export async function GET(req: NextRequest) {
   }
 
   const stripe = getStripe()
+
+  // Guest checkouts (see checkout/route.ts) are saved with no user_id, so a
+  // buyer who paid as a guest and signed in later with the same email saw
+  // an empty Invoices tab. Sign-in is by emailed code, so the account email
+  // is verified — also pick up every paid Stripe Checkout session made with
+  // that email.
+  if (user.email) {
+    try {
+      const byEmail = await stripe.checkout.sessions.list({
+        customer_details: { email: user.email },
+        status: 'complete',
+        limit: 100,
+      })
+      for (const s of byEmail.data) {
+        if (s.payment_status !== 'paid' && s.payment_status !== 'no_payment_required') continue
+        // Only this shop's own checkouts (checkout/route.ts always sets mode).
+        if (s.metadata?.mode !== 'full-access' && s.metadata?.mode !== 'cart') continue
+        if (seen.has(s.id)) continue
+        seen.set(s.id, {
+          type: s.metadata?.mode === 'full-access' ? 'full-access' : 'product',
+          tierKey: s.metadata?.tierKey || null,
+        })
+      }
+    } catch {
+      // Stripe lookup failed — still return whatever the orders table had.
+    }
+  }
+
   const invoices = await Promise.all(
     Array.from(seen.entries()).map(async ([sessionId, info]) => {
       try {
