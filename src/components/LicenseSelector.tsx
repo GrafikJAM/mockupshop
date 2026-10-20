@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useCart } from '@/lib/cart'
 import { useAuth } from '@/lib/auth'
+import { useLicense } from '@/lib/license'
 import { LICENSE_TIERS, LICENSES_HREF } from '@/lib/config'
 import BuyFullAccessButton from './BuyFullAccessButton'
 import styles from './LicenseSelector.module.css'
@@ -18,8 +19,7 @@ type Props = {
 type Ownership = { hasFullAccess: boolean; productIds: string[]; downloadedProductIds?: string[] }
 
 export default function LicenseSelector({ productCount, productId, productTitle, productImage, downloadUrl }: Props) {
-  const [selected, setSelected] = useState(0)
-  const tier = LICENSE_TIERS[selected]
+  const { tier, setTierKey } = useLicense()
   const { addItem, openCart } = useCart()
   const { user, accessToken } = useAuth()
   const [ownership, setOwnership] = useState<Ownership | null>(null)
@@ -88,13 +88,13 @@ export default function LicenseSelector({ productCount, productId, productTitle,
   return (
     <div className={styles.wrap}>
       <div className={styles.tiers}>
-        {LICENSE_TIERS.map((t, i) => (
+        {LICENSE_TIERS.map(t => (
           <button
             key={t.key}
             type="button"
-            onClick={() => setSelected(i)}
-            className={`${styles.tier} ${i === selected ? styles.tierActive : ''}`}
-            aria-pressed={i === selected}
+            onClick={() => setTierKey(t.key)}
+            className={`${styles.tier} ${t.key === tier.key ? styles.tierActive : ''}`}
+            aria-pressed={t.key === tier.key}
           >
             <div className={styles.tierTop}>
               <span className={styles.tierLabel}>{t.label}</span>

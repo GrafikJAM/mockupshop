@@ -86,3 +86,36 @@
   color: var(--text-primary);
   font-weight: 500;
 }
+
+/* Card is now a <div> (it holds buttons, which can't sit inside a link);
+   the image and the title row are each their own link to the product. */
+.imgLink { display: block; }
+.uniformImgWrap .imgLink { height: 100%; }
+.meta { color: inherit; }
+
+/* Hover actions: two buttons pinned to the bottom of the image. Shown on
+   hover or when a button inside has keyboard focus. Hidden on touch
+   devices, where there's no hover — tapping goes to the product page. */
+.actions {
+  position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 2;
+  display: flex; gap: 8px;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  pointer-events: none;
+}
+.card:hover .actions, .actions:focus-within { opacity: 1; transform: none; pointer-events: auto; }
+.action {
+  flex: 1; min-width: 0;
+  padding: 10px 12px; border-radius: 100px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: opacity 0.15s, background 0.15s;
+}
+.action:focus-visible { outline: 2px solid var(--accent-yellow); outline-offset: 2px; }
+.actionGhost { background: rgba(23, 23, 21, 0.72); color: #f1efea; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.actionGhost:hover { background: rgba(23, 23, 21, 0.88); }
+.actionGhost:disabled { cursor: default; }
+.actionPrimary { background: #f1efea; color: #1d1d1b; }
+.actionPrimary:hover { opacity: 0.9; }
+@media (hover: none) { .actions { display: none; } }
+@media (prefers-reduced-motion: reduce) { .actions { transition: none; } }

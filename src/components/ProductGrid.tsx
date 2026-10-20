@@ -2,7 +2,9 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { toDirectImageUrl } from '@/lib/imageUrl'
-import { LICENSE_TIERS } from '@/lib/config'
+import { useCart } from '@/lib/cart'
+import { useQuickBuy } from '@/lib/quickBuy'
+import { useLicense } from '@/lib/license'
 import styles from './ProductGrid.module.css'
 
 type Product = {
@@ -13,42 +15,63 @@ type Product = {
   price?: string
 }
 
-// Every single mockup is sold at the same license-tier prices (see
-// LICENSE_TIERS — this is what checkout actually charges), so the card shows
-// the cheapest tier as a "from" price rather than the free-text `price`
-// field in admin, which isn't used for billing and can drift.
-const FROM_PRICE = Math.min(...LICENSE_TIERS.map(t => t.price))
-
 function Card({ product, uniform = false, showPrice = false }: { product: Product; uniform?: boolean; showPrice?: boolean }) {
   const [hovered, setHovered] = useState(false)
-  const src = hovered && product.image_hover ? product.image_hover : product.image_default
+  const [added, setAdded] = useState(false)
+  const { items, addItem } = useCart()
+  const { open } = useQuickBuy()
+  const { tier } = useLicense()
+  const image = toDirectImageUrl(product.image_default)
+  const inCart = items.some(i => i.productId === product.id)
+
+  // First item in the cart: confirm the license in a popup. After that,
+  // add straight away with the site-wide license (nav selector).
+  function handleAdd() {
+    if (items.length === 0) { open({ id: product.id, title: product.title, image }, 'cart'); return }
+    addItem({ productId: product.id, title: product.title, image, tierKey: tier.key, tierLabel: tier.label, price: tier.price })
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1600)
+  }
 
   return (
-    <Link
-      href={`/product/${product.id}`}
+    <div
       className={styles.card}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <div className={`${styles.imgWrap} ${uniform ? styles.uniformImgWrap : ''}`}>
-        <img
-          src={toDirectImageUrl(product.image_default)}
-          alt={product.title}
-          className={`${styles.img} ${styles.imgDefault} ${hovered ? styles.hidden : ''}`}
-        />
-        {product.image_hover && (
+        <Link href={`/product/${product.id}`} className={styles.imgLink} tabIndex={-1} aria-hidden>
           <img
-            src={toDirectImageUrl(product.image_hover)}
+            src={image}
             alt=""
-            className={`${styles.img} ${styles.imgHover} ${hovered ? styles.visible : ''}`}
+            className={`${styles.img} ${styles.imgDefault} ${hovered && product.image_hover ? styles.hidden : ''}`}
           />
-        )}
+          {product.image_hover && (
+            <img
+              src={toDirectImageUrl(product.image_hover)}
+              alt=""
+              className={`${styles.img} ${styles.imgHover} ${hovered ? styles.visible : ''}`}
+            />
+          )}
+        </Link>
+        <div className={styles.actions}>
+          <button type="button" className={`${styles.action} ${styles.actionGhost}`} onClick={handleAdd} disabled={added}>
+            {added ? 'Added' : inCart ? 'In cart' : 'Add to cart'}
+          </button>
+          <button
+            type="button"
+            className={`${styles.action} ${styles.actionPrimary}`}
+            onClick={() => open({ id: product.id, title: product.title, image }, 'purchase')}
+          >
+            Purchase
+          </button>
+        </div>
       </div>
-      <div className={styles.meta}>
+      <Link href={`/product/${product.id}`} className={styles.meta}>
         <span className={styles.title}>{product.title}</span>
-        {showPrice && <span className={styles.price}>From ${FROM_PRICE}</span>}
-      </div>
-    </Link>
+        {showPrice && <span className={styles.price}>${tier.price}</span>}
+      </Link>
+    </div>
   )
 }
 

@@ -1,0 +1,43 @@
+.wrap { position: relative; }
+.trigger {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 12px;
+  border: 1px solid var(--border); border-radius: 100px;
+  background: none; color: var(--text-primary);
+  font-family: inherit; font-size: 12px; cursor: pointer;
+  transition: border-color 0.15s;
+}
+.trigger:hover, .trigger[aria-expanded="true"] { border-color: var(--border-hover); }
+.trigger:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+.triggerLabel { color: var(--text-secondary); }
+.triggerValue { font-weight: 500; }
+
+.menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 120;
+  width: 280px; padding: 6px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.option {
+  display: grid; grid-template-columns: 1fr auto; column-gap: 12px;
+  text-align: left; padding: 10px 12px; border-radius: 8px;
+  background: none; border: 1px solid transparent; color: var(--text-primary);
+  font-family: inherit; cursor: pointer;
+}
+.option:hover { background: var(--bg-elevated); }
+.optionActive { border-color: var(--text-primary); }
+.option:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 1px; }
+.optionName { font-size: 14px; font-weight: 500; }
+.optionScale { grid-column: 1; font-size: 12px; color: var(--text-secondary); }
+.optionPrice { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 14px; font-weight: 500; }
+.compare { padding: 8px 12px 6px; font-size: 12px; color: var(--text-secondary); text-decoration: underline; text-underline-offset: 3px; }
+.compare:hover { color: var(--text-primary); }
+
+/* Mobile menu version */
+.inline { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; }
+.inlineLabel { font-size: 12px; color: var(--text-secondary); }
+.inlineList { display: flex; flex-direction: column; gap: 4px; }
+.inlineList .option { border-color: var(--border); }
+.inlineList .optionActive { border-color: var(--text-primary); }
+.inlineList .compare { padding-left: 0; }
