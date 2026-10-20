@@ -18,6 +18,9 @@ type Product = {
 function Card({ product, uniform = false, showPrice = false }: { product: Product; uniform?: boolean; showPrice?: boolean }) {
   const [hovered, setHovered] = useState(false)
   const [added, setAdded] = useState(false)
+  // Vertical mockups keep the hover image anchored to the bottom (their
+  // focal point); horizontal ones stay centred so the swap doesn't shift.
+  const [portrait, setPortrait] = useState(false)
   const { items, addItem } = useCart()
   const { open } = useQuickBuy()
   const { tier } = useLicense()
@@ -45,12 +48,13 @@ function Card({ product, uniform = false, showPrice = false }: { product: Produc
             src={image}
             alt=""
             className={`${styles.img} ${styles.imgDefault} ${hovered && product.image_hover ? styles.hidden : ''}`}
+            onLoad={e => { const i = e.currentTarget; setPortrait(i.naturalHeight > i.naturalWidth) }}
           />
           {product.image_hover && (
             <img
               src={toDirectImageUrl(product.image_hover)}
               alt=""
-              className={`${styles.img} ${styles.imgHover} ${hovered ? styles.visible : ''}`}
+              className={`${styles.img} ${styles.imgHover} ${portrait ? styles.imgHoverPortrait : ''} ${hovered ? styles.visible : ''}`}
             />
           )}
         </Link>

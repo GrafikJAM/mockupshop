@@ -124,3 +124,5 @@
 .actionPrimary { background: #f1efea; color: #1d1d1b; }
 @media (hover: none) { .actions { display: none; } }
 @media (prefers-reduced-motion: reduce) { .actions { transition: none; } }
+
+.imgHoverPortrait { object-position: center bottom; }
