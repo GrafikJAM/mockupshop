@@ -27,6 +27,7 @@
   .ctaDesktop { display: none; }
   .themeToggle { display: none; }
   .cartToggle { display: none; }
+  .licenseDesktop { display: none; }
   .profileToggle { display: none; }
   .menuToggle { display: flex; }
   .mobileMenu {

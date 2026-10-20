@@ -8,6 +8,9 @@ import { CartProvider } from '@/lib/cart'
 import { FullAccessModalProvider } from '@/lib/fullAccessModal'
 import CartDrawer from '@/components/CartDrawer'
 import FullAccessModal from '@/components/FullAccessModal'
+import QuickBuyModal from '@/components/QuickBuyModal'
+import { QuickBuyProvider } from '@/lib/quickBuy'
+import { LicenseProvider } from '@/lib/license'
 import ReferralCapture from '@/components/ReferralCapture'
 
 const SITE_URL = 'https://grafikjam.shop'
@@ -103,11 +106,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <AuthProvider>
             <CartProvider>
-              <FullAccessModalProvider>
-                {children}
-                <CartDrawer />
-                <FullAccessModal />
-              </FullAccessModalProvider>
+              <LicenseProvider>
+              <QuickBuyProvider>
+                <FullAccessModalProvider>
+                  {children}
+                  <CartDrawer />
+                  <FullAccessModal />
+                  <QuickBuyModal />
+                </FullAccessModalProvider>
+              </QuickBuyProvider>
+              </LicenseProvider>
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>

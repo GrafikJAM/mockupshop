@@ -7,6 +7,7 @@ import { useCart } from '@/lib/cart'
 import { useAuth } from '@/lib/auth'
 import { useFullAccessModal } from '@/lib/fullAccessModal'
 import { SITE } from '@/lib/config'
+import LicenseSwitcher from './LicenseSwitcher'
 import styles from './Nav.module.css'
 
 const LOGO_FADE_SCROLL_PX = 100
@@ -43,6 +44,7 @@ export default function Nav() {
           <Image src={theme === 'dark' ? '/jam_white.svg' : '/JAM-06.svg'} alt={SITE.name} width={64} height={38} priority />
         </Link>
         <div className={styles.right}>
+          <div className={styles.licenseDesktop}><LicenseSwitcher /></div>
           <button className={`${styles.toggle} ${styles.themeToggle}`} onClick={toggle} aria-label="Toggle theme">
             {theme === 'dark' ? (
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.3"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.05 3.05l1.06 1.06M11.89 11.89l1.06 1.06M3.05 12.95l1.06-1.06M11.89 4.11l1.06-1.06" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
@@ -90,6 +92,7 @@ export default function Nav() {
           <a href="https://grafikjam.com" target="_blank" rel="noopener noreferrer" className={styles.mobileBrandLink} onClick={() => setMenuOpen(false)}>
             GrafikJAM
           </a>
+          <LicenseSwitcher inline />
           <button className={styles.mobileLink} onClick={() => { setMenuOpen(false); toggleCart() }}>
             Cart{items.length > 0 ? ` (${items.length})` : ''}
           </button>
