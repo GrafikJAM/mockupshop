@@ -48,13 +48,14 @@
 .tierPrice { font-size: 1.35rem; font-family: var(--font-display); letter-spacing: -0.02em; margin-top: 8px; }
 
 .confirm {
-  width: 100%; padding: 14px 20px; border-radius: 100px;
-  background: var(--cta-bg); color: var(--cta-text);
-  font-size: 15px; font-weight: 500;
-  transition: opacity 0.15s;
+  width: 100%; padding: 13px 20px; border-radius: 100px;
+  background: var(--accent-yellow); color: var(--accent-red);
+  border: 2px solid var(--accent-red);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  transition: opacity 0.15s, transform 0.15s;
 }
-.confirm:hover { opacity: 0.88; }
-.confirm:disabled { opacity: 0.6; cursor: wait; }
+.confirm:hover { opacity: 0.88; transform: translateY(-1px); }
+.confirm:disabled { opacity: 0.6; cursor: wait; transform: none; }
 .confirm:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 3px; }
 
 .error { font-size: 13px; color: var(--danger); text-align: center; }

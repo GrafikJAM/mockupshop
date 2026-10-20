@@ -106,16 +106,20 @@
 .card:hover .actions, .actions:focus-within { opacity: 1; transform: none; pointer-events: auto; }
 .action {
   flex: 1; min-width: 0;
-  padding: 10px 12px; border-radius: 100px;
-  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+  padding: 9px 10px; border-radius: 100px;
+  border: 2px solid var(--accent-red);
+  font-family: var(--font-body); font-size: 11.5px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  transition: opacity 0.15s, background 0.15s;
+  transition: opacity 0.15s, transform 0.15s;
 }
-.action:focus-visible { outline: 2px solid var(--accent-yellow); outline-offset: 2px; }
-.actionGhost { background: rgba(23, 23, 21, 0.72); color: #f1efea; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-.actionGhost:hover { background: rgba(23, 23, 21, 0.88); }
-.actionGhost:disabled { cursor: default; }
-.actionPrimary { background: #f1efea; color: #1d1d1b; }
-.actionPrimary:hover { opacity: 0.9; }
+.action:hover { opacity: 0.9; transform: translateY(-1px); }
+.action:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+/* Same yellow/red pair as the product page's "Purchase full access"
+   button and the $99 starburst: Purchase is yellow with red text, Add to
+   cart is its inverse. */
+.actionGhost { background: var(--accent-red); color: var(--accent-yellow); }
+.actionGhost:disabled { cursor: default; opacity: 1; transform: none; }
+.actionPrimary { background: var(--accent-yellow); color: var(--accent-red); }
 @media (hover: none) { .actions { display: none; } }
 @media (prefers-reduced-motion: reduce) { .actions { transition: none; } }
