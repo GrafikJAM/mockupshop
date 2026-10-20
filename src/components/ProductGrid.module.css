@@ -106,20 +106,20 @@
 .card:hover .actions, .actions:focus-within { opacity: 1; transform: none; pointer-events: auto; }
 .action {
   flex: 1; min-width: 0;
-  padding: 9px 10px; border-radius: 100px;
-  border: 2px solid var(--accent-red);
+  padding: 10px 10px; border-radius: 100px;
   font-family: var(--font-body); font-size: 11.5px; font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   transition: opacity 0.15s, transform 0.15s;
 }
 .action:hover { opacity: 0.9; transform: translateY(-1px); }
-.action:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
-/* Same yellow/red pair as the product page's "Purchase full access"
-   button and the $99 starburst: Purchase is yellow with red text, Add to
-   cart is its inverse. */
-.actionGhost { background: var(--accent-red); color: var(--accent-yellow); }
+.action:focus-visible { outline: 2px solid var(--accent-yellow); outline-offset: 2px; }
+/* Neutral black/white over the photo so the thumbnails stay calm; the
+   yellow/red brand buttons are kept for the popup's confirm and the
+   product page's Full Access purchase. Fixed colours (not theme tokens)
+   because they sit on images, not on the page background. */
+.actionGhost { background: #1d1d1b; color: #f1efea; }
 .actionGhost:disabled { cursor: default; opacity: 1; transform: none; }
-.actionPrimary { background: var(--accent-yellow); color: var(--accent-red); }
+.actionPrimary { background: #f1efea; color: #1d1d1b; }
 @media (hover: none) { .actions { display: none; } }
 @media (prefers-reduced-motion: reduce) { .actions { transition: none; } }
