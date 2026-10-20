@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toDirectImageUrl } from '@/lib/imageUrl'
 import { useCart } from '@/lib/cart'
 import { useQuickBuy } from '@/lib/quickBuy'
@@ -21,6 +21,13 @@ function Card({ product, uniform = false, showPrice = false }: { product: Produc
   // Vertical mockups keep the hover image anchored to the bottom (their
   // focal point); horizontal ones stay centred so the swap doesn't shift.
   const [portrait, setPortrait] = useState(false)
+  const imgRef = useRef<HTMLImageElement>(null)
+  // A cached image can finish loading before hydration, so onLoad never
+  // fires for it — check once on mount too.
+  useEffect(() => {
+    const i = imgRef.current
+    if (i && i.complete && i.naturalWidth) setPortrait(i.naturalHeight > i.naturalWidth)
+  }, [])
   const { items, addItem } = useCart()
   const { open } = useQuickBuy()
   const { tier } = useLicense()
@@ -45,6 +52,7 @@ function Card({ product, uniform = false, showPrice = false }: { product: Produc
       <div className={`${styles.imgWrap} ${uniform ? styles.uniformImgWrap : ''}`}>
         <Link href={`/product/${product.id}`} className={styles.imgLink} tabIndex={-1} aria-hidden>
           <img
+            ref={imgRef}
             src={image}
             alt=""
             className={`${styles.img} ${styles.imgDefault} ${hovered && product.image_hover ? styles.hidden : ''}`}
