@@ -21,12 +21,16 @@ function Card({ product, uniform = false, showPrice = false }: { product: Produc
   // Vertical mockups keep the hover image anchored to the bottom (their
   // focal point); horizontal ones stay centred so the swap doesn't shift.
   const [portrait, setPortrait] = useState(false)
+  // Image failed to load (e.g. a throttled Dropbox link): show a neutral
+  // tile with the name instead of the browser's broken-image icon.
+  const [broken, setBroken] = useState(false)
   const imgRef = useRef<HTMLImageElement>(null)
   // A cached image can finish loading before hydration, so onLoad never
   // fires for it — check once on mount too.
   useEffect(() => {
     const i = imgRef.current
     if (i && i.complete && i.naturalWidth) setPortrait(i.naturalHeight > i.naturalWidth)
+    else if (i && i.complete && !i.naturalWidth) setBroken(true)
   }, [])
   const { items, addItem } = useCart()
   const { open } = useQuickBuy()
@@ -51,14 +55,19 @@ function Card({ product, uniform = false, showPrice = false }: { product: Produc
     >
       <div className={`${styles.imgWrap} ${uniform ? styles.uniformImgWrap : ''}`}>
         <Link href={`/product/${product.id}`} className={styles.imgLink} tabIndex={-1} aria-hidden>
+          {broken ? (
+            <div className={styles.placeholder}><span>{product.title}</span></div>
+          ) : (
           <img
             ref={imgRef}
             src={image}
             alt=""
             className={`${styles.img} ${styles.imgDefault} ${hovered && product.image_hover ? styles.hidden : ''}`}
             onLoad={e => { const i = e.currentTarget; setPortrait(i.naturalHeight > i.naturalWidth) }}
+            onError={() => setBroken(true)}
           />
-          {product.image_hover && (
+          )}
+          {product.image_hover && !broken && (
             <img
               src={toDirectImageUrl(product.image_hover)}
               alt=""

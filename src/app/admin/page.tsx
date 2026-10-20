@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef } from 'react'
 import { toDirectImageUrl } from '@/lib/imageUrl'
+import DropboxMigration from './DropboxMigration'
 import FileDropField from './FileDropField'
 import styles from './page.module.css'
 
@@ -342,6 +343,7 @@ export default function AdminPage() {
         <button className={`${styles.tab} ${tab === 'clients' ? styles.tabActive : ''}`} onClick={openClientsTab}>Clients</button>
       </div>
 
+      <DropboxMigration password={password} />
       {msg && <p className={msg.startsWith('Error') ? styles.error : styles.success}>{msg}</p>}
 
       {tab === 'add' && (
