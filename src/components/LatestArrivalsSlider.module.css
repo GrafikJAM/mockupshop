@@ -108,3 +108,14 @@
   from { width: 0%; }
   to { width: 100%; }
 }
+
+/* Phones: one big card at a time in a swipe strip instead of the paged
+   2×2 slider (which was cramped and glitchy at that width). */
+.mobileRow { display: none; }
+@media (max-width: 640px) {
+  .mobileRow { display: block; }
+  .viewport, .progress { display: none; }
+  .headRow { grid-template-columns: 1fr auto; }
+  .headText { grid-column: 1 / -1; }
+  .viewAllLink { grid-column: 1 / -1; justify-self: start; }
+}

@@ -7,8 +7,8 @@ type Item = { slug: string; name: string; count: number; cover?: string }
 
 // Big typographic category index. On devices with a mouse, hovering a name
 // lights it up in the accent colour, dims the rest, and floats that
-// category's cover image at the cursor. Touch devices get a small inline
-// thumbnail next to each name instead (CSS: @media (hover: none)).
+// category's cover image at the cursor.
+// Touch devices just get the list (no previews).
 // The floating preview is moved via a ref, not state, so mouse movement
 // never re-renders the list.
 export default function CategoryIndex({ items }: { items: Item[] }) {
@@ -39,7 +39,6 @@ export default function CategoryIndex({ items }: { items: Item[] }) {
               onFocus={() => show(item)}
               onBlur={() => setActive(null)}
             >
-              {item.cover && <img src={item.cover} alt="" loading="lazy" className={styles.thumb} />}
               <span className={styles.name}>{item.name}</span>
               <sup className={styles.count}>{item.count}</sup>
             </Link>

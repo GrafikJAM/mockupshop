@@ -149,6 +149,10 @@ export default function LatestArrivalsSlider({ products }: { products: Product[]
         </Link>
       </div>
 
+      <div className={styles.mobileRow}>
+        <ProductGrid products={products} showPrice row />
+      </div>
+
       <div className={styles.viewport}>
         {looped && (
           <button type="button" className={`${styles.arrow} ${styles.arrowPrev}`} onClick={prevStep} aria-label="Previous mockups">

@@ -52,8 +52,6 @@
 .all .name { color: var(--text-muted); }
 .list .all:hover .name { color: inherit; }
 
-/* Inline thumbnail: only on touch devices, where there is no hover. */
-.thumb { display: none; }
 
 /* Floating cursor preview (mouse devices only). position: fixed so it
    follows clientX/Y; pointer-events: none so it never steals the hover. */
@@ -87,21 +85,18 @@
 @media (hover: none) {
   .preview { display: none; }
   .list:hover .link { opacity: 1; }
-  .thumb {
-    display: block;
-    align-self: center;
-    width: 1.15em;
-    height: 0.86em;
-    object-fit: cover;
-    border-radius: 0.08em;
-    margin-right: 0.12em;
-    background: var(--bg-elevated);
-  }
 }
 
+/* Phones: a clean index — one category per row, name left, count right,
+   hairline between rows — instead of big type wrapping unevenly. */
 @media (max-width: 640px) {
-  .list { font-size: clamp(2rem, 10vw, 3rem); column-gap: 0.4em; row-gap: 0.12em; }
-  .head { margin-bottom: 18px; }
+  .head { margin-bottom: 8px; }
+  .list { display: block; font-size: clamp(2rem, 9vw, 2.6rem); letter-spacing: -0.03em; }
+  .item { display: block; border-bottom: 1px solid var(--border); }
+  .link { display: flex; align-items: baseline; justify-content: space-between; padding: 0.22em 0 0.18em; width: 100%; }
+  .count { align-self: center; margin-top: 0; font-size: 13px; color: var(--text-secondary); }
+  .item:last-child { border-bottom: none; }
+  .all { padding-top: 0.35em; }
 }
 
 @media (prefers-reduced-motion: reduce) {
