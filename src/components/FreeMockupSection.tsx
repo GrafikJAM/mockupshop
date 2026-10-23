@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { toDirectImageUrl } from '@/lib/imageUrl'
+import { resizedImageUrl } from '@/lib/imageUrl'
 import styles from './FreeMockupSection.module.css'
 
 type LeadMagnet = { title: string; image_default: string }
@@ -41,7 +41,7 @@ export default function FreeMockupSection({ leadMagnet }: { leadMagnet: LeadMagn
   return (
     <div className={styles.row}>
       <div className={styles.preview}>
-        <img src={toDirectImageUrl(leadMagnet.image_default)} alt={leadMagnet.title} loading="lazy" className={styles.img} />
+        <img src={resizedImageUrl(leadMagnet.image_default, 1200)} alt={leadMagnet.title} loading="lazy" className={styles.img} />
         <span className={styles.badge}>Free</span>
       </div>
 

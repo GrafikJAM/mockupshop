@@ -1,5 +1,5 @@
 import { CATEGORIES } from '@/lib/categories'
-import { toDirectImageUrl } from '@/lib/imageUrl'
+import { resizedImageUrl } from '@/lib/imageUrl'
 import CategoryIndex from './CategoryIndex'
 
 type Product = { id: string; image_default: string; tags?: string[] | null }
@@ -35,7 +35,7 @@ export default function CategoryRow({ products }: { products: Product[] }) {
         slug: t.cat.slug,
         name: t.cat.label.replace(/ Mockups$/, ''),
         count: t.count,
-        cover: t.cover ? toDirectImageUrl(t.cover) : undefined,
+        cover: t.cover ? resizedImageUrl(t.cover, 828) : undefined,
       }))}
     />
   )

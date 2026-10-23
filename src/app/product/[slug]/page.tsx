@@ -7,7 +7,7 @@ import ProductGrid from '@/components/ProductGrid'
 import { CATEGORIES } from '@/lib/categories'
 import { supabase } from '@/lib/supabase'
 import { LICENSE_TIERS } from '@/lib/config'
-import { toDirectImageUrl } from '@/lib/imageUrl'
+import { toDirectImageUrl, resizedImageUrl, resizedSrcSet } from '@/lib/imageUrl'
 import type { Metadata } from 'next'
 import styles from './page.module.css'
 
@@ -72,9 +72,8 @@ export default async function ProductPage({ params }: { params: { slug: string }
     .slice(0, 8)
     .map(x => x.p)
 
-  const allImages = [product.image_default, product.image_hover, ...(product.images_extra || [])]
+  const allImages: string[] = [product.image_default, product.image_hover, ...(product.images_extra || [])]
     .filter(Boolean)
-    .map(toDirectImageUrl)
 
   // Product structured data — lets Google understand price/availability for
   // this mockup and makes it eligible for rich results in search listings.
@@ -119,7 +118,15 @@ export default async function ProductPage({ params }: { params: { slug: string }
             <div className={styles.images}>
               {allImages.map((img: string, i: number) => (
                 <div key={i} className={i === 0 ? styles.mainImage : styles.extraImage}>
-                  <img src={img} alt={`${product.title} ${i + 1}`} className={styles.img} />
+                  <img
+                    src={resizedImageUrl(img, 1920)}
+                    srcSet={resizedSrcSet(img, [828, 1200, 1920])}
+                    sizes="(max-width: 900px) 100vw, 60vw"
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    alt={`${product.title} ${i + 1}`}
+                    className={styles.img}
+                  />
                 </div>
               ))}
             </div>

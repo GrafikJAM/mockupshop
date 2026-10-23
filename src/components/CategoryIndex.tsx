@@ -13,6 +13,9 @@ type Item = { slug: string; name: string; count: number; cover?: string }
 // never re-renders the list.
 export default function CategoryIndex({ items }: { items: Item[] }) {
   const [active, setActive] = useState<Item | null>(null)
+  // Only fetch a cover once its name has been hovered, not all of them up front.
+  const [seen, setSeen] = useState<Set<string>>(new Set())
+  function show(item: Item) { setActive(item); setSeen(prev => prev.has(item.slug) ? prev : new Set(prev).add(item.slug)) }
   const previewRef = useRef<HTMLDivElement>(null)
 
   function onMove(e: React.MouseEvent) {
@@ -32,8 +35,8 @@ export default function CategoryIndex({ items }: { items: Item[] }) {
             <Link
               href={`/mockups/${item.slug}`}
               className={`${styles.link} ${active?.slug === item.slug ? styles.linkActive : ''}`}
-              onMouseEnter={() => setActive(item)}
-              onFocus={() => setActive(item)}
+              onMouseEnter={() => show(item)}
+              onFocus={() => show(item)}
               onBlur={() => setActive(null)}
             >
               {item.cover && <img src={item.cover} alt="" loading="lazy" className={styles.thumb} />}
@@ -50,7 +53,7 @@ export default function CategoryIndex({ items }: { items: Item[] }) {
       </ul>
 
       <div ref={previewRef} className={`${styles.preview} ${active?.cover ? styles.previewOn : ''}`} aria-hidden>
-        {items.map(item => item.cover && (
+        {items.map(item => item.cover && seen.has(item.slug) && (
           <img
             key={item.slug}
             src={item.cover}
