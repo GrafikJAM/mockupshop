@@ -18,7 +18,7 @@ type Product = {
 // Rendered width of a card: 2 columns on phones, 3 on tablets, up to 4+.
 const CARD_SIZES = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw'
 
-function Card({ product, uniform = false, showPrice = false, hideOnMobile = false }: { product: Product; uniform?: boolean; showPrice?: boolean; hideOnMobile?: boolean }) {
+function Card({ product, uniform = false, showPrice = false }: { product: Product; uniform?: boolean; showPrice?: boolean }) {
   const [hovered, setHovered] = useState(false)
   const [added, setAdded] = useState(false)
   // Vertical mockups keep the hover image anchored to the bottom (their
@@ -52,7 +52,7 @@ function Card({ product, uniform = false, showPrice = false, hideOnMobile = fals
 
   return (
     <div
-      className={`${styles.card} ${hideOnMobile ? styles.mobileHide : ''}`}
+      className={styles.card}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -114,13 +114,12 @@ function Card({ product, uniform = false, showPrice = false, hideOnMobile = fals
 // Default (masonry) behavior is unchanged everywhere else.
 // `row`: one card per screen in a horizontal swipe strip (used for "Latest
 // mockups" on phones), with the next card peeking in from the right.
-// `mobileLimit`: on phones, show a single column with only the first N.
-export default function ProductGrid({ products, cols = 4, uniform = false, showPrice = false, row = false, mobileLimit }: { products: Product[]; cols?: number; uniform?: boolean; showPrice?: boolean; row?: boolean; mobileLimit?: number }) {
-  const base = row ? `${styles.uniformGrid} ${styles.rowGrid}` : uniform ? styles.uniformGrid : styles.grid
-  const cls = mobileLimit ? `${base} ${styles.mobileSingle}` : base
+// `mobileCols`: column count on phones (1 or 2; default 2).
+export default function ProductGrid({ products, cols = 4, uniform = false, showPrice = false, row = false, mobileCols }: { products: Product[]; cols?: number; uniform?: boolean; showPrice?: boolean; row?: boolean; mobileCols?: number }) {
+  const cls = row ? `${styles.uniformGrid} ${styles.rowGrid}` : uniform ? styles.uniformGrid : styles.grid
   return (
-    <div className={cls} style={{ '--cols': cols } as React.CSSProperties}>
-      {products.map((p, i) => <Card key={p.id} product={p} uniform={uniform || row} showPrice={showPrice} hideOnMobile={mobileLimit != null && i >= mobileLimit} />)}
+    <div className={cls} style={{ '--cols': cols, ...(mobileCols ? { '--mcols': mobileCols } : {}) } as React.CSSProperties}>
+      {products.map(p => <Card key={p.id} product={p} uniform={uniform || row} showPrice={showPrice} />)}
     </div>
   )
 }

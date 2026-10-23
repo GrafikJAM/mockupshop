@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
-import ProductGrid from '@/components/ProductGrid'
+import CategoryProducts from '@/components/CategoryProducts'
 import { supabase } from '@/lib/supabase'
 import { CATEGORIES, getCategory } from '@/lib/categories'
 import type { Metadata } from 'next'
@@ -100,7 +100,7 @@ export default async function CategoryPage({ params }: { params: { category: str
           <p className={styles.intro}>{cat.intro}</p>
 
           {items.length > 0 ? (
-            <ProductGrid products={items} cols={4} />
+            <CategoryProducts products={items} />
           ) : (
             <p className={styles.empty}>No {cat.label.toLowerCase()} live right now — <Link href="/mockups">browse the full catalog →</Link></p>
           )}
