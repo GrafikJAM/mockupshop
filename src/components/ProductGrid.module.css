@@ -144,3 +144,10 @@
 }
 .rowGrid::-webkit-scrollbar { display: none; }
 .rowGrid .card { flex: 0 0 86%; scroll-snap-align: start; margin-bottom: 0; }
+
+/* `mobileLimit` (e.g. Best sellers): one column, first N only, on phones. */
+@media (max-width: 640px) {
+  .mobileSingle.grid { column-count: 1; }
+  .mobileSingle.uniformGrid { grid-template-columns: 1fr; }
+  .mobileHide { display: none; }
+}
