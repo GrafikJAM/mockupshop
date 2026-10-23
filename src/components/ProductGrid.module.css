@@ -133,3 +133,14 @@
   background: var(--bg-elevated); color: var(--text-muted);
   font-size: 13px; text-align: center;
 }
+
+/* Swipe strip (see `row`): must come after .uniformGrid's breakpoints so it
+   wins on phones too. */
+.rowGrid {
+  display: flex; gap: 12px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  margin: 0 -20px; padding: 0 20px; scroll-padding: 0 20px;
+}
+.rowGrid::-webkit-scrollbar { display: none; }
+.rowGrid .card { flex: 0 0 86%; scroll-snap-align: start; margin-bottom: 0; }

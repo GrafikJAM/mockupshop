@@ -112,10 +112,13 @@ function Card({ product, uniform = false, showPrice = false }: { product: Produc
 // masonry columns — used by the homepage's "Just added" slider, where
 // mixed product-photo aspect ratios made the gap between pages too big.
 // Default (masonry) behavior is unchanged everywhere else.
-export default function ProductGrid({ products, cols = 4, uniform = false, showPrice = false }: { products: Product[]; cols?: number; uniform?: boolean; showPrice?: boolean }) {
+// `row`: one card per screen in a horizontal swipe strip (used for "Latest
+// mockups" on phones), with the next card peeking in from the right.
+export default function ProductGrid({ products, cols = 4, uniform = false, showPrice = false, row = false }: { products: Product[]; cols?: number; uniform?: boolean; showPrice?: boolean; row?: boolean }) {
+  const cls = row ? `${styles.uniformGrid} ${styles.rowGrid}` : uniform ? styles.uniformGrid : styles.grid
   return (
-    <div className={uniform ? styles.uniformGrid : styles.grid} style={{ '--cols': cols } as React.CSSProperties}>
-      {products.map(p => <Card key={p.id} product={p} uniform={uniform} showPrice={showPrice} />)}
+    <div className={cls} style={{ '--cols': cols } as React.CSSProperties}>
+      {products.map(p => <Card key={p.id} product={p} uniform={uniform || row} showPrice={showPrice} />)}
     </div>
   )
 }
