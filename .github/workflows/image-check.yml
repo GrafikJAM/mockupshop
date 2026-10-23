@@ -5,8 +5,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
+          set -e
           html=$(curl -sL https://www.grafikjam.shop/)
-          echo "$html" | grep -o '/_next/image?url=[^"& ]*&amp;w=[0-9]*&amp;q=75' | sed 's/&amp;/\&/g' | sort -u | head -5 > urls.txt
-          echo "found $(wc -l < urls.txt) sample urls"
-          while read u; do curl -s -o /dev/null -w "%{http_code} %{content_type} %{size_download}B  $u\n" "https://www.grafikjam.shop$u" | cut -c1-160; done < urls.txt
-          echo "direct supabase/dropbox img src count:"; echo "$html" | grep -oE 'src="https://[^"]*(supabase\.co|dropbox)[^"]*"' | wc -l
+          echo "$html" | grep -o '/_next/image?url=[^"& ]*&amp;w=[0-9]*&amp;q=75' | sed 's/&amp;/\&/g' | sort -u | head -8 > urls.txt
+          n=$(wc -l < urls.txt); echo "sample=$n"; [ "$n" -ge 3 ]
+          while read u; do
+            out=$(curl -s -o /dev/null -w "%{http_code} %{content_type} %{size_download}" "https://www.grafikjam.shop$u")
+            echo "$out"
+            echo "$out" | grep -q "^200 image/webp" || exit 1
+            size=$(echo "$out" | awk '{print $3}'); [ "$size" -lt 1500000 ] || exit 1
+          done < urls.txt
+          direct=$(echo "$html" | grep -oE 'src="https://[^"]*(supabase\.co|dropbox)[^"]*"' | wc -l); echo "direct=$direct"; [ "$direct" -eq 0 ]
