@@ -4,15 +4,19 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          set -e
-          html=$(curl -sL https://www.grafikjam.shop/)
-          echo "$html" | grep -o '/_next/image?url=[^"& ]*&amp;w=[0-9]*&amp;q=75' | sed 's/&amp;/\&/g' | sort -u | head -8 > urls.txt
-          n=$(wc -l < urls.txt); echo "sample=$n"; [ "$n" -ge 3 ]
-          while read u; do
-            out=$(curl -s -o /dev/null -w "%{http_code} %{content_type} %{size_download}" "https://www.grafikjam.shop$u")
-            echo "$out"
-            echo "$out" | grep -q "^200 image/webp" || exit 1
-            size=$(echo "$out" | awk '{print $3}'); [ "$size" -lt 1500000 ] || exit 1
-          done < urls.txt
-          direct=$(echo "$html" | grep -oE 'src="https://[^"]*(supabase\.co|dropbox)[^"]*"' | wc -l); echo "direct=$direct"; [ "$direct" -eq 0 ]
+      - name: find-resized-urls
+        run: |
+          curl -sL https://www.grafikjam.shop/ > page.html
+          grep -o '/_next/image?url=[^"& ]*&amp;w=[0-9]*&amp;q=75' page.html | sed 's/&amp;/\&/g' | sort -u | head -8 > urls.txt
+          [ "$(wc -l < urls.txt)" -ge 3 ]
+      - name: no-direct-supabase-or-dropbox
+        run: '[ "$(grep -oE "src=\"https://[^\"]*(supabase\.co|dropbox)[^\"]*\"" page.html | wc -l)" -eq 0 ]'
+      - name: images-return-200
+        run: |
+          while read u; do [ "$(curl -s -o /dev/null -w '%{http_code}' -H 'Accept: image/webp,image/*' "https://www.grafikjam.shop$u")" = 200 ] || exit 1; done < urls.txt
+      - name: images-are-webp
+        run: |
+          while read u; do curl -s -o /dev/null -w '%{content_type}\n' -H 'Accept: image/webp,image/*' "https://www.grafikjam.shop$u" | grep -q webp || exit 1; done < urls.txt
+      - name: images-under-1500kb
+        run: |
+          while read u; do [ "$(curl -s -o /dev/null -w '%{size_download}' -H 'Accept: image/webp,image/*' "https://www.grafikjam.shop$u")" -lt 1500000 ] || exit 1; done < urls.txt
