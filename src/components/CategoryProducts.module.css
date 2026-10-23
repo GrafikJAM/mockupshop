@@ -1,0 +1,4 @@
+.bar { display: none; }
+@media (max-width: 640px) {
+  .bar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+}

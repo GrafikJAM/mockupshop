@@ -5,6 +5,7 @@ import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import ProductGrid from '@/components/ProductGrid'
 import ColumnToggle from '@/components/ColumnToggle'
+import { useMobileCols } from '@/lib/useMobileCols'
 import StarburstBadge from '@/components/StarburstBadge'
 import { CATEGORIES } from '@/lib/categories'
 import styles from './page.module.css'
@@ -41,6 +42,7 @@ export default function MockupsPage() {
   const [activeTag, setActiveTag] = useState('All')
   const [loading, setLoading] = useState(true)
   const [cols, setCols] = useState(4)
+  const [mobileCols, setMobileCols] = useMobileCols()
 
   useEffect(() => {
     fetch('/api/products').then(r => r.json()).then(data => { setProducts(Array.isArray(data) ? data : []); setLoading(false) })
@@ -66,6 +68,7 @@ export default function MockupsPage() {
               />
             )}
             <ColumnToggle options={[2, 4, 6]} value={cols} onChange={setCols} className={styles.headerToggle} />
+            <ColumnToggle options={[1, 2]} value={mobileCols} onChange={setMobileCols} className={styles.mobileToggle} />
           </div>
           <div className={styles.filters}>
             <button className={`${styles.filter} ${activeTag === 'All' ? styles.active : ''}`} onClick={() => setActiveTag('All')}>All</button>
@@ -78,7 +81,7 @@ export default function MockupsPage() {
               )
             })}
           </div>
-          {loading ? <p className={styles.empty}>Loading...</p> : filtered.length > 0 ? <ProductGrid products={filtered} cols={cols} /> : <p className={styles.empty}>No products in this category yet.</p>}
+          {loading ? <p className={styles.empty}>Loading...</p> : filtered.length > 0 ? <ProductGrid products={filtered} cols={cols} mobileCols={mobileCols} /> : <p className={styles.empty}>No products in this category yet.</p>}
 
           {!loading && (() => {
             const liveTags = new Set(products.flatMap(p => (p.tags && p.tags.length > 0 ? p.tags : [p.category])))
