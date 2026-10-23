@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
-import { toDirectImageUrl } from '@/lib/imageUrl'
+import { toDirectImageUrl, resizedImageUrl, resizedSrcSet } from '@/lib/imageUrl'
 import { useCart } from '@/lib/cart'
 import { useQuickBuy } from '@/lib/quickBuy'
 import { useLicense } from '@/lib/license'
@@ -14,6 +14,9 @@ type Product = {
   image_hover?: string
   price?: string
 }
+
+// Rendered width of a card: 2 columns on phones, 3 on tablets, up to 4+.
+const CARD_SIZES = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw'
 
 function Card({ product, uniform = false, showPrice = false }: { product: Product; uniform?: boolean; showPrice?: boolean }) {
   const [hovered, setHovered] = useState(false)
@@ -60,7 +63,11 @@ function Card({ product, uniform = false, showPrice = false }: { product: Produc
           ) : (
           <img
             ref={imgRef}
-            src={image}
+            src={resizedImageUrl(product.image_default, 1080)}
+            srcSet={resizedSrcSet(product.image_default, [640, 1080])}
+            sizes={CARD_SIZES}
+            loading="lazy"
+            decoding="async"
             alt=""
             className={`${styles.img} ${styles.imgDefault} ${hovered && product.image_hover ? styles.hidden : ''}`}
             onLoad={e => { const i = e.currentTarget; setPortrait(i.naturalHeight > i.naturalWidth) }}
@@ -69,7 +76,11 @@ function Card({ product, uniform = false, showPrice = false }: { product: Produc
           )}
           {product.image_hover && !broken && (
             <img
-              src={toDirectImageUrl(product.image_hover)}
+              src={resizedImageUrl(product.image_hover, 1080)}
+              srcSet={resizedSrcSet(product.image_hover, [640, 1080])}
+              sizes={CARD_SIZES}
+              loading="lazy"
+              decoding="async"
               alt=""
               className={`${styles.img} ${styles.imgHover} ${portrait ? styles.imgHoverPortrait : ''} ${hovered ? styles.visible : ''}`}
             />

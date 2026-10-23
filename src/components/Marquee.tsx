@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { toDirectImageUrl } from '@/lib/imageUrl'
+import { resizedImageUrl } from '@/lib/imageUrl'
 import styles from './Marquee.module.css'
 
 type Product = { id: string; title: string; image_default: string }
@@ -23,7 +23,7 @@ export default function Marquee({ products, direction = 'left', speed = 7 }: {
       >
         {items.map((p, i) => (
           <Link key={`${p.id}-${i}`} href={`/product/${p.id}`} className={styles.item}>
-            <img src={toDirectImageUrl(p.image_default)} alt={p.title} className={styles.img} onError={e => { e.currentTarget.style.visibility = 'hidden' }} />
+            <img src={resizedImageUrl(p.image_default, 384)} loading="lazy" decoding="async" alt={p.title} className={styles.img} onError={e => { e.currentTarget.style.visibility = 'hidden' }} />
           </Link>
         ))}
       </div>

@@ -1,4 +1,5 @@
 'use client'
+import { resizedImageUrl } from '@/lib/imageUrl'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useQuickBuy } from '@/lib/quickBuy'
@@ -77,7 +78,7 @@ export default function QuickBuyModal() {
         </button>
 
         <div className={styles.head}>
-          <img src={product.image} alt="" className={styles.thumb} />
+          <img src={resizedImageUrl(product.image, 256)} alt="" className={styles.thumb} />
           <div>
             <p id="quickbuy-title" className={styles.title}>{product.title}</p>
             <p className={styles.sub}>Choose a license</p>

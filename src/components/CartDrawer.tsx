@@ -1,4 +1,5 @@
 'use client'
+import { resizedImageUrl } from '@/lib/imageUrl'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -86,7 +87,7 @@ export default function CartDrawer() {
             <div className={styles.items}>
               {items.map(item => (
                 <div key={item.productId} className={styles.item}>
-                  <div className={styles.thumb} style={{ backgroundImage: `url(${item.image})` }} />
+                  <div className={styles.thumb} style={{ backgroundImage: `url(${resizedImageUrl(item.image, 256)})` }} />
                   <div className={styles.itemInfo}>
                     <span className={styles.itemTitle}>{item.title}</span>
                     <span className={styles.itemMeta}>{item.tierLabel} license · ${item.price}</span>
