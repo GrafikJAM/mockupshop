@@ -22,7 +22,15 @@ export async function POST(req: NextRequest) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
     if (session.payment_status === 'paid') {
-      await recordOrder(session)
+      try {
+        await recordOrder(session)
+      } catch (err) {
+        // Database unreachable (e.g. Supabase quota block) or a write failed.
+        // Answer non-2xx so Stripe retries this event (for up to 3 days)
+        // instead of the paid order being silently lost.
+        console.error('recordOrder failed — asking Stripe to retry:', err)
+        return NextResponse.json({ error: 'Could not record order yet' }, { status: 500 })
+      }
     }
   }
 
@@ -47,17 +55,18 @@ async function recordOrder(session: Stripe.Checkout.Session) {
 
   // Idempotency guard: Stripe retries webhooks on non-2xx responses, so make sure
   // we don't double-record the same checkout session if this handler runs twice.
-  const { data: existing } = await supabaseAdmin
+  const { data: existing, error: existingError } = await supabaseAdmin
     .from('orders')
     .select('id')
     .eq('stripe_session_id', session.id)
     .limit(1)
+  if (existingError) throw new Error(`orders lookup failed: ${existingError.message}`)
   if (existing && existing.length > 0) return
 
   const buyerEmail = session.customer_details?.email || session.customer_email || 'Unknown'
 
   if (mode === 'full-access') {
-    await supabaseAdmin.from('orders').insert([{
+    const { error: insertError } = await supabaseAdmin.from('orders').insert([{
       user_id: userId,
       product_id: null,
       type: 'full-access',
@@ -65,6 +74,7 @@ async function recordOrder(session: Stripe.Checkout.Session) {
       stripe_session_id: session.id,
       referral_code: referralCode,
     }])
+    if (insertError) throw new Error(`full-access order insert failed: ${insertError.message}`)
     const label = LICENSE_TIERS.find(t => t.key === session.metadata?.tierKey)?.label
     await sendOrderNotificationEmail({
       buyerEmail,
@@ -96,21 +106,18 @@ async function recordOrder(session: Stripe.Checkout.Session) {
       referral_code: referralCode,
     }))
     if (rows.length > 0) {
-      await supabaseAdmin.from('orders').insert(rows)
+      // Look the products up *before* saving the order: if the database is
+      // down this throws, nothing is saved, and Stripe's retry later does
+      // the whole thing — including the download email — once it's back.
+      const { data: productData, error: productsError } = await supabaseAdmin
+        .from('products').select('id, title, download_url, image_default').in('id', productIds)
+      if (productsError) throw new Error(`products lookup failed: ${productsError.message}`)
+      const productRows: { id: string; title: string; download_url: string; image_default: string }[] = productData || []
+      const titleById = new Map(productRows.map(p => [p.id, p.title]))
+      const items = productIds.map(id => titleById.get(id) || 'Unknown product')
 
-      // Notification lists product titles rather than raw ids — best-effort
-      // lookup; falls back to a generic label per item if it fails. Also
-      // pulls download_url, needed below for guest orders' download email.
-      let items = productIds.map(() => 'Mockup')
-      let productRows: { id: string; title: string; download_url: string; image_default: string }[] = []
-      try {
-        const { data } = await supabaseAdmin.from('products').select('id, title, download_url, image_default').in('id', productIds)
-        productRows = data || []
-        const titleById = new Map(productRows.map(p => [p.id, p.title]))
-        items = productIds.map(id => titleById.get(id) || 'Unknown product')
-      } catch {
-        // Fall back to the generic labels above.
-      }
+      const { error: insertError } = await supabaseAdmin.from('orders').insert(rows)
+      if (insertError) throw new Error(`cart order insert failed: ${insertError.message}`)
 
       await sendOrderNotificationEmail({
         buyerEmail,
