@@ -109,11 +109,6 @@ export default async function ProductPage({ params }: { params: { slug: string }
       <Nav />
       <main className={styles.main}>
         <div className="container">
-          <nav className={styles.breadcrumb}>
-            <Link href="/mockups">Mockups</Link>
-            <span>/</span>
-            <span>{product.title}</span>
-          </nav>
           <div className={styles.layout}>
             <div className={styles.images}>
               {allImages.map((img: string, i: number) => (

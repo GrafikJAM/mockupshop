@@ -88,11 +88,6 @@ export default async function CategoryPage({ params }: { params: { category: str
       <Nav />
       <main className={styles.main}>
         <div className="container">
-          <nav className={styles.breadcrumb}>
-            <Link href="/mockups">Mockups</Link>
-            <span>/</span>
-            <span>{cat.label}</span>
-          </nav>
           <div className={styles.header}>
             <h1 className="display-lg">{cat.label}</h1>
             <span className={styles.count}>{items.length} files</span>
