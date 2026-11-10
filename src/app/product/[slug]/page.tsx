@@ -47,6 +47,26 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
+// Descriptions are plain text, one line per paragraph. A line ending in ":"
+// (e.g. "What you get:") starts a list: the short lines after it become
+// bullet points, until a line that reads like a sentence again (long, or
+// ending in a full stop). Lets every existing description render as a
+// compact list without editing it in admin.
+type DescBlock = { type: 'p'; text: string } | { type: 'list'; heading: string; items: string[] }
+function descriptionBlocks(text: string): DescBlock[] {
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
+  const blocks: DescBlock[] = []
+  let list: { type: 'list'; heading: string; items: string[] } | null = null
+  for (const line of lines) {
+    const isItem = line.length <= 90 && !/[.!?]$/.test(line)
+    if (list && isItem) { list.items.push(line.replace(/^[-•*]\s*/, '')); continue }
+    list = null
+    if (line.endsWith(':')) { list = { type: 'list', heading: line, items: [] }; blocks.push(list); continue }
+    blocks.push({ type: 'p', text: line })
+  }
+  return blocks
+}
+
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const { data: product } = await supabase.from('products').select('*').eq('id', params.slug).single()
   if (!product) return <div style={{ padding: '100px', color: '#f0ede8' }}>Product not found.</div>
@@ -139,9 +159,18 @@ export default async function ProductPage({ params }: { params: { slug: string }
               <h1 className={styles.title}>{product.title}</h1>
               {product.description && (
                 <div className={styles.desc}>
-                  {product.description.split('\n').map((line: string, i: number) => (
-                    <p key={i}>{line}</p>
-                  ))}
+                  {descriptionBlocks(product.description).map((b, i) =>
+                    b.type === 'list' ? (
+                      <div key={i} className={styles.featureBlock}>
+                        <p className={styles.featureHead}>{b.heading}</p>
+                        <ul className={styles.features}>
+                          {b.items.map((item, j) => <li key={j}>{item}</li>)}
+                        </ul>
+                      </div>
+                    ) : (
+                      <p key={i}>{b.text}</p>
+                    )
+                  )}
                 </div>
               )}
               <LicenseSelector
