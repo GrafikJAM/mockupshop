@@ -41,7 +41,7 @@ export default function Nav() {
           </a>
         </div>
         <Link href="/" className={`${styles.logo} ${logoHidden ? styles.logoHidden : ''}`}>
-          <Image src={theme === 'dark' ? '/jam_white.svg' : '/JAM-06.svg'} alt={SITE.name} width={64} height={38} priority />
+          <Image src={theme === 'dark' ? '/jam_white.svg' : '/JAM-06.svg'} alt={SITE.name} width={40} height={24} priority />
         </Link>
         <div className={styles.right}>
           <div className={styles.licenseDesktop}><LicenseSwitcher /></div>
