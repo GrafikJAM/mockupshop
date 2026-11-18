@@ -51,7 +51,9 @@ export default async function Home() {
 
         <section className={styles.hero}>
                     <h1 className={styles.heroDesc}>
-            {SITE.description.replace(/\n/g, ' ')}
+            {SITE.description.split('\n').map((line, i, arr) => (
+              <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
+            ))}
           </h1>
           <div className={styles.heroCtas}>
             <Link href="/mockups" className="btn-primary">
