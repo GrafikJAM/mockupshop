@@ -68,7 +68,7 @@ export default async function Home() {
 
 
         {latestArrivals.length > 0 && (
-          <section className={`${styles.section} section`}>
+          <section className={`${styles.section} section ${styles.latestSection}`}>
             <div className="container">
               <LatestArrivalsSlider products={latestArrivals} />
             </div>
