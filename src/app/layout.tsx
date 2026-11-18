@@ -91,7 +91,18 @@ const websiteJsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    // Dark is the default theme. suppressHydrationWarning: the inline script
+    // below may switch data-theme to a visitor's saved "light" before React
+    // hydrates, which is intentional.
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
+      <head>
+        {/* Apply a saved theme choice before first paint, so visitors who
+            picked light mode don't see a dark flash on every page load. */}
+        <script
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: "try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}" }}
+        />
+      </head>
       <body>
         <script
           type="application/ld+json"
