@@ -37,6 +37,11 @@
 .pricingCardWrap { position: relative; z-index: 2; width: 100%; pointer-events: none; }
 
 .founderSection { border-top: none; }
+/* Full-width statement heading above the portrait + bio. FitHeading sets
+   the exact font size; this is the starting size before it measures. */
+.founderHeadingWrap { width: 100%; margin-bottom: 56px; overflow: hidden; }
+.founderHeading { font-family: var(--font-display); font-weight: 400; font-size: 7.4vw; line-height: 1; letter-spacing: -0.04em; color: var(--text-primary); }
+@media (max-width: 768px) { .founderHeadingWrap { margin-bottom: 32px; } }
 .founderRow { display: flex; align-items: center; justify-content: center; gap: 48px; max-width: 900px; margin: 0 auto; }
 .founderImg { width: 220px; height: auto; flex-shrink: 0; }
 .founder { max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
