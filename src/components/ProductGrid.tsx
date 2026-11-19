@@ -5,6 +5,7 @@ import { toDirectImageUrl, resizedImageUrl, resizedSrcSet } from '@/lib/imageUrl
 import { useCart } from '@/lib/cart'
 import { useQuickBuy } from '@/lib/quickBuy'
 import { useLicense } from '@/lib/license'
+import { productAlt } from '@/lib/seoName'
 import styles from './ProductGrid.module.css'
 
 type Product = {
@@ -57,7 +58,7 @@ function Card({ product, uniform = false, showPrice = false }: { product: Produc
       onMouseLeave={() => setHovered(false)}
     >
       <div className={`${styles.imgWrap} ${uniform ? styles.uniformImgWrap : ''}`}>
-        <Link href={`/product/${product.id}`} className={styles.imgLink} tabIndex={-1} aria-hidden>
+        <Link href={`/product/${product.id}`} className={styles.imgLink} tabIndex={-1}>
           {broken ? (
             <div className={styles.placeholder}><span>{product.title}</span></div>
           ) : (
@@ -68,7 +69,7 @@ function Card({ product, uniform = false, showPrice = false }: { product: Produc
             sizes={CARD_SIZES}
             loading="lazy"
             decoding="async"
-            alt=""
+            alt={productAlt(product.title)}
             className={`${styles.img} ${styles.imgDefault} ${hovered && product.image_hover ? styles.hidden : ''}`}
             onLoad={e => { const i = e.currentTarget; setPortrait(i.naturalHeight > i.naturalWidth) }}
             onError={() => setBroken(true)}

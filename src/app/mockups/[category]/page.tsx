@@ -83,7 +83,16 @@ export default async function CategoryPage({ params }: { params: { category: str
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, {
+          // Breadcrumb trail for Google only: Home > Mockups > this category.
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+            { '@type': 'ListItem', position: 2, name: 'Mockups', item: `${SITE_URL}/mockups` },
+            { '@type': 'ListItem', position: 3, name: cat.label, item: `${SITE_URL}/mockups/${cat.slug}` },
+          ],
+        }]) }}
       />
       <Nav />
       <main className={styles.main}>

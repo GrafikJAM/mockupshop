@@ -5,6 +5,7 @@ import LicenseSelector from '@/components/LicenseSelector'
 import Link from 'next/link'
 import ProductGrid from '@/components/ProductGrid'
 import { CATEGORIES } from '@/lib/categories'
+import { productBaseName, productSeoTitle } from '@/lib/seoName'
 import { supabase } from '@/lib/supabase'
 import { LICENSE_TIERS } from '@/lib/config'
 import { toDirectImageUrl, resizedImageUrl, resizedSrcSet } from '@/lib/imageUrl'
@@ -22,25 +23,30 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const { data: product } = await supabase.from('products').select('*').eq('id', params.slug).single()
   if (!product) return {}
 
-  const description = product.description
-    ? product.description.split('\n')[0].slice(0, 155)
-    : `${product.title} — a premium Photoshop mockup from GrafikJAM Mockups.`
+  // Search-friendly title/description (see lib/seoName): leads with what
+  // people actually type — "<thing> mockup psd" — instead of "… 01JAM".
+  const name = productBaseName(product.title)
+  const seoTitle = productSeoTitle(product.title)
+  const firstLine = product.description
+    ? (product.description as string).split('\n').map((l: string) => l.trim()).find((l: string) => l.length > 60) || ''
+    : ''
+  const description = `${name} mockup for Photoshop — PSD with Smart Object.${firstLine ? ' ' + firstLine : ''}`.slice(0, 158)
   const image = toDirectImageUrl(product.image_default)
 
   return {
-    title: product.title,
+    title: { absolute: seoTitle },
     description,
     alternates: { canonical: `/product/${product.id}` },
     openGraph: {
       type: 'website',
       url: `/product/${product.id}`,
-      title: product.title,
+      title: seoTitle,
       description,
-      images: image ? [{ url: image, width: 1200, height: 1200, alt: product.title }] : undefined,
+      images: image ? [{ url: image, width: 1200, height: 1200, alt: `${name} mockup` }] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
-      title: product.title,
+      title: seoTitle,
       description,
       images: image ? [image] : undefined,
     },
@@ -102,7 +108,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: product.title,
+    name: `${productBaseName(product.title)} Mockup (PSD)`,
     description: product.description || `${product.title} — a premium Photoshop mockup from GrafikJAM Mockups.`,
     image: allImages,
     url: `${SITE_URL}/product/${product.id}`,
@@ -119,12 +125,27 @@ export default async function ProductPage({ params }: { params: { slug: string }
     },
   }
 
+  // Breadcrumb trail for Google only (the visible breadcrumb was removed
+  // for the design): Home > Mockups > first category > this mockup.
+  const crumbCat = CATEGORIES.find(c => (product.tags || []).includes(c.tag))
+  const crumbs = [
+    { name: 'Home', url: SITE_URL },
+    { name: 'Mockups', url: `${SITE_URL}/mockups` },
+    ...(crumbCat ? [{ name: crumbCat.label, url: `${SITE_URL}/mockups/${crumbCat.slug}` }] : []),
+    { name: `${productBaseName(product.title)} Mockup`, url: `${SITE_URL}/product/${product.id}` },
+  ]
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: c.url })),
+  }
+
   return (
     <>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, breadcrumbLd]) }}
       />
       <Nav />
       <main className={styles.main}>
@@ -139,7 +160,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
                     sizes="(max-width: 900px) 100vw, 60vw"
                     loading={i === 0 ? 'eager' : 'lazy'}
                     decoding="async"
-                    alt={`${product.title} ${i + 1}`}
+                    alt={`${productBaseName(product.title)} Photoshop mockup – view ${i + 1}`}
                     className={styles.img}
                   />
                 </div>
