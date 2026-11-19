@@ -61,7 +61,6 @@ export default function MockupsBrowser({ initialProducts }: { initialProducts: P
                 className={styles.headerBadge}
               />
             )}
-            <ColumnToggle options={[2, 4, 6]} value={cols} onChange={setCols} className={styles.headerToggle} />
             <ColumnToggle options={[1, 2]} value={mobileCols} onChange={setMobileCols} className={styles.mobileToggle} />
           </div>
           <div className={styles.filters}>
@@ -74,6 +73,8 @@ export default function MockupsBrowser({ initialProducts }: { initialProducts: P
                 </button>
               )
             })}
+            {/* Desktop column switch sits at the end of the category row. */}
+            <ColumnToggle options={[2, 4, 6]} value={cols} onChange={setCols} className={styles.headerToggle} />
           </div>
           {filtered.length > 0 ? <ProductGrid products={filtered} cols={cols} mobileCols={mobileCols} /> : <p className={styles.empty}>No products in this category yet.</p>}
 
