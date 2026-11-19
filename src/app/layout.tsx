@@ -74,8 +74,10 @@ const organizationJsonLd = {
   '@type': 'Organization',
   name: 'GrafikJAM Mockups',
   url: SITE_URL,
-  logo: `${SITE_URL}/grafikjam-Black.svg`,
-  founder: { '@type': 'Person', name: 'Jekabs A. Mucenieks' },
+  // Google's logo feature needs a raster image (it ignores SVG).
+  logo: `${SITE_URL}/email-logo.png`,
+  sameAs: ['https://grafikjam.com'],
+  founder: { '@type': 'Person', name: 'Jekabs A. Mucenieks', url: 'https://grafikjam.com' },
 }
 
 // Note: no SearchAction here (the sitelinks-search-box markup) — /mockups

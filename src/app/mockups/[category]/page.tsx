@@ -4,6 +4,8 @@ import Footer from '@/components/Footer'
 import CategoryProducts from '@/components/CategoryProducts'
 import { supabase } from '@/lib/supabase'
 import { CATEGORIES, getCategory } from '@/lib/categories'
+import { productPath } from '@/lib/productUrl'
+import { productBaseName } from '@/lib/seoName'
 import type { Metadata } from 'next'
 import styles from './page.module.css'
 
@@ -74,6 +76,17 @@ export default async function CategoryPage({ params }: { params: { category: str
     name: cat.label,
     description: cat.metaDescription,
     url: `${SITE_URL}/mockups/${cat.slug}`,
+    // The mockups on this page, as a list Google can read.
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: items.length,
+      itemListElement: items.map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${SITE_URL}${productPath(p)}`,
+        name: `${productBaseName(p.title)} Mockup`,
+      })),
+    },
   }
 
   const otherCategories = CATEGORIES.filter(c => c.slug !== cat.slug)

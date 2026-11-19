@@ -1,4 +1,5 @@
 'use client'
+import { productPath } from '@/lib/productUrl'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { toDirectImageUrl, resizedImageUrl, resizedSrcSet } from '@/lib/imageUrl'
@@ -58,7 +59,7 @@ function Card({ product, uniform = false, showPrice = false }: { product: Produc
       onMouseLeave={() => setHovered(false)}
     >
       <div className={`${styles.imgWrap} ${uniform ? styles.uniformImgWrap : ''}`}>
-        <Link href={`/product/${product.id}`} className={styles.imgLink} tabIndex={-1}>
+        <Link href={productPath(product)} className={styles.imgLink} tabIndex={-1}>
           {broken ? (
             <div className={styles.placeholder}><span>{product.title}</span></div>
           ) : (
@@ -100,7 +101,7 @@ function Card({ product, uniform = false, showPrice = false }: { product: Produc
           </button>
         </div>
       </div>
-      <Link href={`/product/${product.id}`} className={styles.meta}>
+      <Link href={productPath(product)} className={styles.meta}>
         <span className={styles.title}>{product.title}</span>
         {showPrice && <span className={styles.price}>${tier.price}</span>}
       </Link>
