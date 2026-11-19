@@ -14,9 +14,9 @@ import { LicenseProvider } from '@/lib/license'
 import ReferralCapture from '@/components/ReferralCapture'
 
 const SITE_URL = 'https://grafikjam.shop'
-const TITLE = 'GrafikJAM Mockups — Photoshop Mockups That Actually Stand Out'
+const TITLE = 'GrafikJAM Mockups — Photoshop PSD Mockups with Smart Objects'
 const DESCRIPTION =
-  "Photoshop mockups built from real client work, not stock-photo filler. Grab one, or get lifetime Full Access to the whole library for one payment."
+  "Realistic Photoshop PSD mockups with Smart Objects, built from real branding work — billboards, packaging, apparel, screens. Buy one or get Full Access."
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
