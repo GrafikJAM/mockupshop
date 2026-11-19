@@ -1,4 +1,5 @@
 'use client'
+import { productPath } from '@/lib/productUrl'
 import Link from 'next/link'
 import { resizedImageUrl } from '@/lib/imageUrl'
 import { productAlt } from '@/lib/seoName'
@@ -23,7 +24,7 @@ export default function Marquee({ products, direction = 'left', speed = 7 }: {
         style={{ animationDuration: `${duration}s` }}
       >
         {items.map((p, i) => (
-          <Link key={`${p.id}-${i}`} href={`/product/${p.id}`} className={styles.item}>
+          <Link key={`${p.id}-${i}`} href={productPath(p)} className={styles.item}>
             <img src={resizedImageUrl(p.image_default, 384)} loading="lazy" decoding="async" alt={productAlt(p.title)} className={styles.img} onError={e => { e.currentTarget.style.visibility = 'hidden' }} />
           </Link>
         ))}

@@ -6,6 +6,8 @@ import Link from 'next/link'
 import ProductGrid from '@/components/ProductGrid'
 import { CATEGORIES } from '@/lib/categories'
 import { productBaseName, productSeoTitle } from '@/lib/seoName'
+import { productPath, productSlug, parseProductParam } from '@/lib/productUrl'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { LICENSE_TIERS } from '@/lib/config'
 import { toDirectImageUrl, resizedImageUrl, resizedSrcSet } from '@/lib/imageUrl'
@@ -16,12 +18,30 @@ const SITE_URL = 'https://grafikjam.shop'
 
 export const revalidate = 60
 
+// Finds the product a /product/<param> URL refers to — a readable slug
+// ending in the id prefix, or an old full-uuid link. Includes inactive
+// products, same as before.
+async function loadProduct(param: string) {
+  const parsed = parseProductParam(param)
+  if (!parsed) return null
+  let id: string | undefined
+  if ('id' in parsed) id = parsed.id
+  else {
+    const { data } = await supabase.from('products').select('id')
+    id = (data || []).find((p: { id: string }) => p.id.toLowerCase().startsWith(parsed.prefix))?.id
+  }
+  if (!id) return null
+  const { data: product } = await supabase.from('products').select('*').eq('id', id).single()
+  return product
+}
+
 // Per-product title/description/OG image, so a link to a specific mockup
 // (e.g. pinned on Pinterest, posted on Dribbble/Behance) previews with that
 // mockup's own image and name instead of the generic site-wide card.
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const { data: product } = await supabase.from('products').select('*').eq('id', params.slug).single()
+  const product = await loadProduct(params.slug)
   if (!product) return {}
+  const path = productPath(product)
 
   // Search-friendly title/description (see lib/seoName): leads with what
   // people actually type — "<thing> mockup psd" — instead of "… 01JAM".
@@ -36,10 +56,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title: { absolute: seoTitle },
     description,
-    alternates: { canonical: `/product/${product.id}` },
+    alternates: { canonical: path },
     openGraph: {
       type: 'website',
-      url: `/product/${product.id}`,
+      url: path,
       title: seoTitle,
       description,
       images: image ? [{ url: image, width: 1200, height: 1200, alt: `${name} mockup` }] : undefined,
@@ -74,8 +94,11 @@ function descriptionBlocks(text: string): DescBlock[] {
 }
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
-  const { data: product } = await supabase.from('products').select('*').eq('id', params.slug).single()
-  if (!product) return <div style={{ padding: '100px', color: '#f0ede8' }}>Product not found.</div>
+  const product = await loadProduct(params.slug)
+  if (!product) notFound()
+  // One address per product: old /product/<uuid> links and outdated slugs
+  // (title edited since) redirect permanently to the current readable URL.
+  if (params.slug !== productSlug(product)) permanentRedirect(productPath(product))
 
   const { data: others } = await supabase
     .from('products')
@@ -111,7 +134,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
     name: `${productBaseName(product.title)} Mockup (PSD)`,
     description: product.description || `${product.title} — a premium Photoshop mockup from GrafikJAM Mockups.`,
     image: allImages,
-    url: `${SITE_URL}/product/${product.id}`,
+    url: `${SITE_URL}${productPath(product)}`,
     brand: { '@type': 'Brand', name: 'GrafikJAM Mockups' },
     category: product.category,
     offers: {
@@ -121,7 +144,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
       highPrice,
       offerCount: LICENSE_TIERS.length,
       availability: 'https://schema.org/InStock',
-      url: `${SITE_URL}/product/${product.id}`,
+      url: `${SITE_URL}${productPath(product)}`,
     },
   }
 
@@ -132,7 +155,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
     { name: 'Home', url: SITE_URL },
     { name: 'Mockups', url: `${SITE_URL}/mockups` },
     ...(crumbCat ? [{ name: crumbCat.label, url: `${SITE_URL}/mockups/${crumbCat.slug}` }] : []),
-    { name: `${productBaseName(product.title)} Mockup`, url: `${SITE_URL}/product/${product.id}` },
+    { name: `${productBaseName(product.title)} Mockup`, url: `${SITE_URL}${productPath(product)}` },
   ]
   const breadcrumbLd = {
     '@context': 'https://schema.org',

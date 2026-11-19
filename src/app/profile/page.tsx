@@ -1,4 +1,5 @@
 'use client'
+import { productPath } from '@/lib/productUrl'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -152,11 +153,11 @@ export default function ProfilePage() {
                         if (user.email) dlParams.set('email', user.email)
                         return (
                           <div key={p.id} className={styles.row}>
-                            <Link href={`/product/${p.id}`} className={styles.thumbLink}>
+                            <Link href={productPath(p)} className={styles.thumbLink}>
                               <div className={styles.thumb} style={{ backgroundImage: `url(${resizedImageUrl(p.image_default, 384)})` }} />
                             </Link>
                             <div className={styles.rowInfo}>
-                              <Link href={`/product/${p.id}`} className={styles.rowTitle}>{p.title}</Link>
+                              <Link href={productPath(p)} className={styles.rowTitle}>{p.title}</Link>
                               <span className={styles.rowMeta}>
                                 {p.tierLabel && <span className={styles.rowTier}>{p.tierLabel} License</span>}
                                 {p.downloaded && <span className={styles.rowDownloaded}>Downloaded</span>}

@@ -4,6 +4,7 @@
 .links { display: flex; gap: 24px; }
 .link { font-size: 13px; color: var(--text-muted); transition: color 0.15s; }
 .link:hover { color: var(--text-secondary); }
+.categories { display: flex; flex-wrap: wrap; gap: 8px 20px; max-width: var(--max-w); margin: 0 auto; padding: 0 32px 32px; }
 .wordmark { width: 100%; line-height: 0; }
 .wordmarkImg { width: 100%; height: auto; display: block; }
-@media (max-width: 640px) { .inner { flex-direction: column; gap: 20px; padding: 0 20px 24px; text-align: center; } }
+@media (max-width: 640px) { .inner { flex-direction: column; gap: 20px; padding: 0 20px 24px; text-align: center; } .categories { justify-content: center; padding: 0 20px 24px; } }
