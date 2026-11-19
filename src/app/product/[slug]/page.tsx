@@ -48,17 +48,17 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 // Descriptions are plain text, one line per paragraph. A line ending in ":"
-// (e.g. "What you get:") starts a list: the short lines after it become
-// bullet points, until a line that reads like a sentence again (long, or
-// ending in a full stop). Lets every existing description render as a
-// compact list without editing it in admin.
+// (e.g. "What you get:" / "Features:") starts a list: the short lines after
+// it become bullet points — with or without a trailing full stop — until a
+// long, sentence-length line (a normal paragraph) or another heading. Lets
+// every existing description render as a compact list without editing it.
 type DescBlock = { type: 'p'; text: string } | { type: 'list'; heading: string; items: string[] }
 function descriptionBlocks(text: string): DescBlock[] {
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
   const blocks: DescBlock[] = []
   let list: { type: 'list'; heading: string; items: string[] } | null = null
   for (const line of lines) {
-    const isItem = line.length <= 90 && !/[.!?]$/.test(line)
+    const isItem = line.length <= 110 && !line.endsWith(':')
     if (list && isItem) { list.items.push(line.replace(/^[-•*]\s*/, '')); continue }
     list = null
     if (line.endsWith(':')) { list = { type: 'list', heading: line, items: [] }; blocks.push(list); continue }
