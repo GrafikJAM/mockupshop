@@ -76,7 +76,7 @@ export default async function Home() {
         )}
 
         {all.length > 0 && (
-          <section className={`${styles.section} section`}>
+          <section className={`${styles.section} section ${styles.categorySection}`}>
             <div className="container">
               <CategoryRow products={all} />
             </div>
@@ -84,7 +84,7 @@ export default async function Home() {
         )}
 
         {latest.length > 0 && (
-          <section className={`${styles.section} section`}>
+          <section className={`${styles.section} section ${styles.bestSellersSection}`}>
             <div className="container">
               <TopMockupsSection products={latest} />
               <div className={styles.viewAll}>
