@@ -2,7 +2,7 @@
 
 .hero { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding: 40px 20px 24px; }
 /* First section after the hero: much less top space than the standard 88px. */
-.section.latestSection { padding-top: 32px; }
+.section.latestSection { padding-top: 32px; padding-bottom: 40px; }
 /* Browse-by-category block: tight above and below so it reads as part of
    the page flow rather than floating in empty space. */
 .section.categorySection { padding-top: 40px; padding-bottom: 40px; }
