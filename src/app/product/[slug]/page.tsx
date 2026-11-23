@@ -51,7 +51,6 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     ? (product.description as string).split('\n').map((l: string) => l.trim()).find((l: string) => l.length > 60) || ''
     : ''
   const description = `${name} mockup for Photoshop — PSD with Smart Object.${firstLine ? ' ' + firstLine : ''}`.slice(0, 158)
-  const image = toDirectImageUrl(product.image_default)
 
   return {
     title: { absolute: seoTitle },
@@ -62,13 +61,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       url: path,
       title: seoTitle,
       description,
-      images: image ? [{ url: image, width: 1200, height: 1200, alt: `${name} mockup` }] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
       title: seoTitle,
       description,
-      images: image ? [image] : undefined,
     },
   }
 }
