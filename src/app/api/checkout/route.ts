@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
 
     const isFullAccess = body.mode === 'full-access'
 
-    // Promo codes (e.g. the Black Friday BLACKFRIDAY35 code) only ever apply
+    // Promo codes (e.g. the Black Friday BLACKFRIDAY20 code) only ever apply
     // to Full Access purchases, never single-mockup cart checkouts — see
     // claude/content-and-black-friday-plan.md. If the client sent a
     // promoCode (captured from a ?promo= link or the homepage banner — see
@@ -157,11 +157,11 @@ export async function POST(req: NextRequest) {
         },
       ],
       // Either a pre-applied discount (a captured/link-based promo code
-      // resolved above — Full Access only, e.g. BLACKFRIDAY35) or the
+      // resolved above — Full Access only, e.g. BLACKFRIDAY20) or the
       // option to type a promotion code in manually at checkout. Manual
       // entry is available on both Full Access and single-mockup cart
       // checkouts — cart purchases just never get a code auto-applied,
-      // so a Full-Access-only code like BLACKFRIDAY35 can't silently
+      // so a Full-Access-only code like BLACKFRIDAY20 can't silently
       // discount an individual mockup; any promo code meant for cart
       // purchases has to be typed in on purpose.
       // Stripe doesn't allow combining `discounts` with `allow_promotion_codes`.
