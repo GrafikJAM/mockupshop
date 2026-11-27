@@ -8,6 +8,8 @@
   padding: 14px 24px;
   background: var(--accent-yellow);
   color: var(--accent-red);
+  /* Breathing room before the hero headline. */
+  margin-bottom: 56px;
 }
 
 .text { display: flex; flex-direction: column; gap: 2px; }
@@ -31,5 +33,5 @@
 .cta:hover { opacity: 0.85; transform: translateY(-1px); }
 
 @media (max-width: 480px) {
-  .banner { padding: 12px 16px; }
+  .banner { padding: 12px 16px; margin-bottom: 32px; }
 }
