@@ -21,17 +21,17 @@ export const PRICING = {
   headline: 'One price. Every mockup. Forever.',
   subline: "Less than a stock-photo subscription, minus the recurring bill you'll forget to cancel.",
   badge: 'Zero regrets',
-  amount: '$99',
-  amountValue: 99,
+  amount: '$129',
+  amountValue: 129,
   description: 'The whole library, plus everything I make next — no subscriptions, no catch',
   cta: 'Get Full Access',
   href: 'https://your-payment-link.com',
 }
 
 export const LICENSE_TIERS = [
-  { key: 'freelancer', label: 'Freelancer', scale: '1–2 person design team', price: 19, fullAccessPrice: 99 },
-  { key: 'studio', label: 'Studio', scale: '3–6 person design team', price: 39, fullAccessPrice: 199 },
-  { key: 'commercial', label: 'Commercial', scale: '7+ person design team', price: 69, fullAccessPrice: 299 },
+  { key: 'freelancer', label: 'Freelancer', scale: '1–2 person design team', price: 19, fullAccessPrice: 129 },
+  { key: 'studio', label: 'Studio', scale: '3–6 person design team', price: 39, fullAccessPrice: 229 },
+  { key: 'commercial', label: 'Commercial', scale: '7+ person design team', price: 69, fullAccessPrice: 349 },
 ]
 
 export const LICENSES_HREF = '/licenses'
