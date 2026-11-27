@@ -1,12 +1,12 @@
 // Central config for the Black Friday / Cyber Monday promo (see
 // claude/content-and-black-friday-plan.md). The actual discount is enforced
-// by a Stripe promotion code named BLACKFRIDAY35 — this file only controls
+// by a Stripe promotion code named BLACKFRIDAY20 — this file only controls
 // when the site's own UI (the homepage banner, the Full Access modal notice)
 // shows itself. Dates are evaluated in the visitor's local time; a day or
 // two of timezone slop at the edges is fine for a promo window this long.
 export const BLACK_FRIDAY = {
-  code: 'BLACKFRIDAY35',
-  percentOff: 35,
+  code: 'BLACKFRIDAY20',
+  percentOff: 20,
   // Runs Nov 27 through Dec 1, 2026 inclusive. `end` is an exclusive upper
   // bound at the start of Dec 2.
   start: new Date('2026-11-27T00:00:00'),

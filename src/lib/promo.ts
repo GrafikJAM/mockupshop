@@ -1,7 +1,7 @@
 'use client'
 
 // Promo code capture, mirroring src/lib/referral.ts's pattern. A link like
-// https://grafikjam.shop/mockups?promo=BLACKFRIDAY35 stores the code for 10
+// https://grafikjam.shop/mockups?promo=BLACKFRIDAY20 stores the code for 10
 // days (long enough to cover someone clicking a Pinterest pin or email link
 // during the Black Friday window and buying a few days later after
 // browsing around). The homepage Black Friday banner also calls
